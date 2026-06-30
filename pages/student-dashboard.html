@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>הדשבורד שלי – ניקוד★</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0A0E1A;--surface:#111827;--card:#1C2333;--border:#2A3450;
+  --accent:#6C63FF;--accent2:#FF6B6B;--gold:#FFD166;--green:#06D6A0;
+  --text:#E8EBF4;--muted:#8892AA;--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh}
+
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(10,14,26,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
+.logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
+.logo span{color:var(--gold)}
+.nav-right{display:flex;align-items:center;gap:14px}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:99px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem}
+.logout-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+
+.dashboard{padding:28px 32px;max-width:1100px;margin:0 auto}
+.dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.welcome h2{font-size:1.5rem;font-weight:800}
+.welcome p{color:var(--muted);font-size:0.9rem}
+.points-badge{background:linear-gradient(135deg,var(--accent),#9B5DE5);border-radius:var(--r);padding:14px 26px;text-align:center}
+.pts-num{font-size:2rem;font-weight:900;color:var(--gold)}
+.pts-label{font-size:0.78rem;color:rgba(255,255,255,0.7)}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card h3{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+
+.activity-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.88rem}
+.activity-item:last-child{border-bottom:none}
+.activity-pts{margin-right:auto;color:var(--green);font-weight:700}
+
+.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-size:0.8rem;color:var(--muted);width:20px;font-weight:700}
+.lb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700}
+.lb-name{flex:1;font-size:0.88rem}
+.lb-pts{font-weight:700;color:var(--gold);font-size:0.88rem}
+
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.store-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:border-color 0.2s}
+.store-item:hover{border-color:var(--gold)}
+.item-icon{font-size:1.7rem;margin-bottom:6px}
+.item-name{font-size:0.8rem;font-weight:600}
+.item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px}
+
+.empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
+
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#0A0E1A;padding:13px 26px;border-radius:99px;font-weight:700;font-size:0.9rem;z-index:999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+
+@media(max-width:700px){
+  .dashboard{padding:18px 16px}
+  .grid-2{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ניקוד<span>★</span></div>
+  <div class="nav-right">
+    <span id="userName" style="font-size:0.88rem;color:var(--muted)"></span>
+    <button class="logout-btn" onclick="logout()">יציאה</button>
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<div id="loadingScreen" class="loading">טוען את הנתונים שלך...</div>
+
+<div class="dashboard hidden" id="dashboard" style="display:none">
+  <div class="dashboard-header">
+    <div class="welcome">
+      <h2 id="welcomeText">שלום 👋</h2>
+      <p id="classInfo"></p>
+    </div>
+    <div class="points-badge">
+      <div class="pts-num" id="pointsDisplay">0</div>
+      <div class="pts-label">נקודות</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>⚡ פעילות אחרונה</h3>
+      <div id="activityList"><div class="empty-state">אין עדיין פעילות. השיעור הראשון שלך יופיע כאן!</div></div>
+    </div>
+    <div class="card">
+      <h3>🏆 ליגת הכיתה</h3>
+      <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בכיתה</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎁 חנות פרסים – יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
+    <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+let supabase = null
+let currentUser = null
+let currentPoints = 0
+
+async function init() {
+  try {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  } catch(e) {
+    document.getElementById('loadingScreen').innerHTML =
+      '⚠️ המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
+    return
+  }
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) { window.location.href = 'login.html'; return }
+
+  const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+  if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
+
+  currentUser = profile
+  currentPoints = profile.points || 0
+
+  document.getElementById('userName').textContent = profile.name
+  document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
+  document.getElementById('classInfo').textContent = `כיתה ${profile.class_name || ''}`
+  document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+  document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+
+  await loadActivity(profile.id)
+  await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
+  await loadStore()
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  document.getElementById('dashboard').style.display = 'block'
+}
+
+async function loadActivity(studentId) {
+  const { data } = await supabase
+    .from('point_logs')
+    .select('*, lessons(subject)')
+    .eq('student_id', studentId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (!data || data.length === 0) return
+
+  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥' }
+  document.getElementById('activityList').innerHTML = data.map(log => `
+    <div class="activity-item">
+      <div>${icons[log.reason] || '📌'}</div>
+      <div>${log.lessons?.subject || 'פעילות'}<br><span style="font-size:0.76rem;color:var(--muted)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div class="activity-pts">+${log.points}</div>
+    </div>
+  `).join('')
+}
+
+async function loadLeaderboard(schoolId, className, currentUserId) {
+  const { data } = await supabase
+    .from('users')
+    .select('id, name, points')
+    .eq('school_id', schoolId)
+    .eq('class_name', className)
+    .eq('role', 'student')
+    .order('points', { ascending: false })
+    .limit(8)
+
+  if (!data || data.length === 0) return
+
+  const colors = ['#6C63FF,#9B5DE5', '#06D6A0,#0CB', '#FFD166,#F4A261', '#FF6B6B,#E63']
+  document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
+    <div class="lb-item">
+      <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
+      <div class="lb-avatar" style="background:linear-gradient(135deg,${colors[i % colors.length]})">${s.name[0]}</div>
+      <div class="lb-name" style="${s.id===currentUserId?'color:var(--gold);font-weight:700':''}">${s.name}${s.id===currentUserId?' (אתה)':''}</div>
+      <div class="lb-pts">${s.points.toLocaleString()}</div>
+    </div>
+  `).join('')
+}
+
+async function loadStore() {
+  const { data } = await supabase.from('store_items').select('*').eq('active', true).order('points_cost')
+  if (!data) return
+
+  document.getElementById('storeGrid').innerHTML = data.map(item => `
+    <div class="store-item" onclick="buyItem('${item.id}', '${item.name}', ${item.points_cost})">
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-pts">${item.points_cost} נקודות</div>
+    </div>
+  `).join('')
+}
+
+async function buyItem(itemId, name, cost) {
+  if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
+
+  try {
+    await supabase.from('purchases').insert({
+      student_id: currentUser.id, item_id: itemId, points_spent: cost
+    })
+    await supabase.from('users').update({ points: currentPoints - cost }).eq('id', currentUser.id)
+
+    currentPoints -= cost
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    showToast(`🎁 ${name} נרכש בהצלחה!`)
+  } catch (err) {
+    showToast('שגיאה ברכישה, נסה שוב', true)
+  }
+}
+
+async function logout() {
+  await supabase.auth.signOut()
+  window.location.href = 'index.html'
+}
+
+let toastTimer
+function showToast(msg, isError) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.background = isError ? 'var(--accent2)' : 'var(--green)'
+  t.style.color = isError ? '#fff' : '#0A0E1A'
+  t.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
+}
+
+init()
+</script>
+</body>
+</html>
