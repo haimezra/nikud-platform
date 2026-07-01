@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דשבורד מנהל – ניקוד★</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0A0E1A;--surface:#111827;--card:#1C2333;--border:#2A3450;
+  --accent:#6C63FF;--accent2:#FF6B6B;--gold:#FFD166;--green:#06D6A0;
+  --text:#E8EBF4;--muted:#8892AA;--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;
+  min-height:100vh;
+  background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,0.14) 0%, transparent 70%);
+}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 32px;border-bottom:1px solid var(--border);
+  background:rgba(17,24,39,0.6);backdrop-filter:blur(10px);
+  position:sticky;top:0;z-index:10;
+}
+.logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
+.logo span{color:var(--gold)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.school-pill{
+  background:var(--surface);border:1px solid var(--border);border-radius:999px;
+  padding:8px 16px;font-size:0.85rem;color:var(--muted);
+}
+.school-pill strong{color:var(--text)}
+.logout-btn{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  padding:8px 16px;border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;
+  font-size:0.85rem;transition:all 0.2s;
+}
+.logout-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:1100px;margin:0 auto;padding:32px}
+.page-title{font-size:1.6rem;font-weight:800;margin-bottom:4px}
+.page-sub{color:var(--muted);font-size:0.92rem;margin-bottom:28px}
+
+/* ---------- Stat cards ---------- */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;margin-bottom:32px;
+}
+.stat-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;
+}
+.stat-num{font-size:2rem;font-weight:900;line-height:1}
+.stat-label{color:var(--muted);font-size:0.82rem;margin-top:6px}
+.stat-card.accent .stat-num{color:var(--accent)}
+.stat-card.gold .stat-num{color:var(--gold)}
+.stat-card.green .stat-num{color:var(--green)}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface);border-radius:12px;padding:4px;width:fit-content}
+.tab{
+  padding:9px 18px;border:none;background:none;color:var(--muted);
+  border-radius:9px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
+  transition:all 0.2s;
+}
+.tab.active{background:var(--accent);color:#fff}
+
+/* ---------- Panel / table ---------- */
+.panel{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:24px;
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+}
+.panel-head h3{font-size:1rem;font-weight:700}
+.add-btn{
+  background:var(--accent);border:none;color:#fff;padding:9px 16px;
+  border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
+  transition:all 0.2s;
+}
+.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(108,99,255,0.35)}
+
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--muted);
+  font-weight:600;border-bottom:1px solid var(--border);
+}
+td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.role-badge{
+  display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.75rem;font-weight:700;
+}
+.role-badge.teacher{background:rgba(108,99,255,0.15);color:var(--accent)}
+.role-badge.student{background:rgba(6,214,160,0.15);color:var(--green)}
+.points-tag{color:var(--gold);font-weight:700}
+
+.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:0.9rem}
+
+/* ---------- Modal ---------- */
+.modal-overlay{
+  display:none;position:fixed;inset:0;background:rgba(10,14,26,0.7);
+  align-items:center;justify-content:center;z-index:50;padding:20px;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px;width:100%;max-width:400px;
+}
+.modal h3{font-size:1.1rem;margin-bottom:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px}
+.field input,.field select{
+  width:100%;background:var(--surface);border:1px solid var(--border);
+  border-radius:10px;padding:11px 14px;color:var(--text);
+  font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;
+}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions button{
+  flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;
+}
+.btn-cancel{background:var(--surface);color:var(--muted)}
+.btn-confirm{background:var(--accent);color:#fff}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:12px 20px;font-size:0.85rem;display:none;z-index:60;
+}
+.toast.show{display:block}
+.toast.error{border-color:rgba(255,107,107,0.4);color:var(--accent2)}
+.toast.success{border-color:rgba(6,214,160,0.4);color:var(--green)}
+
+.loading{text-align:center;padding:60px;color:var(--muted)}
+.hidden{display:none !important}
+
+@media(max-width:640px){
+  .topbar{padding:14px 18px}
+  .wrap{padding:20px 16px}
+  th:nth-child(3),td:nth-child(3){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">ניקוד<span>★</span></div>
+  <div class="topbar-right">
+    <span class="school-pill">בית ספר: <strong id="schoolNameLabel">טוען...</strong></span>
+    <button class="logout-btn" onclick="handleLogout()">יציאה</button>
+  </div>
+</div>
+
+<div class="wrap" id="app">
+  <div class="loading" id="loadingState">טוען נתונים...</div>
+
+  <div id="dashboardContent" class="hidden">
+    <div class="page-title">דשבורד ניהול</div>
+    <div class="page-sub">שלום <span id="principalName">מנהל/ת</span>, הנה מצב בית הספר שלך</div>
+
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-num" id="statTeachers">0</div>
+        <div class="stat-label">מורים</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-num" id="statStudents">0</div>
+        <div class="stat-label">תלמידים</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-num" id="statPoints">0</div>
+        <div class="stat-label">סה"כ נקודות שחולקו</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statCode">—</div>
+        <div class="stat-label">קוד הצטרפות לבית הספר</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="setTab('students', this)">תלמידים</button>
+      <button class="tab" onclick="setTab('teachers', this)">מורים</button>
+    </div>
+
+    <!-- Students panel -->
+    <div class="panel" id="studentsPanel">
+      <div class="panel-head">
+        <h3>רשימת תלמידים</h3>
+      </div>
+      <table>
+        <thead>
+          <tr><th>שם</th><th>כיתה</th><th>אימייל</th><th>נקודות</th></tr>
+        </thead>
+        <tbody id="studentsBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="studentsEmpty">עדיין אין תלמידים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
+    </div>
+
+    <!-- Teachers panel -->
+    <div class="panel hidden" id="teachersPanel">
+      <div class="panel-head">
+        <h3>רשימת מורים</h3>
+      </div>
+      <table>
+        <thead>
+          <tr><th>שם</th><th>אימייל</th><th></th></tr>
+        </thead>
+        <tbody id="teachersBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="teachersEmpty">עדיין אין מורים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
+    </div>
+  </div>
+
+  <div class="empty-state hidden" id="errorState"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let currentUser = null
+let currentSchoolId = null
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show ' + (type || '')
+  setTimeout(() => t.classList.remove('show'), 3500)
+}
+
+async function handleLogout() {
+  await supabaseClient.auth.signOut()
+  window.location.href = 'login.html'
+}
+
+function setTab(tab, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  btn.classList.add('active')
+  document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
+  document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
+}
+
+function renderRow(user, kind) {
+  if (kind === 'student') {
+    return `<tr>
+      <td>${escapeHtml(user.name || '—')}</td>
+      <td>${escapeHtml(user.class_name || '—')}</td>
+      <td>${escapeHtml(user.email || '—')}</td>
+      <td class="points-tag">${user.points ?? 0}</td>
+    </tr>`
+  }
+  return `<tr>
+    <td>${escapeHtml(user.name || '—')}</td>
+    <td>${escapeHtml(user.email || '—')}</td>
+    <td><span class="role-badge teacher">מורה</span></td>
+  </tr>`
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
+}
+
+async function loadDashboard() {
+  const { data: sessionData } = await supabaseClient.auth.getSession()
+  if (!sessionData.session) {
+    window.location.href = 'login.html'
+    return
+  }
+  currentUser = sessionData.session.user
+
+  // Load principal profile
+  const { data: profile, error: profileErr } = await supabaseClient
+    .from('users').select('*').eq('id', currentUser.id).single()
+
+  if (profileErr || !profile) {
+    showFatalError('לא הצלחנו לטעון את הפרופיל שלך. נסה להתחבר שוב.')
+    return
+  }
+  if (profile.role !== 'principal') {
+    // Not a principal — send to the right place
+    window.location.href = profile.role === 'teacher' ? 'teacher-dashboard.html' : 'student-dashboard.html'
+    return
+  }
+
+  currentSchoolId = profile.school_id
+  document.getElementById('principalName').textContent = profile.name || 'מנהל/ת'
+
+  // Load school
+  const { data: school } = await supabaseClient
+    .from('schools').select('*').eq('id', currentSchoolId).single()
+
+  document.getElementById('schoolNameLabel').textContent = school ? school.name : 'לא ידוע'
+  document.getElementById('statCode').textContent = currentSchoolId ? currentSchoolId.slice(0, 8) : '—'
+
+  // Load teachers + students of this school
+  const { data: members, error: membersErr } = await supabaseClient
+    .from('users').select('*').eq('school_id', currentSchoolId)
+
+  if (membersErr) {
+    showFatalError('שגיאה בטעינת הצוות: ' + membersErr.message)
+    return
+  }
+
+  const teachers = (members || []).filter(u => u.role === 'teacher')
+  const students = (members || []).filter(u => u.role === 'student')
+  const totalPoints = students.reduce((sum, s) => sum + (s.points || 0), 0)
+
+  document.getElementById('statTeachers').textContent = teachers.length
+  document.getElementById('statStudents').textContent = students.length
+  document.getElementById('statPoints').textContent = totalPoints
+
+  const studentsBody = document.getElementById('studentsBody')
+  const teachersBody = document.getElementById('teachersBody')
+
+  studentsBody.innerHTML = students.map(s => renderRow(s, 'student')).join('')
+  teachersBody.innerHTML = teachers.map(t => renderRow(t, 'teacher')).join('')
+
+  document.getElementById('studentsEmpty').classList.toggle('hidden', students.length > 0)
+  document.getElementById('teachersEmpty').classList.toggle('hidden', teachers.length > 0)
+
+  document.getElementById('loadingState').classList.add('hidden')
+  document.getElementById('dashboardContent').classList.remove('hidden')
+}
+
+function showFatalError(msg) {
+  document.getElementById('loadingState').classList.add('hidden')
+  const el = document.getElementById('errorState')
+  el.textContent = msg
+  el.classList.remove('hidden')
+  showToast(msg, 'error')
+}
+
+loadDashboard()
+</script>
+</body>
+</html>
