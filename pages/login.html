@@ -140,17 +140,33 @@ body{
 </div>
 
 <script>
-// ⚠️ מלא את הפרטים שלך כאן או טען מ-config.js חיצוני
+// חיבור ל-Supabase - פרטי הפרויקט
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 
 let supabase = null
+
+function markConnected() {
+  const note = document.getElementById('setupNote')
+  note.classList.add('hidden')
+}
+
+function markError(msg) {
+  const note = document.getElementById('setupNote')
+  note.innerHTML = '❌ <strong>שגיאת חיבור:</strong> ' + msg
+  note.classList.remove('hidden')
+}
+
 try {
-  if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+  if (typeof window.supabase === 'undefined') {
+    markError('ספריית Supabase לא נטענה (בעיית CDN/רשת). רענן את הדף.')
+  } else {
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-    document.getElementById('setupNote').classList.add('hidden')
+    markConnected()
   }
-} catch(e) { console.log('Supabase not configured yet') }
+} catch(e) {
+  markError(e.message || 'שגיאה לא ידועה בעת יצירת חיבור')
+}
 
 let currentRole = 'student'
 let currentMode = 'login'
@@ -213,7 +229,7 @@ async function handleSubmit(e) {
   const btn = document.getElementById('submitBtn')
 
   if (!supabase) {
-    showError('המערכת עדיין לא מחוברת ל-Supabase. ראה הוראות ב-README.')
+    showError('המערכת עדיין לא מחוברת ל-Supabase. ראה ההודעה למעלה לפרטי השגיאה.')
     return
   }
 
@@ -283,4 +299,3 @@ async function handleSubmit(e) {
 </script>
 </body>
 </html>
-
