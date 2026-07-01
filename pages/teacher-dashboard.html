@@ -136,7 +136,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 <script>
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
-let supabase = null
+let supabaseClient = null
 let currentUser = null
 let currentLesson = null
 let students = []
@@ -144,17 +144,17 @@ const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
 
 async function init() {
   try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   } catch(e) {
     document.getElementById('loadingScreen').innerHTML =
       '⚠️ המערכת לא מחוברת ל-Supabase עדיין. חבר את הפרטים כדי להפעיל נתונים אמיתיים.'
     return
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await supabaseClient.auth.getUser()
   if (!user) { window.location.href = 'login.html'; return }
 
-  const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+  const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
   if (!profile || profile.role !== 'teacher') { window.location.href = 'login.html'; return }
 
   currentUser = profile
@@ -169,7 +169,7 @@ async function startLesson() {
   const class_name = document.getElementById('classInput').value
   if (!subject || !class_name) { showToast('נא למלא מקצוע וכיתה', true); return }
 
-  const { data: lesson, error } = await supabase.from('lessons').insert({
+  const { data: lesson, error } = await supabaseClient.from('lessons').insert({
     teacher_id: currentUser.id,
     school_id: currentUser.school_id,
     class_name, subject, status: 'active'
@@ -179,7 +179,7 @@ async function startLesson() {
 
   currentLesson = lesson
 
-  const { data: classStudents } = await supabase
+  const { data: classStudents } = await supabaseClient
     .from('users').select('id, name, avatar_color')
     .eq('school_id', currentUser.school_id)
     .eq('class_name', class_name)
@@ -268,14 +268,14 @@ async function openSubmit() {
       lesson_id: currentLesson.id, student_id: a.student_id,
       points: a.points, reason: a.reason
     }))
-    await supabase.from('point_logs').insert(logs)
+    await supabaseClient.from('point_logs').insert(logs)
 
     for (const a of approvals) {
-      const { data: student } = await supabase.from('users').select('points').eq('id', a.student_id).single()
-      await supabase.from('users').update({ points: (student?.points || 0) + a.points }).eq('id', a.student_id)
+      const { data: student } = await supabaseClient.from('users').select('points').eq('id', a.student_id).single()
+      await supabaseClient.from('users').update({ points: (student?.points || 0) + a.points }).eq('id', a.student_id)
     }
 
-    await supabase.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
+    await supabaseClient.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
 
     showToast(`🎉 נקודות חולקו ל-${approvals.length} תלמידים!`)
     setTimeout(() => {
@@ -291,7 +291,7 @@ async function openSubmit() {
 }
 
 async function logout() {
-  await supabase.auth.signOut()
+  await supabaseClient.auth.signOut()
   window.location.href = 'index.html'
 }
 
