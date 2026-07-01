@@ -111,23 +111,23 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 <script>
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
-let supabase = null
+let supabaseClient = null
 let currentUser = null
 let currentPoints = 0
 
 async function init() {
   try {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   } catch(e) {
     document.getElementById('loadingScreen').innerHTML =
       '⚠️ המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
     return
   }
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await supabaseClient.auth.getUser()
   if (!user) { window.location.href = 'login.html'; return }
 
-  const { data: profile } = await supabase.from('users').select('*').eq('id', user.id).single()
+  const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
   if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
 
   currentUser = profile
@@ -148,7 +148,7 @@ async function init() {
 }
 
 async function loadActivity(studentId) {
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from('point_logs')
     .select('*, lessons(subject)')
     .eq('student_id', studentId)
@@ -168,7 +168,7 @@ async function loadActivity(studentId) {
 }
 
 async function loadLeaderboard(schoolId, className, currentUserId) {
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from('users')
     .select('id, name, points')
     .eq('school_id', schoolId)
@@ -191,7 +191,7 @@ async function loadLeaderboard(schoolId, className, currentUserId) {
 }
 
 async function loadStore() {
-  const { data } = await supabase.from('store_items').select('*').eq('active', true).order('points_cost')
+  const { data } = await supabaseClient.from('store_items').select('*').eq('active', true).order('points_cost')
   if (!data) return
 
   document.getElementById('storeGrid').innerHTML = data.map(item => `
@@ -207,10 +207,10 @@ async function buyItem(itemId, name, cost) {
   if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
 
   try {
-    await supabase.from('purchases').insert({
+    await supabaseClient.from('purchases').insert({
       student_id: currentUser.id, item_id: itemId, points_spent: cost
     })
-    await supabase.from('users').update({ points: currentPoints - cost }).eq('id', currentUser.id)
+    await supabaseClient.from('users').update({ points: currentPoints - cost }).eq('id', currentUser.id)
 
     currentPoints -= cost
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
@@ -222,7 +222,7 @@ async function buyItem(itemId, name, cost) {
 }
 
 async function logout() {
-  await supabase.auth.signOut()
+  await supabaseClient.auth.signOut()
   window.location.href = 'index.html'
 }
 
