@@ -144,7 +144,7 @@ body{
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 
-let supabase = null
+let supabaseClient = null
 
 function markConnected() {
   const note = document.getElementById('setupNote')
@@ -161,7 +161,7 @@ try {
   if (typeof window.supabase === 'undefined') {
     markError('ספריית Supabase לא נטענה (בעיית CDN/רשת). רענן את הדף.')
   } else {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
     markConnected()
   }
 } catch(e) {
@@ -228,7 +228,7 @@ async function handleSubmit(e) {
   const password = document.getElementById('passwordInput').value
   const btn = document.getElementById('submitBtn')
 
-  if (!supabase) {
+  if (!supabaseClient) {
     showError('המערכת עדיין לא מחוברת ל-Supabase. ראה ההודעה למעלה לפרטי השגיאה.')
     return
   }
@@ -238,11 +238,11 @@ async function handleSubmit(e) {
 
   try {
     if (currentMode === 'login') {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
       if (error) throw error
 
       // Fetch user profile to determine redirect
-      const { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).single()
+      const { data: profile } = await supabaseClient.from('users').select('role').eq('id', data.user.id).single()
       showSuccess('התחברת בהצלחה! מעביר אותך...')
       setTimeout(() => {
         if (profile.role === 'student') window.location.href = 'student-dashboard.html'
@@ -261,7 +261,7 @@ async function handleSubmit(e) {
       if (currentRole === 'principal') {
         // Create new school
         const schoolName = document.getElementById('schoolNameInput').value
-        const { data: school, error: schoolErr } = await supabase
+        const { data: school, error: schoolErr } = await supabaseClient
           .from('schools')
           .insert({ name: schoolName, plan: 'trial' })
           .select().single()
@@ -269,18 +269,18 @@ async function handleSubmit(e) {
         school_id = school.id
       } else {
         // Find school by code (assumes school code = school id prefix, simplified)
-        const { data: school, error: findErr } = await supabase
+        const { data: school, error: findErr } = await supabaseClient
           .from('schools').select('id').eq('id', schoolCode).single()
         if (findErr || !school) throw new Error('קוד בית ספר לא נמצא')
         school_id = school.id
       }
 
-      const { data: authData, error: authErr } = await supabase.auth.signUp({ email, password })
+      const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password })
       if (authErr) throw authErr
 
       const class_name = currentRole === 'student' ? document.getElementById('classInput').value : null
 
-      const { error: profileErr } = await supabase.from('users').insert({
+      const { error: profileErr } = await supabaseClient.from('users').insert({
         id: authData.user.id,
         name, email, role: currentRole, school_id, class_name, points: 0
       })
