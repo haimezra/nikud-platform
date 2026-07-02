@@ -142,7 +142,7 @@ section{padding:90px 20px}
 .how-step p{font-size:0.88rem;color:var(--muted);line-height:1.6}
 
 /* WHO FOR */
-.who-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:50px}
+.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:50px}
 .who-card{
   background:var(--card);border:1px solid var(--border);
   border-radius:var(--r);padding:28px;
@@ -279,7 +279,7 @@ footer{
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">🟢 פיילוט פעיל ב-12 בתי ספר</div>
+  <div class="hero-badge">🟢 nikud</div>
   <h1>הגעת לשיעור?<br>מגיע לך <em>לזכות.</em></h1>
   <p class="hero-sub">תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות. המורה מאשרת בסוף כל שיעור. הנקודות הופכות לפרסים אמיתיים.</p>
   <div class="hero-btns">
@@ -312,10 +312,10 @@ footer{
 
 <!-- STATS BAR -->
 <div class="stats-bar">
-  <div class="stat-item"><div class="stat-num">12,400+</div><div class="stat-lbl">תלמידים פעילים</div></div>
-  <div class="stat-item"><div class="stat-num">87%</div><div class="stat-lbl">שיפור ממוצע בנוכחות</div></div>
-  <div class="stat-item"><div class="stat-num">340</div><div class="stat-lbl">כיתות מחוברות</div></div>
-  <div class="stat-item"><div class="stat-num">6</div><div class="stat-lbl">שותפי פרסים</div></div>
+  <div class="stat-item"><div class="stat-num">2,000+</div><div class="stat-lbl">תלמידים פעילים</div></div>
+  <div class="stat-item"><div class="stat-num">97%</div><div class="stat-lbl">שיפור ממוצע בנוכחות</div></div>
+  <div class="stat-item"><div class="stat-num">22</div><div class="stat-lbl">כיתות מחוברות</div></div>
+  <div class="stat-item"><div class="stat-num">100</div><div class="stat-lbl">שותפי פרסים</div></div>
 </div>
 
 <!-- HOW IT WORKS -->
@@ -389,6 +389,47 @@ footer{
           <li>שיפור מדיד בנוכחות</li>
         </ul>
       </div>
+      <div class="who-card">
+        <div class="who-emoji">🏢</div>
+        <h3>עסקים</h3>
+        <ul>
+          <li>שיפור נוכחות עובדים</li>
+          <li>מדידת נוכחות בזמן אמת</li>
+          <li>תגמול העובדים בפרסים אמיתיים</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REWARDS -->
+<section id="rewards">
+  <div class="section-inner">
+    <div class="section-label">קטלוג פרסים</div>
+    <h2 class="section-title">בשביל מה שווה לצבור נקודות</h2>
+    <p class="section-sub">כמה דוגמאות לפרסים שאפשר לממש עם הנקודות</p>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-emoji">☕</div>
+        <h3>קפה בקפיטריה</h3>
+        <ul>
+          <li>מימוש מיידי</li>
+        </ul>
+      </div>
+      <div class="who-card">
+        <div class="who-emoji">🎬</div>
+        <h3>סרט חינם</h3>
+        <ul>
+          <li>בצבירת 1,000 נקודות</li>
+        </ul>
+      </div>
+      <div class="who-card">
+        <div class="who-emoji">🦁</div>
+        <h3>כרטיס לספארי</h3>
+        <ul>
+          <li>בצבירת 1,000 נקודות</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -406,9 +447,9 @@ footer{
         <div class="price-period">30 ימים, ללא כרטיס אשראי</div>
         <div class="price-desc">לבית ספר שרוצה להכיר את המערכת</div>
         <ul class="price-features">
-          <li>עד 2 כיתות</li>
-          <li>עד 60 תלמידים</li>
-          <li>חנות פרסים בסיסית</li>
+          <li>כיתה אחת</li>
+          <li>עד 30 תלמידים</li>
+          <li>2 פונקציות פעילות</li>
           <li class="no">דוחות מתקדמים</li>
           <li class="no">התראות להורים</li>
         </ul>
@@ -416,32 +457,31 @@ footer{
       </div>
       <div class="price-card popular">
         <div class="popular-badge">הכי פופולרי</div>
-        <div class="price-name">בסיסי</div>
-        <div class="price-amount">₪399</div>
+        <div class="price-name">מנוי</div>
+        <div class="price-amount">₪299</div>
         <div class="price-period">לחודש, לבית ספר</div>
         <div class="price-desc">לבתי ספר יסודיים ועל יסודיים</div>
         <ul class="price-features">
-          <li>כיתות ותלמידים ללא הגבלה</li>
+          <li>עד 2 כיתות</li>
+          <li>עד 60 תלמידים</li>
+          <li>שליטה מלאה במערכת</li>
           <li>חנות פרסים מלאה</li>
-          <li>דוחות ונתוני נוכחות</li>
-          <li>התראות להורים</li>
-          <li class="no">לוח בקרה לרשת בתי ספר</li>
+          <li>שליטה מלאה על מדדים ואישורים</li>
         </ul>
         <a href="login.html" class="btn btn-primary" style="width:100%;text-align:center">הצטרף עכשיו</a>
       </div>
       <div class="price-card">
-        <div class="price-name">רשת</div>
-        <div class="price-amount">₪299</div>
-        <div class="price-period">לבית ספר/חודש (5+ בתי ספר)</div>
-        <div class="price-desc">לרשתות חינוך ועיריות</div>
+        <div class="price-name">מנוי מורחב</div>
+        <div class="price-amount">₪699</div>
+        <div class="price-period">לחודש, לבית ספר</div>
+        <div class="price-desc">לבתי ספר גדולים שרוצים שליטה מלאה</div>
         <ul class="price-features">
-          <li>הכל בתוכנית בסיסית</li>
-          <li>לוח בקרה רשתי</li>
-          <li>API לשילוב עם מערכות קיימות</li>
+          <li>עד 5 כיתות</li>
+          <li>שליטה מלאה על מדדים ואישורים</li>
+          <li>כל התכונות של תוכנית מנוי</li>
           <li>מנהל לקוח ייעודי</li>
-          <li>SLA מובטח</li>
         </ul>
-        <a href="mailto:sales@nikud.co.il" class="btn btn-outline" style="width:100%;text-align:center">דבר איתנו</a>
+        <a href="mailto:nikud2026@gmail.com" class="btn btn-outline" style="width:100%;text-align:center">דבר איתנו</a>
       </div>
     </div>
   </div>
