@@ -245,7 +245,7 @@ async function handleSubmit(e) {
       const { data: profile } = await supabaseClient.from('users').select('role').eq('id', data.user.id).single()
       showSuccess('התחברת בהצלחה! מעביר אותך...')
       setTimeout(() => {
-        if (profile.role === 'student') window.location.href = 'dashboard.html'
+        if (profile.role === 'student') window.location.href = 'school-dashboard.html'
         else if (profile.role === 'teacher') window.location.href = 'teacher.html'
         else window.location.href = 'principal.html'
       }, 800)
