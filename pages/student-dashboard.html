@@ -370,10 +370,11 @@ async function buyItem(itemId, name, cost) {
   if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
 
   try {
-    await supabaseClient.from('purchases').insert({
+    const { error } = await supabaseClient.from('purchases').insert({
       student_id: currentUser.id, item_id: itemId, points_spent: cost
     })
-    await supabaseClient.from('users').update({ points: currentPoints - cost }).eq('id', currentUser.id)
+    if (error) throw error
+    // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מנכה את זה אוטומטית
 
     currentPoints -= cost
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
