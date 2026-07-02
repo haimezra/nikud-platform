@@ -107,6 +107,13 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 .role-badge.student{background:rgba(6,214,160,0.15);color:var(--green)}
 .points-tag{color:var(--gold);font-weight:700}
 
+.history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.85rem}
+.history-item:last-child{border-bottom:none}
+.history-pts{margin-right:auto;color:var(--green);font-weight:700}
+tr.clickable{cursor:pointer}
+.attn-bar-track{height:6px;border-radius:99px;background:var(--surface);overflow:hidden;width:70px;display:inline-block;margin-left:8px;vertical-align:middle}
+.attn-bar-fill{height:100%;border-radius:99px}
+
 .empty-state{padding:40px;text-align:center;color:var(--muted);font-size:0.9rem}
 
 /* ---------- Modal ---------- */
@@ -195,6 +202,8 @@ tr:hover td{background:rgba(255,255,255,0.02)}
     <div class="tabs">
       <button class="tab active" onclick="setTab('students', this)">תלמידים</button>
       <button class="tab" onclick="setTab('teachers', this)">מורים</button>
+      <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
+      <button class="tab" onclick="setTab('teacherActivity', this)">פעילות מורים</button>
     </div>
 
     <!-- Students panel -->
@@ -224,9 +233,58 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       </table>
       <div class="empty-state hidden" id="teachersEmpty">עדיין אין מורים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
     </div>
+
+    <!-- Attendance report panel -->
+    <div class="panel hidden" id="attendancePanel">
+      <div class="panel-head">
+        <h3>דוח נוכחות לפי תלמיד (מהכי נעדר להכי נוכח)</h3>
+      </div>
+      <table>
+        <thead>
+          <tr><th>שם</th><th>כיתה</th><th>שיעורים שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th></tr>
+        </thead>
+        <tbody id="attendanceBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="attendanceEmpty">אין עדיין שיעורים שנערכו כדי להציג דוח נוכחות.</div>
+    </div>
+
+    <!-- Teacher activity panel -->
+    <div class="panel hidden" id="teacherActivityPanel">
+      <div class="panel-head">
+        <h3>פעילות מורים (מהכי פעיל להכי פחות)</h3>
+      </div>
+      <table>
+        <thead>
+          <tr><th>שם</th><th>שיעורים שנפתחו</th><th>נקודות שחולקו</th><th>פעילות אחרונה</th></tr>
+        </thead>
+        <tbody id="teacherActivityBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מורים להציג.</div>
+    </div>
   </div>
 
   <div class="empty-state hidden" id="errorState"></div>
+</div>
+
+<div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
+  <div class="modal" style="max-width:480px">
+    <h3 id="studentModalName">תלמיד/ה</h3>
+    <div style="display:flex;gap:16px;margin-bottom:18px">
+      <div class="stat-card gold" style="flex:1;padding:14px">
+        <div class="stat-num" id="studentModalPoints" style="font-size:1.5rem">0</div>
+        <div class="stat-label">נקודות כרגע</div>
+      </div>
+      <div class="stat-card" style="flex:1;padding:14px">
+        <div class="stat-num" id="studentModalClass" style="font-size:1.5rem">—</div>
+        <div class="stat-label">כיתה</div>
+      </div>
+    </div>
+    <h3 style="font-size:0.9rem;margin-bottom:10px">היסטוריית פעילות</h3>
+    <div id="studentModalHistory" style="max-height:320px;overflow-y:auto"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeStudentModal()">סגור</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -239,6 +297,10 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 let currentUser = null
 let currentSchoolId = null
 let currentInviteCode = null
+let allStudents = []
+let allTeachers = []
+let allLessons = []
+let allPointLogs = []
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -257,6 +319,8 @@ function setTab(tab, btn) {
   btn.classList.add('active')
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
+  document.getElementById('attendancePanel').classList.toggle('hidden', tab !== 'attendance')
+  document.getElementById('teacherActivityPanel').classList.toggle('hidden', tab !== 'teacherActivity')
 }
 
 function copyInviteCode() {
@@ -267,7 +331,7 @@ function copyInviteCode() {
 
 function renderRow(user, kind) {
   if (kind === 'student') {
-    return `<tr>
+    return `<tr class="clickable" onclick="openStudentModal('${user.id}')">
       <td>${escapeHtml(user.name || '—')}</td>
       <td>${escapeHtml(user.class_name || '—')}</td>
       <td>${escapeHtml(user.email || '—')}</td>
@@ -279,6 +343,107 @@ function renderRow(user, kind) {
     <td>${escapeHtml(user.email || '—')}</td>
     <td><span class="role-badge teacher">מורה</span></td>
   </tr>`
+}
+
+function openStudentModal(studentId) {
+  const student = allStudents.find(s => s.id === studentId)
+  if (!student) return
+
+  document.getElementById('studentModalName').textContent = student.name || 'תלמיד/ה'
+  document.getElementById('studentModalPoints').textContent = student.points ?? 0
+  document.getElementById('studentModalClass').textContent = student.class_name || '—'
+
+  const logs = allPointLogs
+    .filter(l => l.student_id === studentId)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+  const reasonLabel = { attendance: '📚 נוכחות', approved: '📚 נוכחות', bonus: '⭐ בונוס', personal_bonus: '🎁 בונוס אישי' }
+  const historyEl = document.getElementById('studentModalHistory')
+  historyEl.innerHTML = logs.length === 0
+    ? '<div class="empty-state" style="padding:20px">אין עדיין פעילות לתלמיד/ה זו</div>'
+    : logs.map(l => {
+        const lesson = allLessons.find(ls => ls.id === l.lesson_id)
+        const subject = lesson ? lesson.subject : (l.reason === 'personal_bonus' ? 'בונוס אישי' : 'פעילות')
+        return `<div class="history-item">
+          <div>${reasonLabel[l.reason] || '📌'}</div>
+          <div>${escapeHtml(subject)}<br><span style="font-size:0.74rem;color:var(--muted)">${new Date(l.created_at).toLocaleDateString('he-IL')}</span></div>
+          <div class="history-pts">+${l.points}</div>
+        </div>`
+      }).join('')
+
+  document.getElementById('studentModalOverlay').classList.add('show')
+}
+
+function closeStudentModal() {
+  document.getElementById('studentModalOverlay').classList.remove('show')
+}
+
+function renderAttendanceReport() {
+  const lessonsPerClass = {}
+  allLessons.forEach(l => { lessonsPerClass[l.class_name] = (lessonsPerClass[l.class_name] || 0) + 1 })
+
+  const attendedLessonsPerStudent = {}
+  allPointLogs
+    .filter(l => l.reason === 'attendance' || l.reason === 'approved' || l.reason === 'bonus')
+    .forEach(l => {
+      if (!attendedLessonsPerStudent[l.student_id]) attendedLessonsPerStudent[l.student_id] = new Set()
+      attendedLessonsPerStudent[l.student_id].add(l.lesson_id)
+    })
+
+  const rows = allStudents.map(s => {
+    const totalLessons = lessonsPerClass[s.class_name] || 0
+    const attended = attendedLessonsPerStudent[s.id] ? attendedLessonsPerStudent[s.id].size : 0
+    const pct = totalLessons > 0 ? Math.round((attended / totalLessons) * 100) : null
+    return { student: s, totalLessons, attended, pct }
+  })
+  .filter(r => r.totalLessons > 0)
+  .sort((a, b) => a.pct - b.pct)
+
+  document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
+  document.getElementById('attendanceBody').innerHTML = rows.map(r => {
+    const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
+    return `<tr>
+      <td>${escapeHtml(r.student.name || '—')}</td>
+      <td>${escapeHtml(r.student.class_name || '—')}</td>
+      <td>${r.totalLessons}</td>
+      <td>${r.attended}</td>
+      <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
+    </tr>`
+  }).join('')
+}
+
+function renderTeacherActivity() {
+  const lessonsPerTeacher = {}
+  const lastActivityPerTeacher = {}
+  allLessons.forEach(l => {
+    lessonsPerTeacher[l.teacher_id] = (lessonsPerTeacher[l.teacher_id] || 0) + 1
+    const d = new Date(l.created_at)
+    if (!lastActivityPerTeacher[l.teacher_id] || d > lastActivityPerTeacher[l.teacher_id]) {
+      lastActivityPerTeacher[l.teacher_id] = d
+    }
+  })
+
+  const pointsPerTeacher = {}
+  allPointLogs.forEach(l => {
+    const lesson = allLessons.find(ls => ls.id === l.lesson_id)
+    if (!lesson) return
+    pointsPerTeacher[lesson.teacher_id] = (pointsPerTeacher[lesson.teacher_id] || 0) + l.points
+  })
+
+  const rows = allTeachers.map(t => ({
+    teacher: t,
+    lessonCount: lessonsPerTeacher[t.id] || 0,
+    points: pointsPerTeacher[t.id] || 0,
+    lastActivity: lastActivityPerTeacher[t.id] || null
+  })).sort((a, b) => b.lessonCount - a.lessonCount)
+
+  document.getElementById('teacherActivityEmpty').classList.toggle('hidden', rows.some(r => r.lessonCount > 0))
+  document.getElementById('teacherActivityBody').innerHTML = rows.map(r => `<tr>
+      <td>${escapeHtml(r.teacher.name || '—')}</td>
+      <td>${r.lessonCount}</td>
+      <td class="points-tag">${r.points}</td>
+      <td>${r.lastActivity ? r.lastActivity.toLocaleDateString('he-IL') : '—'}</td>
+    </tr>`).join('')
 }
 
 function escapeHtml(str) {
@@ -332,6 +497,8 @@ async function loadDashboard() {
   const teachers = (members || []).filter(u => u.role === 'teacher')
   const students = (members || []).filter(u => u.role === 'student')
   const totalPoints = students.reduce((sum, s) => sum + (s.points || 0), 0)
+  allTeachers = teachers
+  allStudents = students
 
   document.getElementById('statTeachers').textContent = teachers.length
   document.getElementById('statStudents').textContent = students.length
@@ -345,6 +512,23 @@ async function loadDashboard() {
 
   document.getElementById('studentsEmpty').classList.toggle('hidden', students.length > 0)
   document.getElementById('teachersEmpty').classList.toggle('hidden', teachers.length > 0)
+
+  // Load lessons + point logs for the whole school (used by student cards, attendance report, teacher activity)
+  const { data: lessons } = await supabaseClient
+    .from('lessons').select('*').eq('school_id', currentSchoolId)
+  allLessons = lessons || []
+
+  const lessonIds = allLessons.map(l => l.id)
+  if (lessonIds.length > 0) {
+    const { data: logs } = await supabaseClient
+      .from('point_logs').select('*').in('lesson_id', lessonIds)
+    allPointLogs = logs || []
+  } else {
+    allPointLogs = []
+  }
+
+  renderAttendanceReport()
+  renderTeacherActivity()
 
   document.getElementById('loadingState').classList.add('hidden')
   document.getElementById('dashboardContent').classList.remove('hidden')
