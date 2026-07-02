@@ -56,6 +56,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 
 .empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
 
+.checkin-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem}
+.checkin-btn:disabled{opacity:0.5;cursor:not-allowed}
+.checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
+.checkin-status.pending{color:var(--gold)}
+.checkin-status.approved{color:var(--green)}
+.checkin-status.rejected{color:var(--accent2)}
+
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#0A0E1A;padding:13px 26px;border-radius:99px;font-weight:700;font-size:0.9rem;z-index:999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
@@ -94,6 +101,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
     </div>
   </div>
 
+  <div class="card hidden" id="checkinCard" style="margin-bottom:18px"></div>
+
   <div class="grid-2">
     <div class="card">
       <h3>⚡ פעילות אחרונה</h3>
@@ -117,6 +126,9 @@ const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 let supabaseClient = null
 let currentUser = null
 let currentPoints = 0
+let activeLesson = null
+let myCheckin = null
+let checkinPollTimer = null
 
 // Conversion rate: 30 points = 1 ₪ (matches class monthly budget of 300₪ = 9,000 points)
 const POINTS_PER_ILS = 30
@@ -149,9 +161,98 @@ async function init() {
   await loadActivity(profile.id)
   await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
   await loadStore()
+  await refreshActiveLessonAndCheckin()
+  checkinPollTimer = setInterval(refreshActiveLessonAndCheckin, 6000)
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'block'
+}
+
+async function refreshActiveLessonAndCheckin() {
+  const { data: lessons } = await supabaseClient
+    .from('lessons')
+    .select('*')
+    .eq('school_id', currentUser.school_id)
+    .eq('class_name', currentUser.class_name)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  activeLesson = (lessons && lessons[0]) || null
+  const card = document.getElementById('checkinCard')
+
+  if (!activeLesson) {
+    card.classList.add('hidden')
+    myCheckin = null
+    return
+  }
+
+  const { data: existing } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('lesson_id', activeLesson.id)
+    .eq('student_id', currentUser.id)
+    .maybeSingle()
+
+  const previousStatus = myCheckin?.status
+  myCheckin = existing || null
+  card.classList.remove('hidden')
+  renderCheckinCard()
+
+  // If the teacher just approved/rejected us, refresh points + activity
+  if (myCheckin && myCheckin.status !== previousStatus && myCheckin.status !== 'ממתינה') {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('pointsIlsDisplay').textContent = `≈ ₪${(currentPoints / POINTS_PER_ILS).toFixed(0)}`
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    await loadActivity(currentUser.id)
+    if (myCheckin.status === 'אושר') showToast('🎉 המורה אישר/ה את הצ\'ק-אין שלך!')
+    else if (myCheckin.status === 'נדחה') showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
+  }
+}
+
+function renderCheckinCard() {
+  const card = document.getElementById('checkinCard')
+  if (!activeLesson) { card.innerHTML = ''; return }
+
+  if (!myCheckin) {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <p style="color:var(--muted);font-size:0.85rem;margin:8px 0 14px">המורה פתח/ה שיעור פעיל. סמן/י נוכחות כדי שהמורה יוכל/תוכל לאשר לך נקודות.</p>
+      <button class="checkin-btn" onclick="doCheckin()">✅ צ'ק-אין לשיעור</button>
+    `
+  } else if (myCheckin.status === 'ממתינה') {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status pending">⏳ ממתין/ה לאישור המורה...</div>
+    `
+  } else if (myCheckin.status === 'אושר') {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status approved">✓ אושר! קיבלת ${myCheckin.points || ''} נקודות</div>
+    `
+  } else {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status rejected">✗ הצ'ק-אין לא אושר הפעם</div>
+    `
+  }
+}
+
+async function doCheckin() {
+  if (!activeLesson) return
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .insert({ lesson_id: activeLesson.id, student_id: currentUser.id, status: 'ממתינה' })
+    .select()
+    .single()
+
+  if (error) { showToast('שגיאה בשליחת הצ\'ק-אין', true); return }
+
+  myCheckin = data
+  renderCheckinCard()
+  showToast('הצ\'ק-אין נשלח למורה ✅')
 }
 
 async function loadActivity(studentId) {
@@ -231,6 +332,7 @@ async function buyItem(itemId, name, cost) {
 }
 
 async function logout() {
+  if (checkinPollTimer) clearInterval(checkinPollTimer)
   await supabaseClient.auth.signOut()
   window.location.href = 'index.html'
 }
