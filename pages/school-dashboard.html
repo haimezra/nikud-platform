@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>דשבורד מנהל – ניקוד★</title>
+<title>הדשבורד שלי – ניקוד★</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -13,536 +13,396 @@
   --text:#E8EBF4;--muted:#8892AA;--r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;
-  min-height:100vh;
-  background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,0.14) 0%, transparent 70%);
-}
+body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh}
 
-/* ---------- Top bar ---------- */
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 32px;border-bottom:1px solid var(--border);
-  background:rgba(17,24,39,0.6);backdrop-filter:blur(10px);
-  position:sticky;top:0;z-index:10;
-}
+nav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(10,14,26,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
 .logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
 .logo span{color:var(--gold)}
-.topbar-right{display:flex;align-items:center;gap:16px}
-.school-pill{
-  background:var(--surface);border:1px solid var(--border);border-radius:999px;
-  padding:8px 16px;font-size:0.85rem;color:var(--muted);
-}
-.school-pill strong{color:var(--text)}
-.logout-btn{
-  background:none;border:1px solid var(--border);color:var(--muted);
-  padding:8px 16px;border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.85rem;transition:all 0.2s;
-}
+.nav-right{display:flex;align-items:center;gap:14px}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:99px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem}
 .logout-btn:hover{border-color:var(--accent2);color:var(--accent2)}
 
-/* ---------- Layout ---------- */
-.wrap{max-width:1100px;margin:0 auto;padding:32px}
-.page-title{font-size:1.6rem;font-weight:800;margin-bottom:4px}
-.page-sub{color:var(--muted);font-size:0.92rem;margin-bottom:28px}
+.dashboard{padding:28px 32px;max-width:1100px;margin:0 auto}
+.dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.welcome h2{font-size:1.5rem;font-weight:800}
+.welcome p{color:var(--muted);font-size:0.9rem}
+.points-badge{background:linear-gradient(135deg,var(--accent),#9B5DE5);border-radius:var(--r);padding:14px 26px;text-align:center}
+.pts-num{font-size:2rem;font-weight:900;color:var(--gold)}
+.pts-label{font-size:0.78rem;color:rgba(255,255,255,0.7)}
+.pts-ils{font-size:0.76rem;color:rgba(255,255,255,0.85);margin-top:2px}
 
-/* ---------- Stat cards ---------- */
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:16px;margin-bottom:32px;
-}
-.stat-card{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  padding:20px;
-}
-.stat-num{font-size:2rem;font-weight:900;line-height:1}
-.stat-label{color:var(--muted);font-size:0.82rem;margin-top:6px}
-.stat-card.accent .stat-num{color:var(--accent)}
-.stat-card.gold .stat-num{color:var(--gold)}
-.stat-card.green .stat-num{color:var(--green)}
-.copy-code-btn{
-  margin-top:8px;background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.35);
-  color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
-  cursor:pointer;font-family:'Heebo',sans-serif;
-}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.card h3{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
 
-/* ---------- Tabs ---------- */
-.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface);border-radius:12px;padding:4px;width:fit-content}
-.tab{
-  padding:9px 18px;border:none;background:none;color:var(--muted);
-  border-radius:9px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
-  transition:all 0.2s;
-}
-.tab.active{background:var(--accent);color:#fff}
+.activity-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.88rem}
+.activity-item:last-child{border-bottom:none}
+.activity-pts{margin-right:auto;color:var(--green);font-weight:700}
 
-/* ---------- Panel / table ---------- */
-.panel{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--r);
-  overflow:hidden;margin-bottom:24px;
-}
-.panel-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 22px;border-bottom:1px solid var(--border);
-}
-.panel-head h3{font-size:1rem;font-weight:700}
-.add-btn{
-  background:var(--accent);border:none;color:#fff;padding:9px 16px;
-  border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
-  transition:all 0.2s;
-}
-.add-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(108,99,255,0.35)}
+.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-size:0.8rem;color:var(--muted);width:20px;font-weight:700}
+.lb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700}
+.lb-name{flex:1;font-size:0.88rem}
+.lb-pts{font-weight:700;color:var(--gold);font-size:0.88rem}
 
-table{width:100%;border-collapse:collapse}
-th{
-  text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--muted);
-  font-weight:600;border-bottom:1px solid var(--border);
-}
-td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--border)}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,0.02)}
-.role-badge{
-  display:inline-block;padding:3px 10px;border-radius:999px;font-size:0.75rem;font-weight:700;
-}
-.role-badge.teacher{background:rgba(108,99,255,0.15);color:var(--accent)}
-.role-badge.student{background:rgba(6,214,160,0.15);color:var(--green)}
-.points-tag{color:var(--gold);font-weight:700}
+.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.store-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:border-color 0.2s}
+.store-item:hover{border-color:var(--gold)}
+.item-icon{font-size:1.7rem;margin-bottom:6px}
+.item-name{font-size:0.8rem;font-weight:600}
+.item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px}
+.item-ils{font-size:0.7rem;color:var(--muted)}
 
-.history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.85rem}
-.history-item:last-child{border-bottom:none}
-.history-pts{margin-right:auto;color:var(--green);font-weight:700}
-tr.clickable{cursor:pointer}
-.attn-bar-track{height:6px;border-radius:99px;background:var(--surface);overflow:hidden;width:70px;display:inline-block;margin-left:8px;vertical-align:middle}
-.attn-bar-fill{height:100%;border-radius:99px}
+.earn-list{display:flex;flex-direction:column;gap:2px;margin-top:14px}
+.earn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border-radius:12px}
+.earn-icon{font-size:1.3rem}
+.earn-text{font-size:0.85rem}
+.earn-text b{color:var(--text);font-weight:700}
+.earn-text span{color:var(--muted);display:block;font-size:0.78rem;margin-top:1px}
 
-.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:0.9rem}
+.expired-screen{max-width:440px;margin:80px auto;text-align:center;padding:0 20px}
+.expired-screen .icon{font-size:3rem;margin-bottom:16px}
+.expired-screen h2{font-size:1.3rem;margin-bottom:10px}
+.expired-screen p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
+.expired-screen a{display:inline-block;padding:14px 30px;background:var(--accent);color:#fff;text-decoration:none;border-radius:99px;font-weight:700;font-size:0.95rem}
 
-/* ---------- Modal ---------- */
-.modal-overlay{
-  display:none;position:fixed;inset:0;background:rgba(10,14,26,0.7);
-  align-items:center;justify-content:center;z-index:50;padding:20px;
-}
-.modal-overlay.show{display:flex}
-.modal{
-  background:var(--card);border:1px solid var(--border);border-radius:20px;
-  padding:28px;width:100%;max-width:400px;
-}
-.modal h3{font-size:1.1rem;margin-bottom:20px}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:6px}
-.field input,.field select{
-  width:100%;background:var(--surface);border:1px solid var(--border);
-  border-radius:10px;padding:11px 14px;color:var(--text);
-  font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;
-}
-.field input:focus,.field select:focus{border-color:var(--accent)}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.modal-actions button{
-  flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;
-  font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;
-}
-.btn-cancel{background:var(--surface);color:var(--muted)}
-.btn-confirm{background:var(--accent);color:#fff}
+.demo-banner{background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.4);border-radius:12px;padding:12px 18px;margin-bottom:18px;font-size:0.85rem;color:var(--gold);display:flex;align-items:center;gap:10px}
 
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:12px 20px;font-size:0.85rem;display:none;z-index:60;
-}
-.toast.show{display:block}
-.toast.error{border-color:rgba(255,107,107,0.4);color:var(--accent2)}
-.toast.success{border-color:rgba(6,214,160,0.4);color:var(--green)}
+.empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
 
-.loading{text-align:center;padding:60px;color:var(--muted)}
-.hidden{display:none !important}
+.checkin-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem}
+.checkin-btn:disabled{opacity:0.5;cursor:not-allowed}
+.checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
+.checkin-status.pending{color:var(--gold)}
+.checkin-status.approved{color:var(--green)}
+.checkin-status.rejected{color:var(--accent2)}
 
-@media(max-width:640px){
-  .topbar{padding:14px 18px}
-  .wrap{padding:20px 16px}
-  th:nth-child(3),td:nth-child(3){display:none}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#0A0E1A;padding:13px 26px;border-radius:99px;font-weight:700;font-size:0.9rem;z-index:999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+
+@media(max-width:700px){
+  .dashboard{padding:18px 16px}
+  .grid-2{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 
-<div class="topbar">
+<nav>
   <div class="logo">ניקוד<span>★</span></div>
-  <div class="topbar-right">
-    <span class="school-pill">בית ספר: <strong id="schoolNameLabel">טוען...</strong></span>
-    <button class="logout-btn" onclick="handleLogout()">יציאה</button>
+  <div class="nav-right">
+    <span id="userName" style="font-size:0.88rem;color:var(--muted)"></span>
+    <button class="logout-btn" onclick="logout()">יציאה</button>
   </div>
-</div>
-
-<div class="wrap" id="app">
-  <div class="loading" id="loadingState">טוען נתונים...</div>
-
-  <div id="dashboardContent" class="hidden">
-    <div class="page-title">דשבורד ניהול</div>
-    <div class="page-sub">שלום <span id="principalName">מנהל/ת</span>, הנה מצב בית הספר שלך</div>
-
-    <div class="stats-grid">
-      <div class="stat-card accent">
-        <div class="stat-num" id="statTeachers">0</div>
-        <div class="stat-label">מורים</div>
-      </div>
-      <div class="stat-card green">
-        <div class="stat-num" id="statStudents">0</div>
-        <div class="stat-label">תלמידים</div>
-      </div>
-      <div class="stat-card gold">
-        <div class="stat-num" id="statPoints">0</div>
-        <div class="stat-label">סה"כ נקודות שחולקו</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statCode">—</div>
-        <div class="stat-label">קוד הצטרפות לבית הספר</div>
-        <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
-      </div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" onclick="setTab('students', this)">תלמידים</button>
-      <button class="tab" onclick="setTab('teachers', this)">מורים</button>
-      <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
-      <button class="tab" onclick="setTab('teacherActivity', this)">פעילות מורים</button>
-    </div>
-
-    <!-- Students panel -->
-    <div class="panel" id="studentsPanel">
-      <div class="panel-head">
-        <h3>רשימת תלמידים</h3>
-      </div>
-      <table>
-        <thead>
-          <tr><th>שם</th><th>כיתה</th><th>אימייל</th><th>נקודות</th></tr>
-        </thead>
-        <tbody id="studentsBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="studentsEmpty">עדיין אין תלמידים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-    </div>
-
-    <!-- Teachers panel -->
-    <div class="panel hidden" id="teachersPanel">
-      <div class="panel-head">
-        <h3>רשימת מורים</h3>
-      </div>
-      <table>
-        <thead>
-          <tr><th>שם</th><th>אימייל</th><th></th></tr>
-        </thead>
-        <tbody id="teachersBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="teachersEmpty">עדיין אין מורים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-    </div>
-
-    <!-- Attendance report panel -->
-    <div class="panel hidden" id="attendancePanel">
-      <div class="panel-head">
-        <h3>דוח נוכחות לפי תלמיד (מהכי נעדר להכי נוכח)</h3>
-      </div>
-      <table>
-        <thead>
-          <tr><th>שם</th><th>כיתה</th><th>שיעורים שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th></tr>
-        </thead>
-        <tbody id="attendanceBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="attendanceEmpty">אין עדיין שיעורים שנערכו כדי להציג דוח נוכחות.</div>
-    </div>
-
-    <!-- Teacher activity panel -->
-    <div class="panel hidden" id="teacherActivityPanel">
-      <div class="panel-head">
-        <h3>פעילות מורים (מהכי פעיל להכי פחות)</h3>
-      </div>
-      <table>
-        <thead>
-          <tr><th>שם</th><th>שיעורים שנפתחו</th><th>נקודות שחולקו</th><th>פעילות אחרונה</th></tr>
-        </thead>
-        <tbody id="teacherActivityBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מורים להציג.</div>
-    </div>
-  </div>
-
-  <div class="empty-state hidden" id="errorState"></div>
-</div>
-
-<div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
-  <div class="modal" style="max-width:480px">
-    <h3 id="studentModalName">תלמיד/ה</h3>
-    <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalPoints" style="font-size:1.5rem">0</div>
-        <div class="stat-label">נקודות כרגע</div>
-      </div>
-      <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalClass" style="font-size:1.5rem">—</div>
-        <div class="stat-label">כיתה</div>
-      </div>
-    </div>
-    <h3 style="font-size:0.9rem;margin-bottom:10px">היסטוריית פעילות</h3>
-    <div id="studentModalHistory" style="max-height:320px;overflow-y:auto"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeStudentModal()">סגור</button>
-    </div>
-  </div>
-</div>
+</nav>
 
 <div class="toast" id="toast"></div>
+
+<div id="loadingScreen" class="loading">טוען את הנתונים שלך...</div>
+
+<div id="expiredScreen" class="expired-screen" style="display:none">
+  <div class="icon">⏳</div>
+  <h2>תקופת הניסיון הסתיימה</h2>
+  <p>15 הימים של הניסיון החינמי של בית הספר שלך הסתיימו. כדי להמשיך להשתמש במערכת, צריך לאשר את בית הספר למנוי רשמי.</p>
+  <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%20%D7%94%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F%20%D7%A9%D7%9C%D7%99%20%D7%94%D7%A1%D7%AA%D7%99%D7%99%D7%9E%D7%94%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3" target="_blank">דברו איתנו בוואטסאפ</a>
+</div>
+
+<div class="dashboard hidden" id="dashboard" style="display:none">
+  <div class="dashboard-header">
+    <div class="welcome">
+      <h2 id="welcomeText">שלום 👋</h2>
+      <p id="classInfo"></p>
+    </div>
+    <div class="points-badge">
+      <div class="pts-num" id="pointsDisplay">0</div>
+      <div class="pts-label">נקודות</div>
+    </div>
+  </div>
+
+  <div class="demo-banner hidden" id="demoBanner" style="display:none">
+    <span>🎬</span>
+    <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של בית הספר.</span>
+  </div>
+
+  <div class="card hidden" id="checkinCard" style="margin-bottom:18px"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>⚡ פעילות אחרונה</h3>
+      <div id="activityList"><div class="empty-state">אין עדיין פעילות. השיעור הראשון שלך יופיע כאן!</div></div>
+    </div>
+    <div class="card">
+      <h3>🏆 ליגת הכיתה</h3>
+      <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בכיתה</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎁 חנות פרסים – יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
+    <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
+
+    <h3 style="margin-top:22px">💡 איך צוברים נקודות</h3>
+    <div class="earn-list">
+      <div class="earn-item">
+        <div class="earn-icon">📚</div>
+        <div class="earn-text"><b>נוכחות בשיעור</b><span>מגיע/ה לשיעור וסימנת נוכחות</span></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">🌟</div>
+        <div class="earn-text"><b>בונוס התנהגות טובה</b><span>המורה מעניקה בונוס על התנהגות לדוגמה</span></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">🙋</div>
+        <div class="earn-text"><b>בונוס בקשה מהמורה</b><span>ביצעת בקשה או משימה שהמורה ביקשה</span></div>
+      </div>
+      <div class="earn-item">
+        <div class="earn-icon">📝</div>
+        <div class="earn-text"><b>בונוס שיעורי בית</b><span>הגשת שיעורי בית במועד</span></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
+let supabaseClient = null
 let currentUser = null
-let currentSchoolId = null
-let currentInviteCode = null
-let allStudents = []
-let allTeachers = []
-let allLessons = []
-let allPointLogs = []
+let currentPoints = 0
+let activeLesson = null
+let myCheckin = null
+let checkinPollTimer = null
+let isDemoAccount = false
 
-function showToast(msg, type) {
+async function init() {
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  } catch(e) {
+    document.getElementById('loadingScreen').innerHTML =
+      '⚠️ המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
+    return
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser()
+  if (!user) { window.location.href = 'login.html'; return }
+
+  const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
+  if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
+
+  currentUser = profile
+  currentPoints = profile.points || 0
+
+  const { data: school } = await supabaseClient.from('schools').select('plan, plan_expires_at').eq('id', profile.school_id).single()
+  isDemoAccount = !school || school.plan === 'trial'
+  const trialExpired = isDemoAccount && school?.plan_expires_at && new Date(school.plan_expires_at) < new Date()
+
+  if (trialExpired) {
+    document.getElementById('loadingScreen').style.display = 'none'
+    document.getElementById('expiredScreen').style.display = 'block'
+    return
+  }
+
+  document.getElementById('demoBanner').style.display = isDemoAccount ? 'flex' : 'none'
+
+  document.getElementById('userName').textContent = profile.name
+  document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
+  document.getElementById('classInfo').textContent = `כיתה ${profile.class_name || ''}`
+  document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+  document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+
+  await loadActivity(profile.id)
+  await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
+  await loadStore()
+  await refreshActiveLessonAndCheckin()
+  checkinPollTimer = setInterval(refreshActiveLessonAndCheckin, 6000)
+
+  document.getElementById('loadingScreen').style.display = 'none'
+  document.getElementById('dashboard').style.display = 'block'
+}
+
+async function refreshActiveLessonAndCheckin() {
+  const { data: lessons } = await supabaseClient
+    .from('lessons')
+    .select('*')
+    .eq('school_id', currentUser.school_id)
+    .eq('class_name', currentUser.class_name)
+    .eq('status', 'active')
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  activeLesson = (lessons && lessons[0]) || null
+  const card = document.getElementById('checkinCard')
+
+  if (!activeLesson) {
+    card.classList.add('hidden')
+    myCheckin = null
+    return
+  }
+
+  const { data: existing } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('lesson_id', activeLesson.id)
+    .eq('student_id', currentUser.id)
+    .maybeSingle()
+
+  const previousStatus = myCheckin?.status
+  myCheckin = existing || null
+  card.classList.remove('hidden')
+  renderCheckinCard()
+
+  // If the teacher just approved/rejected us, refresh points + activity
+  if (myCheckin && myCheckin.status !== previousStatus && myCheckin.status !== 'ממתינה') {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    await loadActivity(currentUser.id)
+    if (myCheckin.status === 'אושר') showToast('🎉 המורה אישר/ה את הצ\'ק-אין שלך!')
+    else if (myCheckin.status === 'נדחה') showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
+  }
+}
+
+function renderCheckinCard() {
+  const card = document.getElementById('checkinCard')
+  if (!activeLesson) { card.innerHTML = ''; return }
+
+  if (!myCheckin) {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <p style="color:var(--muted);font-size:0.85rem;margin:8px 0 14px">המורה פתח/ה שיעור פעיל. סמן/י נוכחות כדי שהמורה יוכל/תוכל לאשר לך נקודות.</p>
+      <button class="checkin-btn" onclick="doCheckin()">✅ צ'ק-אין לשיעור</button>
+    `
+  } else if (myCheckin.status === 'ממתינה') {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status pending">⏳ ממתין/ה לאישור המורה...</div>
+    `
+  } else if (myCheckin.status === 'אושר') {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status approved">✓ אושר! קיבלת ${myCheckin.points || ''} נקודות</div>
+    `
+  } else {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status rejected">✗ הצ'ק-אין לא אושר הפעם</div>
+    `
+  }
+}
+
+async function doCheckin() {
+  if (!activeLesson) return
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .insert({ lesson_id: activeLesson.id, student_id: currentUser.id, status: 'ממתינה' })
+    .select()
+    .single()
+
+  if (error) { showToast('שגיאה בשליחת הצ\'ק-אין', true); return }
+
+  myCheckin = data
+  renderCheckinCard()
+  showToast('הצ\'ק-אין נשלח למורה ✅')
+}
+
+async function loadActivity(studentId) {
+  const { data } = await supabaseClient
+    .from('point_logs')
+    .select('*, lessons(subject)')
+    .eq('student_id', studentId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (!data || data.length === 0) return
+
+  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📚' }
+  document.getElementById('activityList').innerHTML = data.map(log => `
+    <div class="activity-item">
+      <div>${icons[log.reason] || '📌'}</div>
+      <div>${log.lessons?.subject || 'פעילות'}<br><span style="font-size:0.76rem;color:var(--muted)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div class="activity-pts">+${log.points}</div>
+    </div>
+  `).join('')
+}
+
+async function loadLeaderboard(schoolId, className, currentUserId) {
+  const { data } = await supabaseClient
+    .from('users')
+    .select('id, name, points')
+    .eq('school_id', schoolId)
+    .eq('class_name', className)
+    .eq('role', 'student')
+    .order('points', { ascending: false })
+    .limit(8)
+
+  if (!data || data.length === 0) return
+
+  const colors = ['#6C63FF,#9B5DE5', '#06D6A0,#0CB', '#FFD166,#F4A261', '#FF6B6B,#E63']
+  document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
+    <div class="lb-item">
+      <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
+      <div class="lb-avatar" style="background:linear-gradient(135deg,${colors[i % colors.length]})">${s.name[0]}</div>
+      <div class="lb-name" style="${s.id===currentUserId?'color:var(--gold);font-weight:700':''}">${s.name}${s.id===currentUserId?' (אתה)':''}</div>
+      <div class="lb-pts">${s.points.toLocaleString()}</div>
+    </div>
+  `).join('')
+}
+
+async function loadStore() {
+  const { data } = await supabaseClient.from('store_items').select('*').eq('active', true).order('points_cost')
+  if (!data) return
+
+  document.getElementById('storeGrid').innerHTML = data.map(item => `
+    <div class="store-item" onclick="buyItem('${item.id}', '${item.name}', ${item.points_cost})">
+      <div class="item-icon">${item.icon}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-pts">${item.points_cost} נקודות</div>
+    </div>
+  `).join('')
+}
+
+async function buyItem(itemId, name, cost) {
+  if (isDemoAccount) { showToast('🎬 חשבון דמו - מימוש פרסים יופעל לאחר אישור הרשמה רשמי', true); return }
+  if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
+
+  try {
+    const { error } = await supabaseClient.from('purchases').insert({
+      student_id: currentUser.id, item_id: itemId, points_spent: cost
+    })
+    if (error) throw error
+    // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מנכה את זה אוטומטית
+
+    currentPoints -= cost
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    showToast(`🎁 ${name} נרכש בהצלחה!`)
+  } catch (err) {
+    showToast('שגיאה ברכישה, נסה שוב', true)
+  }
+}
+
+async function logout() {
+  if (checkinPollTimer) clearInterval(checkinPollTimer)
+  await supabaseClient.auth.signOut()
+  window.location.href = 'index.html'
+}
+
+let toastTimer
+function showToast(msg, isError) {
   const t = document.getElementById('toast')
   t.textContent = msg
-  t.className = 'toast show ' + (type || '')
-  setTimeout(() => t.classList.remove('show'), 3500)
+  t.style.background = isError ? 'var(--accent2)' : 'var(--green)'
+  t.style.color = isError ? '#fff' : '#0A0E1A'
+  t.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
 }
 
-async function handleLogout() {
-  await supabaseClient.auth.signOut()
-  window.location.href = 'login.html'
-}
-
-function setTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  btn.classList.add('active')
-  document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
-  document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
-  document.getElementById('attendancePanel').classList.toggle('hidden', tab !== 'attendance')
-  document.getElementById('teacherActivityPanel').classList.toggle('hidden', tab !== 'teacherActivity')
-}
-
-function copyInviteCode() {
-  if (!currentInviteCode) return
-  navigator.clipboard.writeText(currentInviteCode)
-  showToast('הקוד הועתק: ' + currentInviteCode, 'success')
-}
-
-function renderRow(user, kind) {
-  if (kind === 'student') {
-    return `<tr class="clickable" onclick="openStudentModal('${user.id}')">
-      <td>${escapeHtml(user.name || '—')}</td>
-      <td>${escapeHtml(user.class_name || '—')}</td>
-      <td>${escapeHtml(user.email || '—')}</td>
-      <td class="points-tag">${user.points ?? 0}</td>
-    </tr>`
-  }
-  return `<tr>
-    <td>${escapeHtml(user.name || '—')}</td>
-    <td>${escapeHtml(user.email || '—')}</td>
-    <td><span class="role-badge teacher">מורה</span></td>
-  </tr>`
-}
-
-function openStudentModal(studentId) {
-  const student = allStudents.find(s => s.id === studentId)
-  if (!student) return
-
-  document.getElementById('studentModalName').textContent = student.name || 'תלמיד/ה'
-  document.getElementById('studentModalPoints').textContent = student.points ?? 0
-  document.getElementById('studentModalClass').textContent = student.class_name || '—'
-
-  const logs = allPointLogs
-    .filter(l => l.student_id === studentId)
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-
-  const reasonLabel = { attendance: '📚 נוכחות', approved: '📚 נוכחות', bonus: '⭐ בונוס', personal_bonus: '🎁 בונוס אישי' }
-  const historyEl = document.getElementById('studentModalHistory')
-  historyEl.innerHTML = logs.length === 0
-    ? '<div class="empty-state" style="padding:20px">אין עדיין פעילות לתלמיד/ה זו</div>'
-    : logs.map(l => {
-        const lesson = allLessons.find(ls => ls.id === l.lesson_id)
-        const subject = lesson ? lesson.subject : (l.reason === 'personal_bonus' ? 'בונוס אישי' : 'פעילות')
-        return `<div class="history-item">
-          <div>${reasonLabel[l.reason] || '📌'}</div>
-          <div>${escapeHtml(subject)}<br><span style="font-size:0.74rem;color:var(--muted)">${new Date(l.created_at).toLocaleDateString('he-IL')}</span></div>
-          <div class="history-pts">+${l.points}</div>
-        </div>`
-      }).join('')
-
-  document.getElementById('studentModalOverlay').classList.add('show')
-}
-
-function closeStudentModal() {
-  document.getElementById('studentModalOverlay').classList.remove('show')
-}
-
-function renderAttendanceReport() {
-  const lessonsPerClass = {}
-  allLessons.forEach(l => { lessonsPerClass[l.class_name] = (lessonsPerClass[l.class_name] || 0) + 1 })
-
-  const attendedLessonsPerStudent = {}
-  allPointLogs
-    .filter(l => l.reason === 'attendance' || l.reason === 'approved' || l.reason === 'bonus')
-    .forEach(l => {
-      if (!attendedLessonsPerStudent[l.student_id]) attendedLessonsPerStudent[l.student_id] = new Set()
-      attendedLessonsPerStudent[l.student_id].add(l.lesson_id)
-    })
-
-  const rows = allStudents.map(s => {
-    const totalLessons = lessonsPerClass[s.class_name] || 0
-    const attended = attendedLessonsPerStudent[s.id] ? attendedLessonsPerStudent[s.id].size : 0
-    const pct = totalLessons > 0 ? Math.round((attended / totalLessons) * 100) : null
-    return { student: s, totalLessons, attended, pct }
-  })
-  .filter(r => r.totalLessons > 0)
-  .sort((a, b) => a.pct - b.pct)
-
-  document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
-  document.getElementById('attendanceBody').innerHTML = rows.map(r => {
-    const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
-    return `<tr>
-      <td>${escapeHtml(r.student.name || '—')}</td>
-      <td>${escapeHtml(r.student.class_name || '—')}</td>
-      <td>${r.totalLessons}</td>
-      <td>${r.attended}</td>
-      <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
-    </tr>`
-  }).join('')
-}
-
-function renderTeacherActivity() {
-  const lessonsPerTeacher = {}
-  const lastActivityPerTeacher = {}
-  allLessons.forEach(l => {
-    lessonsPerTeacher[l.teacher_id] = (lessonsPerTeacher[l.teacher_id] || 0) + 1
-    const d = new Date(l.created_at)
-    if (!lastActivityPerTeacher[l.teacher_id] || d > lastActivityPerTeacher[l.teacher_id]) {
-      lastActivityPerTeacher[l.teacher_id] = d
-    }
-  })
-
-  const pointsPerTeacher = {}
-  allPointLogs.forEach(l => {
-    const lesson = allLessons.find(ls => ls.id === l.lesson_id)
-    if (!lesson) return
-    pointsPerTeacher[lesson.teacher_id] = (pointsPerTeacher[lesson.teacher_id] || 0) + l.points
-  })
-
-  const rows = allTeachers.map(t => ({
-    teacher: t,
-    lessonCount: lessonsPerTeacher[t.id] || 0,
-    points: pointsPerTeacher[t.id] || 0,
-    lastActivity: lastActivityPerTeacher[t.id] || null
-  })).sort((a, b) => b.lessonCount - a.lessonCount)
-
-  document.getElementById('teacherActivityEmpty').classList.toggle('hidden', rows.some(r => r.lessonCount > 0))
-  document.getElementById('teacherActivityBody').innerHTML = rows.map(r => `<tr>
-      <td>${escapeHtml(r.teacher.name || '—')}</td>
-      <td>${r.lessonCount}</td>
-      <td class="points-tag">${r.points}</td>
-      <td>${r.lastActivity ? r.lastActivity.toLocaleDateString('he-IL') : '—'}</td>
-    </tr>`).join('')
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div')
-  div.textContent = str ?? ''
-  return div.innerHTML
-}
-
-async function loadDashboard() {
-  const { data: sessionData } = await supabaseClient.auth.getSession()
-  if (!sessionData.session) {
-    window.location.href = 'login.html'
-    return
-  }
-  currentUser = sessionData.session.user
-
-  // Load principal profile
-  const { data: profile, error: profileErr } = await supabaseClient
-    .from('users').select('*').eq('id', currentUser.id).single()
-
-  if (profileErr || !profile) {
-    showFatalError('לא הצלחנו לטעון את הפרופיל שלך. נסה להתחבר שוב.')
-    return
-  }
-  if (profile.role !== 'principal') {
-    // Not a principal — send to the right place
-    window.location.href = profile.role === 'teacher' ? 'teacher.html' : 'dashboard.html'
-    return
-  }
-
-  currentSchoolId = profile.school_id
-  document.getElementById('principalName').textContent = profile.name || 'מנהל/ת'
-
-  // Load school
-  const { data: school } = await supabaseClient
-    .from('schools').select('*').eq('id', currentSchoolId).single()
-
-  document.getElementById('schoolNameLabel').textContent = school ? school.name : 'לא ידוע'
-  currentInviteCode = school ? school.invite_code : null
-  document.getElementById('statCode').textContent = currentInviteCode || '—'
-
-  // Load teachers + students of this school
-  const { data: members, error: membersErr } = await supabaseClient
-    .from('users').select('*').eq('school_id', currentSchoolId)
-
-  if (membersErr) {
-    showFatalError('שגיאה בטעינת הצוות: ' + membersErr.message)
-    return
-  }
-
-  const teachers = (members || []).filter(u => u.role === 'teacher')
-  const students = (members || []).filter(u => u.role === 'student')
-  const totalPoints = students.reduce((sum, s) => sum + (s.points || 0), 0)
-  allTeachers = teachers
-  allStudents = students
-
-  document.getElementById('statTeachers').textContent = teachers.length
-  document.getElementById('statStudents').textContent = students.length
-  document.getElementById('statPoints').textContent = totalPoints
-
-  const studentsBody = document.getElementById('studentsBody')
-  const teachersBody = document.getElementById('teachersBody')
-
-  studentsBody.innerHTML = students.map(s => renderRow(s, 'student')).join('')
-  teachersBody.innerHTML = teachers.map(t => renderRow(t, 'teacher')).join('')
-
-  document.getElementById('studentsEmpty').classList.toggle('hidden', students.length > 0)
-  document.getElementById('teachersEmpty').classList.toggle('hidden', teachers.length > 0)
-
-  // Load lessons + point logs for the whole school (used by student cards, attendance report, teacher activity)
-  const { data: lessons } = await supabaseClient
-    .from('lessons').select('*').eq('school_id', currentSchoolId)
-  allLessons = lessons || []
-
-  const lessonIds = allLessons.map(l => l.id)
-  if (lessonIds.length > 0) {
-    const { data: logs } = await supabaseClient
-      .from('point_logs').select('*').in('lesson_id', lessonIds)
-    allPointLogs = logs || []
-  } else {
-    allPointLogs = []
-  }
-
-  renderAttendanceReport()
-  renderTeacherActivity()
-
-  document.getElementById('loadingState').classList.add('hidden')
-  document.getElementById('dashboardContent').classList.remove('hidden')
-}
-
-function showFatalError(msg) {
-  document.getElementById('loadingState').classList.add('hidden')
-  const el = document.getElementById('errorState')
-  el.textContent = msg
-  el.classList.remove('hidden')
-  showToast(msg, 'error')
-}
-
-loadDashboard()
+init()
 </script>
 </body>
 </html>
