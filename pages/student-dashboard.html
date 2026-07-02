@@ -29,6 +29,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 .points-badge{background:linear-gradient(135deg,var(--accent),#9B5DE5);border-radius:var(--r);padding:14px 26px;text-align:center}
 .pts-num{font-size:2rem;font-weight:900;color:var(--gold)}
 .pts-label{font-size:0.78rem;color:rgba(255,255,255,0.7)}
+.pts-ils{font-size:0.76rem;color:rgba(255,255,255,0.85);margin-top:2px}
 
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
@@ -51,6 +52,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 .item-icon{font-size:1.7rem;margin-bottom:6px}
 .item-name{font-size:0.8rem;font-weight:600}
 .item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px}
+.item-ils{font-size:0.7rem;color:var(--muted)}
 
 .empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
 
@@ -88,6 +90,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
     <div class="points-badge">
       <div class="pts-num" id="pointsDisplay">0</div>
       <div class="pts-label">נקודות</div>
+      <div class="pts-ils" id="pointsIlsDisplay">≈ ₪0</div>
     </div>
   </div>
 
@@ -115,6 +118,9 @@ let supabaseClient = null
 let currentUser = null
 let currentPoints = 0
 
+// Conversion rate: 30 points = 1 ₪ (matches class monthly budget of 300₪ = 9,000 points)
+const POINTS_PER_ILS = 30
+
 async function init() {
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -137,6 +143,7 @@ async function init() {
   document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
   document.getElementById('classInfo').textContent = `כיתה ${profile.class_name || ''}`
   document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+  document.getElementById('pointsIlsDisplay').textContent = `≈ ₪${(currentPoints / POINTS_PER_ILS).toFixed(0)}`
   document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
 
   await loadActivity(profile.id)
@@ -199,6 +206,7 @@ async function loadStore() {
       <div class="item-icon">${item.icon}</div>
       <div class="item-name">${item.name}</div>
       <div class="item-pts">${item.points_cost} נקודות</div>
+      ${item.hide_ils ? '' : `<div class="item-ils">≈ ₪${(item.points_cost / POINTS_PER_ILS).toFixed(0)}</div>`}
     </div>
   `).join('')
 }
@@ -214,6 +222,7 @@ async function buyItem(itemId, name, cost) {
 
     currentPoints -= cost
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('pointsIlsDisplay').textContent = `≈ ₪${(currentPoints / POINTS_PER_ILS).toFixed(0)}`
     document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
     showToast(`🎁 ${name} נרכש בהצלחה!`)
   } catch (err) {
