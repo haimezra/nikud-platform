@@ -61,6 +61,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 .earn-text b{color:var(--text);font-weight:700}
 .earn-text span{color:var(--muted);display:block;font-size:0.78rem;margin-top:1px}
 
+.expired-screen{max-width:440px;margin:80px auto;text-align:center;padding:0 20px}
+.expired-screen .icon{font-size:3rem;margin-bottom:16px}
+.expired-screen h2{font-size:1.3rem;margin-bottom:10px}
+.expired-screen p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
+.expired-screen a{display:inline-block;padding:14px 30px;background:var(--accent);color:#fff;text-decoration:none;border-radius:99px;font-weight:700;font-size:0.95rem}
+
+.demo-banner{background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.4);border-radius:12px;padding:12px 18px;margin-bottom:18px;font-size:0.85rem;color:var(--gold);display:flex;align-items:center;gap:10px}
+
 .empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
 
 .checkin-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem}
@@ -95,6 +103,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 
 <div id="loadingScreen" class="loading">טוען את הנתונים שלך...</div>
 
+<div id="expiredScreen" class="expired-screen" style="display:none">
+  <div class="icon">⏳</div>
+  <h2>תקופת הניסיון הסתיימה</h2>
+  <p>15 הימים של הניסיון החינמי של בית הספר שלך הסתיימו. כדי להמשיך להשתמש במערכת, צריך לאשר את בית הספר למנוי רשמי.</p>
+  <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%20%D7%94%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F%20%D7%A9%D7%9C%D7%99%20%D7%94%D7%A1%D7%AA%D7%99%D7%99%D7%9E%D7%94%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3" target="_blank">דברו איתנו בוואטסאפ</a>
+</div>
+
 <div class="dashboard hidden" id="dashboard" style="display:none">
   <div class="dashboard-header">
     <div class="welcome">
@@ -105,6 +120,11 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
       <div class="pts-num" id="pointsDisplay">0</div>
       <div class="pts-label">נקודות</div>
     </div>
+  </div>
+
+  <div class="demo-banner hidden" id="demoBanner" style="display:none">
+    <span>🎬</span>
+    <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של בית הספר.</span>
   </div>
 
   <div class="card hidden" id="checkinCard" style="margin-bottom:18px"></div>
@@ -155,6 +175,7 @@ let currentPoints = 0
 let activeLesson = null
 let myCheckin = null
 let checkinPollTimer = null
+let isDemoAccount = false
 
 async function init() {
   try {
@@ -173,6 +194,18 @@ async function init() {
 
   currentUser = profile
   currentPoints = profile.points || 0
+
+  const { data: school } = await supabaseClient.from('schools').select('plan, plan_expires_at').eq('id', profile.school_id).single()
+  isDemoAccount = !school || school.plan === 'trial'
+  const trialExpired = isDemoAccount && school?.plan_expires_at && new Date(school.plan_expires_at) < new Date()
+
+  if (trialExpired) {
+    document.getElementById('loadingScreen').style.display = 'none'
+    document.getElementById('expiredScreen').style.display = 'block'
+    return
+  }
+
+  document.getElementById('demoBanner').style.display = isDemoAccount ? 'flex' : 'none'
 
   document.getElementById('userName').textContent = profile.name
   document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
@@ -333,6 +366,7 @@ async function loadStore() {
 }
 
 async function buyItem(itemId, name, cost) {
+  if (isDemoAccount) { showToast('🎬 חשבון דמו - מימוש פרסים יופעל לאחר אישור הרשמה רשמי', true); return }
   if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
 
   try {
