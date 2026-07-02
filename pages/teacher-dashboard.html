@@ -70,6 +70,11 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 .btn-reject{background:rgba(255,107,107,0.15);color:var(--red)}
 .btn-reject.selected{background:var(--red);color:#fff}
 
+.stu-personal-bonus{display:flex;align-items:center;gap:6px;margin-top:4px}
+.pb-btn{padding:3px 10px;border-radius:99px;border:1px solid rgba(255,209,102,0.4);background:rgba(255,209,102,0.1);color:var(--gold);font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif}
+.pb-btn:disabled{opacity:0.35;cursor:not-allowed}
+.pb-count{font-size:0.68rem;color:var(--muted)}
+
 .summary-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .sum-item{text-align:center}
 .sum-num{font-size:1.2rem;font-weight:900}
@@ -167,6 +172,11 @@ const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
 // ---- Points awarded ----
 const ATTENDANCE_POINTS = 3   // was 20
 const BONUS_POINTS = 5        // was 35 (scaled down proportionally)
+
+// ---- Personal bonus (teacher can give any student, any time, independent of approval flow) ----
+const PERSONAL_BONUS_POINTS = 5
+const PERSONAL_BONUS_MONTHLY_CAP = 50   // per student, per calendar month
+let personalBonusUsed = {}              // student_id -> points already given this month via personal bonus
 
 // ---- Class monthly point budget ----
 // School allocates 300 ₪ per class per month. Conversion rate: 30 points = 1 ₪.
@@ -293,6 +303,7 @@ function stopCheckinPolling() {
   students.forEach(s => state[s.id] = null)
 
   remainingBudget = await getClassBudgetRemaining(class_name)
+  await loadPersonalBonusUsage(students.map(s => s.id))
 
   document.getElementById('setupCard').classList.add('hidden')
   document.getElementById('activeLessonSection').classList.remove('hidden')
@@ -314,6 +325,54 @@ function stopCheckinPolling() {
   }
 }
 
+async function loadPersonalBonusUsage(studentIds) {
+  if (!studentIds.length) { personalBonusUsed = {}; return }
+  const { data, error } = await supabaseClient
+    .from('point_logs')
+    .select('student_id, points')
+    .eq('reason', 'personal_bonus')
+    .in('student_id', studentIds)
+    .gte('created_at', firstOfMonthISO())
+
+  personalBonusUsed = {}
+  studentIds.forEach(id => personalBonusUsed[id] = 0)
+  if (error) { console.error(error); return }
+  ;(data || []).forEach(row => {
+    personalBonusUsed[row.student_id] = (personalBonusUsed[row.student_id] || 0) + row.points
+  })
+}
+
+async function givePersonalBonus(studentId, studentName) {
+  const used = personalBonusUsed[studentId] || 0
+  if (used + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP) {
+    showToast(`❌ ${studentName} כבר קיבל/ה ${used} נקודות בונוס אישי החודש (מקסימום ${PERSONAL_BONUS_MONTHLY_CAP})`, true)
+    return
+  }
+  if (PERSONAL_BONUS_POINTS > remainingBudget) {
+    showToast('❌ תקציב הנקודות של הכיתה לחודש זה אזל', true)
+    return
+  }
+
+  try {
+    await supabaseClient.from('point_logs').insert({
+      lesson_id: currentLesson ? currentLesson.id : null,
+      student_id: studentId,
+      points: PERSONAL_BONUS_POINTS,
+      reason: 'personal_bonus'
+    })
+    const { data: student } = await supabaseClient.from('users').select('points').eq('id', studentId).single()
+    await supabaseClient.from('users').update({ points: (student?.points || 0) + PERSONAL_BONUS_POINTS }).eq('id', studentId)
+
+    personalBonusUsed[studentId] = used + PERSONAL_BONUS_POINTS
+    remainingBudget -= PERSONAL_BONUS_POINTS
+    renderList()
+    renderBudgetBar(pointsToAward())
+    showToast(`🎁 ${studentName} קיבל/ה ${PERSONAL_BONUS_POINTS} נקודות בונוס אישי!`)
+  } catch (err) {
+    showToast('שגיאה במתן הבונוס', true)
+  }
+}
+
 function renderList() {
   document.getElementById('studentList').innerHTML = students.map(s => {
     const st = state[s.id]
@@ -327,7 +386,13 @@ function renderList() {
     return `
     <div class="student-card ${cardClass}">
       <div class="stu-avatar" style="background:${s.avatar_color || '#6C63FF'}">${s.name[0]}</div>
-      <div class="stu-info"><div class="stu-name">${s.name} ${checkinBadge}</div></div>
+      <div class="stu-info">
+        <div class="stu-name">${s.name} ${checkinBadge}</div>
+        <div class="stu-personal-bonus">
+          <button class="pb-btn" ${((personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">🎁 בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
+          <span class="pb-count">${personalBonusUsed[s.id]||0}/${PERSONAL_BONUS_MONTHLY_CAP} החודש</span>
+        </div>
+      </div>
       <div class="stu-actions">
         <button class="act-btn btn-approve ${st==='approved'?'selected':''}" onclick="setState('${s.id}','approved')">✅</button>
         <button class="act-btn btn-bonus ${st==='bonus'?'selected':''}" onclick="setState('${s.id}','bonus')">⭐</button>
