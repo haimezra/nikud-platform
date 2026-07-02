@@ -237,10 +237,11 @@ async function refreshActiveLessonAndCheckin() {
 
   activeLesson = (lessons && lessons[0]) || null
   const card = document.getElementById('checkinCard')
+  card.classList.remove('hidden')
 
   if (!activeLesson) {
-    card.classList.add('hidden')
     myCheckin = null
+    renderCheckinCard()
     return
   }
 
@@ -270,7 +271,14 @@ async function refreshActiveLessonAndCheckin() {
 
 function renderCheckinCard() {
   const card = document.getElementById('checkinCard')
-  if (!activeLesson) { card.innerHTML = ''; return }
+  if (!activeLesson) {
+    card.innerHTML = `
+      <h3>📍 צ'ק-אין לשיעור</h3>
+      <p style="color:var(--muted);font-size:0.85rem;margin:8px 0 14px">אין כרגע שיעור פעיל בכיתה שלך. ברגע שהמורה תפתח שיעור, כפתור הצ'ק-אין יופעל כאן אוטומטית.</p>
+      <button class="checkin-btn" disabled>✅ צ'ק-אין לשיעור</button>
+    `
+    return
+  }
 
   if (!myCheckin) {
     card.innerHTML = `
