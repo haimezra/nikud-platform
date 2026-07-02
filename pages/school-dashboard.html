@@ -60,6 +60,11 @@ body{
 .stat-card.accent .stat-num{color:var(--accent)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
+.copy-code-btn{
+  margin-top:8px;background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.35);
+  color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
+  cursor:pointer;font-family:'Heebo',sans-serif;
+}
 
 /* ---------- Tabs ---------- */
 .tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface);border-radius:12px;padding:4px;width:fit-content}
@@ -183,6 +188,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <div class="stat-card">
         <div class="stat-num" id="statCode">—</div>
         <div class="stat-label">קוד הצטרפות לבית הספר</div>
+        <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
       </div>
     </div>
 
@@ -232,6 +238,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let currentUser = null
 let currentSchoolId = null
+let currentInviteCode = null
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -250,6 +257,12 @@ function setTab(tab, btn) {
   btn.classList.add('active')
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
+}
+
+function copyInviteCode() {
+  if (!currentInviteCode) return
+  navigator.clipboard.writeText(currentInviteCode)
+  showToast('הקוד הועתק: ' + currentInviteCode, 'success')
 }
 
 function renderRow(user, kind) {
@@ -292,7 +305,7 @@ async function loadDashboard() {
   }
   if (profile.role !== 'principal') {
     // Not a principal — send to the right place
-    window.location.href = profile.role === 'teacher' ? 'teacher-dashboard.html' : 'student-dashboard.html'
+    window.location.href = profile.role === 'teacher' ? 'teacher.html' : 'dashboard.html'
     return
   }
 
@@ -304,7 +317,8 @@ async function loadDashboard() {
     .from('schools').select('*').eq('id', currentSchoolId).single()
 
   document.getElementById('schoolNameLabel').textContent = school ? school.name : 'לא ידוע'
-  document.getElementById('statCode').textContent = currentSchoolId ? currentSchoolId.slice(0, 8) : '—'
+  currentInviteCode = school ? school.invite_code : null
+  document.getElementById('statCode').textContent = currentInviteCode || '—'
 
   // Load teachers + students of this school
   const { data: members, error: membersErr } = await supabaseClient
