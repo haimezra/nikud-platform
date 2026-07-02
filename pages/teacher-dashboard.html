@@ -38,6 +38,16 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 .l-stat-num{font-size:1.4rem;font-weight:900}
 .l-stat-lbl{font-size:0.72rem;color:var(--muted)}
 
+.budget-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.82rem}
+.budget-label{color:var(--muted)}
+.budget-value{font-weight:700}
+.budget-track{height:8px;border-radius:99px;background:var(--surface);overflow:hidden}
+.budget-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.3s}
+.budget-fill.warn{background:var(--gold)}
+.budget-fill.over{background:var(--red)}
+.budget-note{font-size:0.74rem;color:var(--muted);margin-top:6px}
+
 .controls{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
 .ctrl-btn{flex:1;min-width:110px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700}
 .ctrl-green{background:var(--green);color:#0A0E1A}
@@ -113,6 +123,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
         <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
         <div class="l-stat"><div class="l-stat-num" style="color:var(--muted)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
       </div>
+
+      <div class="budget-box">
+        <div class="budget-top">
+          <span class="budget-label">תקציב נקודות לכיתה החודש</span>
+          <span class="budget-value" id="budgetValueText">—</span>
+        </div>
+        <div class="budget-track"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
+        <div class="budget-note" id="budgetNote"></div>
+      </div>
     </div>
 
     <div class="controls">
@@ -142,6 +161,19 @@ let currentLesson = null
 let students = []
 const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
 
+// ---- Class monthly point budget ----
+// School allocates 300 ₪ per class per month. Conversion rate: 30 points = 1 ₪.
+const POINTS_PER_ILS = 30
+const CLASS_MONTHLY_BUDGET_ILS = 300
+const CLASS_MONTHLY_BUDGET_POINTS = CLASS_MONTHLY_BUDGET_ILS * POINTS_PER_ILS // 9000
+let issuedThisMonth = 0   // points already given to this class this calendar month (before this lesson)
+let remainingBudget = CLASS_MONTHLY_BUDGET_POINTS
+
+function firstOfMonthISO() {
+  const d = new Date()
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
+}
+
 async function init() {
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -162,6 +194,45 @@ async function init() {
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('mainContent').classList.remove('hidden')
+}
+
+async function getClassBudgetRemaining(class_name) {
+  const { data: monthLogs, error } = await supabaseClient
+    .from('point_logs')
+    .select('points, lessons!inner(class_name, school_id, created_at)')
+    .eq('lessons.class_name', class_name)
+    .eq('lessons.school_id', currentUser.school_id)
+    .gte('lessons.created_at', firstOfMonthISO())
+
+  if (error) { console.error(error); return CLASS_MONTHLY_BUDGET_POINTS }
+
+  const used = (monthLogs || []).reduce((sum, log) => sum + log.points, 0)
+  return CLASS_MONTHLY_BUDGET_POINTS - used
+}
+
+function renderBudgetBar(afterThisAward = 0) {
+  const projected = remainingBudget - afterThisAward
+  const usedPoints = CLASS_MONTHLY_BUDGET_POINTS - projected
+  const pctUsed = Math.min(100, Math.max(0, (usedPoints / CLASS_MONTHLY_BUDGET_POINTS) * 100))
+
+  const fill = document.getElementById('budgetFill')
+  fill.style.width = pctUsed + '%'
+  fill.className = 'budget-fill' + (projected < 0 ? ' over' : pctUsed >= 80 ? ' warn' : '')
+
+  document.getElementById('budgetValueText').textContent =
+    `${Math.max(0, projected).toLocaleString()} נקודות נותרו (₪${Math.max(0,(projected/POINTS_PER_ILS)).toFixed(0)})`
+
+  const note = document.getElementById('budgetNote')
+  if (projected < 0) {
+    note.textContent = `⚠️ חריגה של ${Math.abs(projected)} נקודות מהתקציב החודשי של הכיתה!`
+    note.style.color = 'var(--red)'
+  } else if (pctUsed >= 80) {
+    note.textContent = `⚠️ מתקרבים לתקרת התקציב החודשי (${CLASS_MONTHLY_BUDGET_ILS} ₪ לכיתה)`
+    note.style.color = 'var(--gold)'
+  } else {
+    note.textContent = `מתוך ${CLASS_MONTHLY_BUDGET_POINTS.toLocaleString()} נקודות (${CLASS_MONTHLY_BUDGET_ILS} ₪) לחודש`
+    note.style.color = 'var(--muted)'
+  }
 }
 
 async function startLesson() {
@@ -189,6 +260,8 @@ async function startLesson() {
   students = classStudents || []
   students.forEach(s => state[s.id] = null)
 
+  remainingBudget = await getClassBudgetRemaining(class_name)
+
   document.getElementById('setupCard').classList.add('hidden')
   document.getElementById('activeLessonSection').classList.remove('hidden')
   document.getElementById('summaryBar').classList.remove('hidden')
@@ -198,6 +271,9 @@ async function startLesson() {
   renderList()
   updateSummary()
 
+  if (remainingBudget <= 0) {
+    showToast('⚠️ תקציב הנקודות של הכיתה לחודש זה כבר אזל', true)
+  }
   if (students.length === 0) {
     showToast('⚠️ אין תלמידים רשומים בכיתה הזו עדיין', true)
   }
@@ -226,12 +302,18 @@ function setState(id, newState) {
   renderList()
 }
 
+function pointsToAward() {
+  const approved = students.filter(s => state[s.id] === 'approved').length
+  const bonus = students.filter(s => state[s.id] === 'bonus').length
+  return approved * 20 + bonus * 35
+}
+
 function updateSummary() {
   const approved = students.filter(s => state[s.id] === 'approved').length
   const bonus = students.filter(s => state[s.id] === 'bonus').length
   const rejected = students.filter(s => state[s.id] === 'rejected').length
   const pending = students.filter(s => state[s.id] === null).length
-  const pts = approved * 20 + bonus * 35
+  const pts = pointsToAward()
 
   document.getElementById('statApproved').textContent = approved
   document.getElementById('statBonus').textContent = bonus
@@ -239,6 +321,8 @@ function updateSummary() {
   document.getElementById('statPending').textContent = pending
   document.getElementById('sumApproved').textContent = approved + bonus
   document.getElementById('sumPts').textContent = pts
+
+  renderBudgetBar(pts)
 }
 
 function approveAll() {
@@ -261,7 +345,22 @@ async function openSubmit() {
 
   if (approvals.length === 0) { showToast('לא אישרת אף תלמיד', true); return }
 
-  if (!confirm(`לשלוח נקודות ל-${approvals.length} תלמידים?`)) return
+  const totalPoints = approvals.reduce((sum, a) => sum + a.points, 0)
+
+  // Hard block: cannot issue more points than the class has left this month
+  if (totalPoints > remainingBudget) {
+    showToast(`❌ חריגה מהתקציב החודשי של הכיתה! נותרו ${Math.max(0,remainingBudget)} נקודות (₪${Math.max(0,(remainingBudget/POINTS_PER_ILS)).toFixed(0)}), וניסית לחלק ${totalPoints}.`, true)
+    return
+  }
+
+  // Soft warning when this award will use up most of what's left
+  const afterAward = remainingBudget - totalPoints
+  if (afterAward < CLASS_MONTHLY_BUDGET_POINTS * 0.2) {
+    const proceed = confirm(`⚠️ לאחר החלוקה הזו יישארו לכיתה רק ${afterAward} נקודות (₪${(afterAward/POINTS_PER_ILS).toFixed(0)}) לשארית החודש. להמשיך?`)
+    if (!proceed) return
+  }
+
+  if (!confirm(`לשלוח נקודות ל-${approvals.length} תלמידים (סה"כ ${totalPoints} נקודות)?`)) return
 
   try {
     const logs = approvals.map(a => ({
@@ -276,6 +375,8 @@ async function openSubmit() {
     }
 
     await supabaseClient.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
+
+    remainingBudget -= totalPoints
 
     showToast(`🎉 נקודות חולקו ל-${approvals.length} תלמידים!`)
     setTimeout(() => {
