@@ -265,7 +265,7 @@ async function loadActivity(studentId) {
 
   if (!data || data.length === 0) return
 
-  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥' }
+  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📚' }
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
       <div>${icons[log.reason] || '📌'}</div>
