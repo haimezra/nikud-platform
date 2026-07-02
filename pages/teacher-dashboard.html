@@ -278,6 +278,8 @@ function stopCheckinPolling() {
   if (checkinPollTimer) clearInterval(checkinPollTimer)
   checkinPollTimer = null
 }
+
+async function startLesson() {
   const subject = document.getElementById('subjectInput').value
   const class_name = document.getElementById('classInput').value
   if (!subject || !class_name) { showToast('נא למלא מקצוע וכיתה', true); return }
@@ -354,14 +356,14 @@ async function givePersonalBonus(studentId, studentName) {
   }
 
   try {
-    await supabaseClient.from('point_logs').insert({
+    const { error } = await supabaseClient.from('point_logs').insert({
       lesson_id: currentLesson ? currentLesson.id : null,
       student_id: studentId,
       points: PERSONAL_BONUS_POINTS,
       reason: 'personal_bonus'
     })
-    const { data: student } = await supabaseClient.from('users').select('points').eq('id', studentId).single()
-    await supabaseClient.from('users').update({ points: (student?.points || 0) + PERSONAL_BONUS_POINTS }).eq('id', studentId)
+    if (error) throw error
+    // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מעדכן את זה אוטומטית
 
     personalBonusUsed[studentId] = used + PERSONAL_BONUS_POINTS
     remainingBudget -= PERSONAL_BONUS_POINTS
@@ -473,12 +475,9 @@ async function openSubmit() {
       lesson_id: currentLesson.id, student_id: a.student_id,
       points: a.points, reason: a.reason
     }))
-    await supabaseClient.from('point_logs').insert(logs)
-
-    for (const a of approvals) {
-      const { data: student } = await supabaseClient.from('users').select('points').eq('id', a.student_id).single()
-      await supabaseClient.from('users').update({ points: (student?.points || 0) + a.points }).eq('id', a.student_id)
-    }
+    const { error: logsError } = await supabaseClient.from('point_logs').insert(logs)
+    if (logsError) throw logsError
+    // הערה: לא צריך לולאת UPDATE ידנית ל-users.points - טריגר במסד הנתונים מעדכן כל תלמיד אוטומטית בעת ה-INSERT למעלה
 
     // Update checkin rows to reflect the final decision (approved / rejected students)
     const checkinUpdates = students
