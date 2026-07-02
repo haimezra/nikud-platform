@@ -85,7 +85,7 @@ body{
   <div class="logo">ניקוד<span>★</span></div>
   <div class="auth-sub">כניסה למערכת התגמול</div>
 
-  <div class="setup-note" id="setupNote">
+  <div class="setup-note hidden" id="setupNote">
     ⚠️ <strong>למפתח:</strong> חבר את Supabase ב-config.js לפני שטופס זה יעבוד באמת.
   </div>
 
@@ -245,9 +245,9 @@ async function handleSubmit(e) {
       const { data: profile } = await supabaseClient.from('users').select('role').eq('id', data.user.id).single()
       showSuccess('התחברת בהצלחה! מעביר אותך...')
       setTimeout(() => {
-        if (profile.role === 'student') window.location.href = 'student-dashboard.html'
-        else if (profile.role === 'teacher') window.location.href = 'teacher-dashboard.html'
-        else window.location.href = 'school-dashboard.html'
+        if (profile.role === 'student') window.location.href = 'dashboard.html'
+        else if (profile.role === 'teacher') window.location.href = 'teacher.html'
+        else window.location.href = 'principal.html'
       }, 800)
 
     } else {
@@ -256,11 +256,11 @@ async function handleSubmit(e) {
       if (!name) { showError('נא למלא שם מלא'); btn.disabled = false; btn.textContent = 'הרשמה'; return }
 
       let school_id = null
-      const schoolCode = document.getElementById('schoolCodeInput').value
 
       if (currentRole === 'principal') {
         // Create new school
         const schoolName = document.getElementById('schoolNameInput').value
+        if (!schoolName) { showError('נא למלא שם בית ספר'); btn.disabled = false; btn.textContent = 'הרשמה'; return }
         const { data: school, error: schoolErr } = await supabaseClient
           .from('schools')
           .insert({ name: schoolName, plan: 'trial' })
@@ -268,10 +268,13 @@ async function handleSubmit(e) {
         if (schoolErr) throw schoolErr
         school_id = school.id
       } else {
-        // Find school by code (assumes school code = school id prefix, simplified)
+        // Find school by its real invite code (not the internal id!)
+        const schoolCode = document.getElementById('schoolCodeInput').value.trim().toUpperCase()
+        if (!schoolCode) { showError('נא למלא קוד בית ספר'); btn.disabled = false; btn.textContent = 'הרשמה'; return }
+
         const { data: school, error: findErr } = await supabaseClient
-          .from('schools').select('id').eq('id', schoolCode).single()
-        if (findErr || !school) throw new Error('קוד בית ספר לא נמצא')
+          .from('schools').select('id').eq('invite_code', schoolCode).single()
+        if (findErr || !school) throw new Error('קוד בית ספר לא נמצא. ודא/י שהקוד הוקלד נכון (6 תווים, כמו שקיבלת ממנהל בית הספר)')
         school_id = school.id
       }
 
