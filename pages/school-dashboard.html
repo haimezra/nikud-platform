@@ -224,12 +224,14 @@ async function init() {
 }
 
 async function refreshActiveLessonAndCheckin() {
+  const eightHoursAgo = new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
   const { data: lessons } = await supabaseClient
     .from('lessons')
     .select('*')
     .eq('school_id', currentUser.school_id)
     .eq('class_name', currentUser.class_name)
     .eq('status', 'active')
+    .gte('created_at', eightHoursAgo)
     .order('created_at', { ascending: false })
     .limit(1)
 
