@@ -279,4 +279,26 @@ async function handleSubmit(e) {
       }
 
       const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password })
-      if (au
+      if (authErr) throw authErr
+
+      const class_name = currentRole === 'student' ? document.getElementById('classInput').value : null
+
+      const { error: profileErr } = await supabaseClient.from('users').insert({
+        id: authData.user.id,
+        name, email, role: currentRole, school_id, class_name, points: 0
+      })
+      if (profileErr) throw profileErr
+
+      showSuccess('נרשמת בהצלחה! בדוק את האימייל שלך לאימות, ואז התחבר.')
+      setMode('login', document.querySelector('.mode-btn'))
+    }
+  } catch (err) {
+    showError(err.message || 'משהו השתבש, נסה שוב')
+  } finally {
+    btn.disabled = false
+    btn.textContent = currentMode === 'login' ? 'כניסה' : 'הרשמה'
+  }
+}
+</script>
+</body>
+</html>
