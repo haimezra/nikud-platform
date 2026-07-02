@@ -139,6 +139,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
       <button class="ctrl-btn ctrl-red" onclick="clearAll()">🔄 אפס</button>
       <button class="ctrl-btn ctrl-purple" onclick="openSubmit()">📤 שלח ואשר</button>
     </div>
+    <div class="controls">
+      <button class="ctrl-btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
+    </div>
 
     <div id="studentList"></div>
   </div>
@@ -161,6 +164,10 @@ let currentLesson = null
 let students = []
 const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
 
+// ---- Points awarded ----
+const ATTENDANCE_POINTS = 3   // was 20
+const BONUS_POINTS = 5        // was 35 (scaled down proportionally)
+
 // ---- Class monthly point budget ----
 // School allocates 300 ₪ per class per month. Conversion rate: 30 points = 1 ₪.
 const POINTS_PER_ILS = 30
@@ -168,6 +175,10 @@ const CLASS_MONTHLY_BUDGET_ILS = 300
 const CLASS_MONTHLY_BUDGET_POINTS = CLASS_MONTHLY_BUDGET_ILS * POINTS_PER_ILS // 9000
 let issuedThisMonth = 0   // points already given to this class this calendar month (before this lesson)
 let remainingBudget = CLASS_MONTHLY_BUDGET_POINTS
+
+// ---- Student self check-ins for the active lesson ----
+let checkins = {}          // student_id -> checkin row {id, status, points}
+let checkinPollTimer = null
 
 function firstOfMonthISO() {
   const d = new Date()
@@ -235,7 +246,28 @@ function renderBudgetBar(afterThisAward = 0) {
   }
 }
 
-async function startLesson() {
+async function refreshCheckins() {
+  if (!currentLesson) return
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('lesson_id', currentLesson.id)
+
+  if (error) { console.error(error); return }
+
+  checkins = {}
+  ;(data || []).forEach(c => { checkins[c.student_id] = c })
+  renderList()
+}
+
+function startCheckinPolling() {
+  stopCheckinPolling()
+  checkinPollTimer = setInterval(refreshCheckins, 6000)
+}
+function stopCheckinPolling() {
+  if (checkinPollTimer) clearInterval(checkinPollTimer)
+  checkinPollTimer = null
+}
   const subject = document.getElementById('subjectInput').value
   const class_name = document.getElementById('classInput').value
   if (!subject || !class_name) { showToast('נא למלא מקצוע וכיתה', true); return }
@@ -271,6 +303,9 @@ async function startLesson() {
   renderList()
   updateSummary()
 
+  await refreshCheckins()
+  startCheckinPolling()
+
   if (remainingBudget <= 0) {
     showToast('⚠️ תקציב הנקודות של הכיתה לחודש זה כבר אזל', true)
   }
@@ -283,10 +318,16 @@ function renderList() {
   document.getElementById('studentList').innerHTML = students.map(s => {
     const st = state[s.id]
     const cardClass = st === 'approved' ? 'approved' : st === 'bonus' ? 'bonus' : st === 'rejected' ? 'rejected' : ''
+    const checkin = checkins[s.id]
+    const checkinBadge = checkin && checkin.status === 'ממתינה'
+      ? '<span style="font-size:0.68rem;background:rgba(108,99,255,0.18);color:var(--accent);padding:2px 8px;border-radius:99px;margin-right:6px">📍 ביקש/ה צ\'ק-אין</span>'
+      : checkin && checkin.status === 'אושר'
+      ? '<span style="font-size:0.68rem;background:rgba(6,214,160,0.18);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
+      : ''
     return `
     <div class="student-card ${cardClass}">
       <div class="stu-avatar" style="background:${s.avatar_color || '#6C63FF'}">${s.name[0]}</div>
-      <div class="stu-info"><div class="stu-name">${s.name}</div></div>
+      <div class="stu-info"><div class="stu-name">${s.name} ${checkinBadge}</div></div>
       <div class="stu-actions">
         <button class="act-btn btn-approve ${st==='approved'?'selected':''}" onclick="setState('${s.id}','approved')">✅</button>
         <button class="act-btn btn-bonus ${st==='bonus'?'selected':''}" onclick="setState('${s.id}','bonus')">⭐</button>
@@ -305,7 +346,7 @@ function setState(id, newState) {
 function pointsToAward() {
   const approved = students.filter(s => state[s.id] === 'approved').length
   const bonus = students.filter(s => state[s.id] === 'bonus').length
-  return approved * 20 + bonus * 35
+  return approved * ATTENDANCE_POINTS + bonus * BONUS_POINTS
 }
 
 function updateSummary() {
@@ -339,7 +380,7 @@ async function openSubmit() {
     .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus')
     .map(s => ({
       student_id: s.id,
-      points: state[s.id] === 'bonus' ? 35 : 20,
+      points: state[s.id] === 'bonus' ? BONUS_POINTS : ATTENDANCE_POINTS,
       reason: state[s.id]
     }))
 
@@ -374,9 +415,24 @@ async function openSubmit() {
       await supabaseClient.from('users').update({ points: (student?.points || 0) + a.points }).eq('id', a.student_id)
     }
 
+    // Update checkin rows to reflect the final decision (approved / rejected students)
+    const checkinUpdates = students
+      .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus' || state[s.id] === 'rejected')
+      .map(s => ({
+        lesson_id: currentLesson.id,
+        student_id: s.id,
+        status: state[s.id] === 'rejected' ? 'נדחה' : 'אושר',
+        points: state[s.id] === 'bonus' ? BONUS_POINTS : state[s.id] === 'approved' ? ATTENDANCE_POINTS : null,
+        updated_at: new Date().toISOString()
+      }))
+    if (checkinUpdates.length > 0) {
+      await supabaseClient.from('checkins').upsert(checkinUpdates, { onConflict: 'lesson_id,student_id' })
+    }
+
     await supabaseClient.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
 
     remainingBudget -= totalPoints
+    stopCheckinPolling()
 
     showToast(`🎉 נקודות חולקו ל-${approvals.length} תלמידים!`)
     setTimeout(() => {
