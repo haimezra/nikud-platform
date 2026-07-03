@@ -9,21 +9,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0A0E1A;
-  --surface: #111827;
-  --card: #1C2333;
-  --border: #2A3450;
-  --accent: #6C63FF;
-  --accent2: #FF6B6B;
-  --gold: #FFD166;
+  --bg: #0B0620;
+  --surface: rgba(255,255,255,0.04);
+  --card: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.14);
+  --accent: #2E6FFF;
+  --accent2: #FF3DBB;
+  --gold: #FFC93D;
   --green: #06D6A0;
-  --text: #E8EBF4;
-  --muted: #8892AA;
+  --text: #F3EFFF;
+  --muted: #C8BEEA;
   --r: 16px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;overflow-x:hidden}
+body{
+  background:
+    radial-gradient(ellipse 60% 45% at 12% 0%, #FF3DBB33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 12%, #2E6FFF33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 45% 100%, #7C4DFF2e 0%, transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+  color:var(--text);font-family:'Heebo',sans-serif;overflow-x:hidden;
+}
+.card,.who-card,.price-card,.test-card,.faq-item,.stat-item,.how-step,.phone-mockup,.act-row,.store-item{backdrop-filter:blur(8px)}
 
 /* NAV */
 nav{
@@ -34,13 +43,24 @@ nav{
   border-bottom:1px solid rgba(255,255,255,0.06);
   transition:all 0.3s;
 }
-.logo{font-size:1.7rem;font-weight:900;color:var(--accent);letter-spacing:-1px;text-decoration:none}
+.logo{
+  font-size:1.7rem;font-weight:900;letter-spacing:-1px;text-decoration:none;
+  background:linear-gradient(90deg,#1A4FCC,#6FE0FF,#2E6FFF,#1A4FCC,#6FE0FF);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:logoWave 5s ease-in-out infinite;
+}
+@keyframes logoWave{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
 .logo span{color:var(--gold)}
 .nav-links{display:flex;gap:28px;align-items:center}
 .nav-links a{color:var(--muted);text-decoration:none;font-size:0.95rem;transition:color 0.2s}
 .nav-links a:hover{color:var(--text)}
-.nav-cta{padding:9px 22px;background:var(--accent);border-radius:99px;color:#fff!important;font-weight:700;font-size:0.9rem!important}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,99,255,0.4)}
+.nav-cta{padding:9px 22px;background:#2E6FFF;border-radius:99px;color:#fff!important;font-weight:700;font-size:0.9rem!important}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(46,111,255,0.4)}
 .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
 
 /* HERO */
@@ -49,13 +69,13 @@ nav{
   justify-content:center;align-items:center;text-align:center;
   padding:120px 20px 80px;
   background:
-    radial-gradient(ellipse 70% 60% at 50% -10%, rgba(108,99,255,0.22) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,107,107,0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 70% 60% at 50% -10%, rgba(46,111,255,0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,61,187,0.1) 0%, transparent 60%);
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
   padding:7px 18px;border-radius:99px;
-  background:rgba(108,99,255,0.12);border:1px solid rgba(108,99,255,0.35);
+  background:rgba(46,111,255,0.12);border:1px solid rgba(46,111,255,0.35);
   font-size:0.85rem;color:var(--accent);margin-bottom:28px;
 }
 .hero-badge::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
@@ -72,8 +92,8 @@ nav{
 .hero-sub{font-size:1.15rem;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:40px}
 .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 .btn{padding:15px 34px;border-radius:99px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(108,99,255,0.45)}
+.btn-primary{background:#2E6FFF;color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(46,111,255,0.45)}
 .btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
 .btn-outline:hover{border-color:var(--accent);color:var(--accent)}
 
@@ -88,8 +108,8 @@ nav{
 }
 .pts-display{
   display:flex;justify-content:space-between;align-items:center;
-  background:linear-gradient(135deg,rgba(108,99,255,0.2),rgba(255,209,102,0.1));
-  border:1px solid rgba(108,99,255,0.3);border-radius:14px;padding:16px 20px;
+  background:linear-gradient(135deg,rgba(46,111,255,0.2),rgba(255,201,61,0.1));
+  border:1px solid rgba(46,111,255,0.3);border-radius:14px;padding:16px 20px;
   margin-bottom:16px;
 }
 .pts-big{font-size:2.4rem;font-weight:900;color:var(--gold)}
@@ -110,7 +130,7 @@ nav{
   box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap;
 }
 .fb-1{top:-20px;left:-40px;color:var(--green);border-color:rgba(6,214,160,0.3)}
-.fb-2{bottom:40px;left:-60px;color:var(--gold);border-color:rgba(255,209,102,0.3)}
+.fb-2{bottom:40px;left:-60px;color:var(--gold);border-color:rgba(255,201,61,0.3)}
 
 /* STATS BAR */
 .stats-bar{
@@ -136,7 +156,7 @@ section{padding:90px 20px}
 /* HOW IT WORKS */
 .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;margin-top:50px;background:var(--border);border-radius:var(--r);overflow:hidden}
 .how-step{background:var(--card);padding:32px 28px}
-.step-num{font-size:3rem;font-weight:900;color:rgba(108,99,255,0.2);line-height:1;margin-bottom:16px}
+.step-num{font-size:3rem;font-weight:900;color:rgba(46,111,255,0.2);line-height:1;margin-bottom:16px}
 .step-icon{font-size:1.8rem;margin-bottom:12px}
 .how-step h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
 .how-step p{font-size:0.88rem;color:var(--muted);line-height:1.6}
@@ -161,7 +181,7 @@ section{padding:90px 20px}
   background:var(--card);border:1px solid var(--border);
   border-radius:var(--r);padding:30px;position:relative;
 }
-.price-card.popular{border-color:var(--accent);background:rgba(108,99,255,0.07)}
+.price-card.popular{border-color:var(--accent);background:rgba(46,111,255,0.07)}
 .popular-badge{
   position:absolute;top:-12px;right:20px;
   background:var(--accent);color:#fff;font-size:0.75rem;font-weight:700;
@@ -207,8 +227,8 @@ section{padding:90px 20px}
 
 /* CTA SECTION */
 .cta-section{
-  background:linear-gradient(135deg,rgba(108,99,255,0.15),rgba(255,107,107,0.08));
-  border:1px solid rgba(108,99,255,0.2);
+  background:linear-gradient(135deg,rgba(46,111,255,0.15),rgba(255,61,187,0.08));
+  border:1px solid rgba(46,111,255,0.2);
   border-radius:24px;margin:0 20px 80px;padding:60px 20px;text-align:center;
   max-width:1060px;margin:0 auto 80px;
 }
@@ -221,7 +241,13 @@ footer{
   border-top:1px solid var(--border);padding:40px;
   display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;
 }
-.footer-logo{font-size:1.3rem;font-weight:900;color:var(--accent)}
+.footer-logo{
+  font-size:1.3rem;font-weight:900;
+  background:linear-gradient(90deg,#1A4FCC,#6FE0FF,#2E6FFF,#1A4FCC,#6FE0FF);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:logoWave 5s ease-in-out infinite;
+}
 .footer-logo span{color:var(--gold)}
 .footer-links{display:flex;gap:24px;flex-wrap:wrap}
 .footer-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;transition:color 0.2s}
@@ -305,8 +331,7 @@ footer{
   <div class="hero-badge">🟢 nikud</div>
   <h1>הגעת לשיעור או לעבודה?<br>מגיע לך <em>לזכות.</em></h1>
   <p class="hero-sub">תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות. המורה מאשרת בסוף כל שיעור. הנקודות הופכות לפרסים אמיתיים.</p>
-  <p style="font-size:0.95rem;color:#B8BFD4;max-width:520px;margin:-16px auto 40px;line-height:1.75;padding-top:18px;border-top:1px solid var(--border)">★ איך גורמים למישהו <b style="color:var(--text)">לרצות</b> להגיע. לא בכוח - אלא דרך פרסים אמיתיים ומשימות יומיומיות שהופכות כל שיעור או משמרת להזדמנות לצבור עוד נקודה, קרוב יותר למה שבאמת רוצים.</p>
-  <p style="font-size:0.95rem;color:#B8BFD4;max-width:520px;margin:-16px auto 40px;line-height:1.75">ניקוד★ היא גם פתרון ניהול נוכחות וביצועים מלא: מעקב אחר נוכחות העובדים, הטלת משימות, ומעקב שוטף אחר העמידה בהן - כשכל פעולה מצטברת לנקודות שהעובד יכול להמיר לפרסים אמיתיים.</p>
+  <p style="font-size:0.95rem;color:#B8BFD4;max-width:520px;margin:-16px auto 40px;line-height:1.75;padding-top:18px;border-top:1px solid var(--border)">ניקוד★ היא פתרון ניהול נוכחות וביצועים מלא: מעקב אחר נוכחות העובדים, הטלת משימות, ומעקב שוטף אחר העמידה בהן - כשכל פעולה מצטברת לנקודות שהעובד יכול להמיר לפרסים אמיתיים.</p>
   <div class="hero-btns">
     <a href="login.html" class="btn btn-primary">התחל בחינם ←</a>
     <a href="#how" class="btn btn-outline">איך זה עובד?</a>
@@ -394,7 +419,7 @@ footer{
           <li>בונוס על רצף נוכחות</li>
         </ul>
       </div>
-      <div class="who-card" style="border-color:rgba(108,99,255,0.3)">
+      <div class="who-card" style="border-color:rgba(46,111,255,0.3)">
         <div class="who-emoji">👩‍🏫</div>
         <h3>מורים</h3>
         <ul>
@@ -528,7 +553,7 @@ footer{
           <li>קוד הצטרפות ייעודי לבית הספר</li>
           <li>מנהל לקוח ייעודי</li>
         </ul>
-        <a href="mailto:nikud2026@gmail.com" class="btn btn-outline" style="width:100%;text-align:center">דבר איתנו</a>
+        <a href="mailto:nikud@outlook.co.il" class="btn btn-outline" style="width:100%;text-align:center">דבר איתנו</a>
       </div>
     </div>
   </div>
@@ -544,7 +569,7 @@ footer{
         <div class="test-stars">★★★★★</div>
         <div class="test-quote">"הנוכחות בכיתה שלי עלתה מ-78% ל-94% תוך חודש. התלמידים פשוט רוצים להיות כאן."</div>
         <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#6C63FF,#9B5DE5)">מ</div>
+          <div class="test-avatar" style="background:linear-gradient(135deg,#2E6FFF,#7C4DFF)">מ</div>
           <div><div class="test-name">מרים לוי</div><div class="test-role">מורה למתמטיקה, תל אביב</div></div>
         </div>
       </div>
@@ -560,7 +585,7 @@ footer{
         <div class="test-stars">★★★★☆</div>
         <div class="test-quote">"הייתי ספקן, אבל אחרי שבועיים ראיתי את השינוי. הילדים באים בזמן ומשתתפים."</div>
         <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#FFD166,#F4A261)">י</div>
+          <div class="test-avatar" style="background:linear-gradient(135deg,#FFC93D,#FF3DBB)">י</div>
           <div><div class="test-name">יוסי אברהם</div><div class="test-role">מורה לחינוך גופני, ירושלים</div></div>
         </div>
       </div>
@@ -606,7 +631,7 @@ footer{
     <div class="cta-btns">
       <a href="login.html" class="btn btn-primary">הרשמת בית ספר חינם ←</a>
       <a href="https://wa.me/972543771767" target="_blank" class="btn btn-outline">💬 דברו איתנו בוואטסאפ</a>
-      <a href="mailto:h.judaicail@gmail.com" class="btn btn-outline">דבר איתנו</a>
+      <a href="mailto:nikud@outlook.co.il" class="btn btn-outline">דבר איתנו</a>
     </div>
   </div>
 </section>
@@ -628,10 +653,10 @@ footer{
     <a href="privacy.html">פרטיות</a>
     <a href="terms.html">תנאי שימוש</a>
     <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
-    <a href="mailto:h.judaicail@gmail.com">צור קשר</a>
+    <a href="mailto:nikud@outlook.co.il">צור קשר</a>
   </div>
   <div class="footer-copy">
-    משרד: אופקים, הרצל 50 &nbsp;|&nbsp; טלפון משרד: 08-9999633 &nbsp;|&nbsp; פקס: 077-5642256 &nbsp;|&nbsp; וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: h.judaicail@gmail.com
+    משרד: אופקים, הרצל 50 &nbsp;|&nbsp; טלפון משרד: 08-9999633 &nbsp;|&nbsp; פקס: 077-5642256 &nbsp;|&nbsp; וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: nikud@outlook.co.il
     <br>© 2025 ניקוד★ | כל הזכויות שמורות
   </div>
 </footer>
