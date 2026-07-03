@@ -178,6 +178,10 @@ const PERSONAL_BONUS_POINTS = 5
 const PERSONAL_BONUS_MONTHLY_CAP = 50   // per student, per calendar month
 let personalBonusUsed = {}              // student_id -> points already given this month via personal bonus
 
+// ---- Per-student monthly point cap (all reasons combined) ----
+const STUDENT_MONTHLY_CAP = 300   // max points any single student can receive per calendar month, across ALL reasons
+let studentMonthlyTotal = {}      // student_id -> total points already received this month (any reason)
+
 // ---- Class monthly point budget ----
 // School allocates 300 ₪ per class per month. Conversion rate: 30 points = 1 ₪.
 const POINTS_PER_ILS = 30
@@ -328,7 +332,25 @@ async function startLesson() {
 }
 
 async function loadPersonalBonusUsage(studentIds) {
-  if (!studentIds.length) { personalBonusUsed = {}; return }
+  if (!studentIds.length) { personalBonusUsed = {}; studentMonthlyTotal = {}; return }
+
+  studentIds.forEach(id => studentMonthlyTotal[id] = 0)
+
+  // כל הנקודות שהתלמידים האלה קיבלו החודש, מכל סיבה - לתקרת ה-300 הכוללת
+  const { data: allLogs, error: allErr } = await supabaseClient
+    .from('point_logs')
+    .select('student_id, points')
+    .in('student_id', studentIds)
+    .gte('created_at', firstOfMonthISO())
+
+  studentMonthlyTotal = {}
+  studentIds.forEach(id => studentMonthlyTotal[id] = 0)
+  if (!allErr) {
+    ;(allLogs || []).forEach(row => {
+      studentMonthlyTotal[row.student_id] = (studentMonthlyTotal[row.student_id] || 0) + row.points
+    })
+  }
+
   const { data, error } = await supabaseClient
     .from('point_logs')
     .select('student_id, points')
@@ -350,6 +372,11 @@ async function givePersonalBonus(studentId, studentName) {
     showToast(`❌ ${studentName} כבר קיבל/ה ${used} נקודות בונוס אישי החודש (מקסימום ${PERSONAL_BONUS_MONTHLY_CAP})`, true)
     return
   }
+  const totalUsed = studentMonthlyTotal[studentId] || 0
+  if (totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) {
+    showToast(`❌ ${studentName} כבר קיבל/ה ${totalUsed} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP} לתלמיד) - כדי לפנות מקום לשאר הכיתה`, true)
+    return
+  }
   if (PERSONAL_BONUS_POINTS > remainingBudget) {
     showToast('❌ תקציב הנקודות של הכיתה לחודש זה אזל', true)
     return
@@ -366,6 +393,7 @@ async function givePersonalBonus(studentId, studentName) {
     // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מעדכן את זה אוטומטית
 
     personalBonusUsed[studentId] = used + PERSONAL_BONUS_POINTS
+    studentMonthlyTotal[studentId] = totalUsed + PERSONAL_BONUS_POINTS
     remainingBudget -= PERSONAL_BONUS_POINTS
     renderList()
     renderBudgetBar(pointsToAward())
@@ -385,19 +413,25 @@ function renderList() {
       : checkin && checkin.status === 'אושר'
       ? '<span style="font-size:0.68rem;background:rgba(6,214,160,0.18);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
       : ''
+    const totalUsed = studentMonthlyTotal[s.id] || 0
+    const atCap = totalUsed >= STUDENT_MONTHLY_CAP
+    const approveDisabled = st !== 'approved' && (totalUsed + ATTENDANCE_POINTS > STUDENT_MONTHLY_CAP)
+    const bonusDisabled = st !== 'bonus' && (totalUsed + BONUS_POINTS > STUDENT_MONTHLY_CAP)
+    const capLabel = `<span class="pb-count" style="${atCap ? 'color:var(--red)' : ''}">${totalUsed}/${STUDENT_MONTHLY_CAP} סה"כ החודש</span>`
     return `
     <div class="student-card ${cardClass}">
       <div class="stu-avatar" style="background:${s.avatar_color || '#6C63FF'}">${s.name[0]}</div>
       <div class="stu-info">
         <div class="stu-name">${s.name} ${checkinBadge}</div>
         <div class="stu-personal-bonus">
-          <button class="pb-btn" ${((personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">🎁 בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
-          <span class="pb-count">${personalBonusUsed[s.id]||0}/${PERSONAL_BONUS_MONTHLY_CAP} החודש</span>
+          <button class="pb-btn" ${((personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP || totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">🎁 בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
+          <span class="pb-count">${personalBonusUsed[s.id]||0}/${PERSONAL_BONUS_MONTHLY_CAP} בונוס אישי</span>
+          ${capLabel}
         </div>
       </div>
       <div class="stu-actions">
-        <button class="act-btn btn-approve ${st==='approved'?'selected':''}" onclick="setState('${s.id}','approved')">✅</button>
-        <button class="act-btn btn-bonus ${st==='bonus'?'selected':''}" onclick="setState('${s.id}','bonus')">⭐</button>
+        <button class="act-btn btn-approve ${st==='approved'?'selected':''}" ${approveDisabled ? 'disabled' : ''} onclick="setState('${s.id}','approved')">✅</button>
+        <button class="act-btn btn-bonus ${st==='bonus'?'selected':''}" ${bonusDisabled ? 'disabled' : ''} onclick="setState('${s.id}','bonus')">⭐</button>
         <button class="act-btn btn-reject ${st==='rejected'?'selected':''}" onclick="setState('${s.id}','rejected')">❌</button>
       </div>
     </div>`
@@ -405,6 +439,14 @@ function renderList() {
 }
 
 function setState(id, newState) {
+  if (newState === 'approved' && state[id] !== 'approved' && (studentMonthlyTotal[id]||0) + ATTENDANCE_POINTS > STUDENT_MONTHLY_CAP) {
+    showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
+    return
+  }
+  if (newState === 'bonus' && state[id] !== 'bonus' && (studentMonthlyTotal[id]||0) + BONUS_POINTS > STUDENT_MONTHLY_CAP) {
+    showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
+    return
+  }
   state[id] = state[id] === newState ? null : newState
   updateSummary()
   renderList()
@@ -434,7 +476,10 @@ function updateSummary() {
 }
 
 function approveAll() {
-  students.forEach(s => state[s.id] = 'approved')
+  students.forEach(s => {
+    const totalUsed = studentMonthlyTotal[s.id] || 0
+    if (totalUsed + ATTENDANCE_POINTS <= STUDENT_MONTHLY_CAP) state[s.id] = 'approved'
+  })
   updateSummary(); renderList()
 }
 function clearAll() {
@@ -458,6 +503,14 @@ async function openSubmit() {
     }))
 
   if (approvals.length === 0) { showToast('לא אישרת אף תלמיד', true); return }
+
+  // Hard block: no single student may exceed the monthly per-student cap
+  const overCapStudent = approvals.find(a => (studentMonthlyTotal[a.student_id] || 0) + a.points > STUDENT_MONTHLY_CAP)
+  if (overCapStudent) {
+    const s = students.find(x => x.id === overCapStudent.student_id)
+    showToast(`❌ ${s ? s.name : 'תלמיד/ה'} יחרוג/תחרוג מתקרת ${STUDENT_MONTHLY_CAP} הנקודות לחודש - בטל/י את הסימון עבורו/ה`, true)
+    return
+  }
 
   const totalPoints = approvals.reduce((sum, a) => sum + a.points, 0)
 
@@ -502,6 +555,9 @@ async function openSubmit() {
     await supabaseClient.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
 
     remainingBudget -= totalPoints
+    approvals.forEach(a => {
+      studentMonthlyTotal[a.student_id] = (studentMonthlyTotal[a.student_id] || 0) + a.points
+    })
     stopCheckinPolling()
 
     showToast(`🎉 נקודות חולקו ל-${approvals.length} תלמידים!`)
