@@ -60,6 +60,10 @@ body{
 .stat-card.accent .stat-num{color:var(--accent)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
+.stat-card.danger{border-color:rgba(255,107,107,0.4);background:rgba(255,107,107,0.06);cursor:pointer;transition:transform 0.2s}
+.stat-card.danger:hover{transform:translateY(-2px)}
+.stat-card.danger .stat-num{color:var(--accent2)}
+tr.at-risk-row td:first-child{border-right:3px solid var(--accent2)}
 .copy-code-btn{
   margin-top:8px;background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.35);
   color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
@@ -196,6 +200,10 @@ tr.clickable{cursor:pointer}
         <div class="stat-num" id="statCode">—</div>
         <div class="stat-label">קוד הצטרפות לבית הספר</div>
         <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
+      </div>
+      <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
+        <div class="stat-num" id="statAtRisk">0</div>
+        <div class="stat-label">⚠️ תלמידים בסיכון (מתחת ל-70% נוכחות)</div>
       </div>
     </div>
 
@@ -379,6 +387,7 @@ function closeStudentModal() {
 }
 
 function renderAttendanceReport() {
+  const AT_RISK_THRESHOLD = 70
   const lessonsPerClass = {}
   allLessons.forEach(l => { lessonsPerClass[l.class_name] = (lessonsPerClass[l.class_name] || 0) + 1 })
 
@@ -399,11 +408,17 @@ function renderAttendanceReport() {
   .filter(r => r.totalLessons > 0)
   .sort((a, b) => a.pct - b.pct)
 
+  const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD)
+  const atRiskCard = document.getElementById('atRiskCard')
+  document.getElementById('statAtRisk').textContent = atRiskRows.length
+  atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
+
   document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
   document.getElementById('attendanceBody').innerHTML = rows.map(r => {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
-    return `<tr>
-      <td>${escapeHtml(r.student.name || '—')}</td>
+    const atRisk = r.pct < AT_RISK_THRESHOLD
+    return `<tr class="${atRisk ? 'at-risk-row' : ''}">
+      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
