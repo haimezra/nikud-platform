@@ -32,6 +32,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 .pts-ils{font-size:0.76rem;color:rgba(255,255,255,0.85);margin-top:2px}
 
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.attn-track{height:8px;border-radius:99px;background:var(--surface);overflow:hidden;margin-top:8px}
+.attn-fill{height:100%;border-radius:99px;background:var(--green);transition:width 0.4s}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
 .card h3{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
 
@@ -129,6 +131,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 
   <div class="card hidden" id="checkinCard" style="margin-bottom:18px"></div>
 
+  <div class="card" id="attendanceCard" style="margin-bottom:18px">
+    <h3>📈 אחוז נוכחות</h3>
+    <div id="attendanceContent" style="margin-top:10px">
+      <div class="empty-state">אין עדיין מספיק נתונים להצגת אחוז נוכחות</div>
+    </div>
+  </div>
+
   <div class="grid-2">
     <div class="card">
       <h3>⚡ פעילות אחרונה</h3>
@@ -215,6 +224,7 @@ async function init() {
 
   await loadActivity(profile.id)
   await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
+  await loadAttendanceStats(profile.id, profile.school_id, profile.class_name)
   await loadStore()
   await refreshActiveLessonAndCheckin()
   checkinPollTimer = setInterval(refreshActiveLessonAndCheckin, 6000)
@@ -337,6 +347,43 @@ async function loadActivity(studentId) {
       <div class="activity-pts">+${log.points}</div>
     </div>
   `).join('')
+}
+
+async function loadAttendanceStats(studentId, schoolId, className) {
+  const { data: lessons } = await supabaseClient
+    .from('lessons')
+    .select('id')
+    .eq('school_id', schoolId)
+    .eq('class_name', className)
+
+  const totalLessons = (lessons || []).length
+  const content = document.getElementById('attendanceContent')
+
+  if (totalLessons === 0) {
+    content.innerHTML = '<div class="empty-state">אין עדיין שיעורים שנערכו בכיתה שלך</div>'
+    return
+  }
+
+  const { data: logs } = await supabaseClient
+    .from('point_logs')
+    .select('lesson_id')
+    .eq('student_id', studentId)
+    .in('reason', ['attendance', 'approved', 'bonus'])
+
+  const attendedSet = new Set((logs || []).map(l => l.lesson_id))
+  const attended = Math.min(attendedSet.size, totalLessons)
+  const pct = Math.round((attended / totalLessons) * 100)
+  const barColor = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
+
+  content.innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-size:2rem;font-weight:900;color:${barColor}">${pct}%</div>
+      <div style="flex:1">
+        <div class="attn-track"><div class="attn-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-top:6px">נוכחת/ה ב-${attended} מתוך ${totalLessons} שיעורים שנערכו בכיתה</div>
+      </div>
+    </div>
+  `
 }
 
 async function loadLeaderboard(schoolId, className, currentUserId) {
