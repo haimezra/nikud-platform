@@ -209,7 +209,7 @@ tr.clickable{cursor:pointer}
       </div>
       <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
         <div class="stat-num" id="statAtRisk">0</div>
-        <div class="stat-label">⚠️ תלמידים בסיכון (מתחת ל-70% נוכחות)</div>
+        <div class="stat-label">⚠️ תלמידים בסיכון (מתחת ל-70% או במגמת ירידה)</div>
       </div>
     </div>
 
@@ -394,8 +394,28 @@ function closeStudentModal() {
 
 function renderAttendanceReport() {
   const AT_RISK_THRESHOLD = 70
+  const TREND_WINDOW_DAYS = 14        // "recent" = last 14 days, "previous" = the 14 days before that
+  const TREND_DROP_THRESHOLD = 20     // percentage-point drop that counts as a concerning trend
+  const now = Date.now()
+  const recentStart = now - TREND_WINDOW_DAYS * 86400000
+  const previousStart = now - 2 * TREND_WINDOW_DAYS * 86400000
+
   const lessonsPerClass = {}
   allLessons.forEach(l => { lessonsPerClass[l.class_name] = (lessonsPerClass[l.class_name] || 0) + 1 })
+
+  // lessons split by class, into "recent" and "previous" windows - used for trend detection
+  const recentLessonsPerClass = {}
+  const previousLessonsPerClass = {}
+  allLessons.forEach(l => {
+    const t = new Date(l.created_at).getTime()
+    if (t >= recentStart) {
+      if (!recentLessonsPerClass[l.class_name]) recentLessonsPerClass[l.class_name] = []
+      recentLessonsPerClass[l.class_name].push(l.id)
+    } else if (t >= previousStart) {
+      if (!previousLessonsPerClass[l.class_name]) previousLessonsPerClass[l.class_name] = []
+      previousLessonsPerClass[l.class_name].push(l.id)
+    }
+  })
 
   const attendedLessonsPerStudent = {}
   allPointLogs
@@ -405,16 +425,29 @@ function renderAttendanceReport() {
       attendedLessonsPerStudent[l.student_id].add(l.lesson_id)
     })
 
+  function pctFor(studentId, lessonIds) {
+    if (!lessonIds || lessonIds.length === 0) return null
+    const attendedSet = attendedLessonsPerStudent[studentId] || new Set()
+    const attended = lessonIds.filter(id => attendedSet.has(id)).length
+    return Math.round((attended / lessonIds.length) * 100)
+  }
+
   const rows = allStudents.map(s => {
     const totalLessons = lessonsPerClass[s.class_name] || 0
     const attended = attendedLessonsPerStudent[s.id] ? attendedLessonsPerStudent[s.id].size : 0
     const pct = totalLessons > 0 ? Math.round((attended / totalLessons) * 100) : null
-    return { student: s, totalLessons, attended, pct }
+
+    const recentPct = pctFor(s.id, recentLessonsPerClass[s.class_name])
+    const previousPct = pctFor(s.id, previousLessonsPerClass[s.class_name])
+    const decliningTrend = recentPct !== null && previousPct !== null &&
+      previousPct >= 50 && (previousPct - recentPct) >= TREND_DROP_THRESHOLD
+
+    return { student: s, totalLessons, attended, pct, recentPct, previousPct, decliningTrend }
   })
   .filter(r => r.totalLessons > 0)
   .sort((a, b) => a.pct - b.pct)
 
-  const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD)
+  const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD || r.decliningTrend)
   const atRiskCard = document.getElementById('atRiskCard')
   document.getElementById('statAtRisk').textContent = atRiskRows.length
   atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
@@ -423,8 +456,11 @@ function renderAttendanceReport() {
   document.getElementById('attendanceBody').innerHTML = rows.map(r => {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
     const atRisk = r.pct < AT_RISK_THRESHOLD
-    return `<tr class="${atRisk ? 'at-risk-row' : ''}">
-      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')}</td>
+    const trendBadge = r.decliningTrend
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(255,209,102,0.15);color:var(--gold);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
+      : ''
+    return `<tr class="${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}">
+      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
