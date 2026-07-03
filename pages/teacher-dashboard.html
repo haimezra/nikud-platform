@@ -179,8 +179,17 @@ let students = []
 const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
 
 // ---- Points awarded ----
-const ATTENDANCE_POINTS = 3   // was 20
-const BONUS_POINTS = 5        // was 35 (scaled down proportionally)
+const ATTENDANCE_POINTS = 3   // was 20 (base value, before surge)
+const BONUS_POINTS = 5        // was 35 (base value, before surge)
+let currentAttendancePoints = ATTENDANCE_POINTS   // dynamic - may be boosted by surge for this specific lesson
+let currentBonusPoints = BONUS_POINTS
+let isSurgeActive = false
+let surgeDemandScore = null
+
+// ---- Surge Points: automatically boosts points for time-slots with chronically low attendance ----
+const SURGE_LOW_THRESHOLD = 0.6     // if historical attendance rate for this subject+day-of-week < 60%, activate surge
+const SURGE_MULTIPLIER = 1.5        // points multiplier when surge is active
+const SURGE_LOOKBACK_DAYS = 90      // how far back to look for historical pattern
 
 // ---- Personal bonus (teacher can give any student, any time, independent of approval flow) ----
 const PERSONAL_BONUS_POINTS = 5
@@ -319,12 +328,14 @@ async function startLesson() {
 
   remainingBudget = await getClassBudgetRemaining(class_name)
   await loadPersonalBonusUsage(students.map(s => s.id))
+  await computeSurgeMultiplier(class_name, subject, students.length)
 
   document.getElementById('setupCard').classList.add('hidden')
   document.getElementById('activeLessonSection').classList.remove('hidden')
   document.getElementById('summaryBar').classList.remove('hidden')
   document.getElementById('lessonTitle').textContent = `${subject} – ${class_name}`
   document.getElementById('lessonMeta').textContent = new Date().toLocaleString('he-IL')
+  renderSurgeBadge()
 
   renderList()
   updateSummary()
@@ -337,6 +348,66 @@ async function startLesson() {
   }
   if (students.length === 0) {
     showToast('⚠️ אין תלמידים רשומים בכיתה הזו עדיין', true)
+  }
+  if (isSurgeActive) {
+    showToast(`🔥 שיעור בביקוש נמוך - נקודות מוכפלות פי ${SURGE_MULTIPLIER} היום!`)
+  }
+}
+
+// Looks at past lessons for the same class+subject+day-of-week, and if historical
+// attendance was chronically low, boosts the points for THIS lesson to give extra incentive.
+async function computeSurgeMultiplier(class_name, subject, studentCount) {
+  currentAttendancePoints = ATTENDANCE_POINTS
+  currentBonusPoints = BONUS_POINTS
+  isSurgeActive = false
+  surgeDemandScore = null
+
+  if (!studentCount) return
+
+  const todayDow = new Date().getDay()
+  const lookbackDate = new Date(Date.now() - SURGE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data: pastLessons, error } = await supabaseClient
+    .from('lessons')
+    .select('id, created_at')
+    .eq('class_name', class_name)
+    .eq('subject', subject)
+    .gte('created_at', lookbackDate)
+
+  if (error || !pastLessons || pastLessons.length < 2) return  // not enough history to judge
+
+  const matchingLessons = pastLessons.filter(l => new Date(l.created_at).getDay() === todayDow)
+  if (matchingLessons.length < 2) return  // need at least 2 past occurrences of this slot to be confident
+
+  const lessonIds = matchingLessons.map(l => l.id)
+  const { data: logs } = await supabaseClient
+    .from('point_logs')
+    .select('lesson_id, student_id')
+    .in('lesson_id', lessonIds)
+    .in('reason', ['attendance', 'approved', 'bonus'])
+
+  const attendedPerLesson = {}
+  ;(logs || []).forEach(row => {
+    if (!attendedPerLesson[row.lesson_id]) attendedPerLesson[row.lesson_id] = new Set()
+    attendedPerLesson[row.lesson_id].add(row.student_id)
+  })
+
+  const rates = lessonIds.map(id => (attendedPerLesson[id] ? attendedPerLesson[id].size : 0) / studentCount)
+  const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length
+  surgeDemandScore = avgRate
+
+  if (avgRate < SURGE_LOW_THRESHOLD) {
+    isSurgeActive = true
+    currentAttendancePoints = Math.round(ATTENDANCE_POINTS * SURGE_MULTIPLIER)
+    currentBonusPoints = Math.round(BONUS_POINTS * SURGE_MULTIPLIER)
+  }
+}
+
+function renderSurgeBadge() {
+  const meta = document.getElementById('lessonMeta')
+  if (!meta) return
+  if (isSurgeActive) {
+    meta.innerHTML = meta.textContent + ` <span style="background:rgba(255,61,187,0.18);color:var(--red);padding:2px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;margin-right:8px">🔥 ביקוש נמוך - נקודות פי ${SURGE_MULTIPLIER}</span>`
   }
 }
 
@@ -424,8 +495,8 @@ function renderList() {
       : ''
     const totalUsed = studentMonthlyTotal[s.id] || 0
     const atCap = totalUsed >= STUDENT_MONTHLY_CAP
-    const approveDisabled = st !== 'approved' && (totalUsed + ATTENDANCE_POINTS > STUDENT_MONTHLY_CAP)
-    const bonusDisabled = st !== 'bonus' && (totalUsed + BONUS_POINTS > STUDENT_MONTHLY_CAP)
+    const approveDisabled = st !== 'approved' && (totalUsed + currentAttendancePoints > STUDENT_MONTHLY_CAP)
+    const bonusDisabled = st !== 'bonus' && (totalUsed + currentBonusPoints > STUDENT_MONTHLY_CAP)
     const capLabel = `<span class="pb-count" style="${atCap ? 'color:var(--red)' : ''}">${totalUsed}/${STUDENT_MONTHLY_CAP} סה"כ החודש</span>`
     return `
     <div class="student-card ${cardClass}">
@@ -448,11 +519,11 @@ function renderList() {
 }
 
 function setState(id, newState) {
-  if (newState === 'approved' && state[id] !== 'approved' && (studentMonthlyTotal[id]||0) + ATTENDANCE_POINTS > STUDENT_MONTHLY_CAP) {
+  if (newState === 'approved' && state[id] !== 'approved' && (studentMonthlyTotal[id]||0) + currentAttendancePoints > STUDENT_MONTHLY_CAP) {
     showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
     return
   }
-  if (newState === 'bonus' && state[id] !== 'bonus' && (studentMonthlyTotal[id]||0) + BONUS_POINTS > STUDENT_MONTHLY_CAP) {
+  if (newState === 'bonus' && state[id] !== 'bonus' && (studentMonthlyTotal[id]||0) + currentBonusPoints > STUDENT_MONTHLY_CAP) {
     showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
     return
   }
@@ -464,7 +535,7 @@ function setState(id, newState) {
 function pointsToAward() {
   const approved = students.filter(s => state[s.id] === 'approved').length
   const bonus = students.filter(s => state[s.id] === 'bonus').length
-  return approved * ATTENDANCE_POINTS + bonus * BONUS_POINTS
+  return approved * currentAttendancePoints + bonus * currentBonusPoints
 }
 
 function updateSummary() {
@@ -487,7 +558,7 @@ function updateSummary() {
 function approveAll() {
   students.forEach(s => {
     const totalUsed = studentMonthlyTotal[s.id] || 0
-    if (totalUsed + ATTENDANCE_POINTS <= STUDENT_MONTHLY_CAP) state[s.id] = 'approved'
+    if (totalUsed + currentAttendancePoints <= STUDENT_MONTHLY_CAP) state[s.id] = 'approved'
   })
   updateSummary(); renderList()
 }
@@ -507,7 +578,7 @@ async function openSubmit() {
     .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus')
     .map(s => ({
       student_id: s.id,
-      points: state[s.id] === 'bonus' ? BONUS_POINTS : ATTENDANCE_POINTS,
+      points: state[s.id] === 'bonus' ? currentBonusPoints : currentAttendancePoints,
       reason: state[s.id]
     }))
 
@@ -554,7 +625,7 @@ async function openSubmit() {
         lesson_id: currentLesson.id,
         student_id: s.id,
         status: state[s.id] === 'rejected' ? 'נדחה' : 'אושר',
-        points: state[s.id] === 'bonus' ? BONUS_POINTS : state[s.id] === 'approved' ? ATTENDANCE_POINTS : null,
+        points: state[s.id] === 'bonus' ? currentBonusPoints : state[s.id] === 'approved' ? currentAttendancePoints : null,
         updated_at: new Date().toISOString()
       }))
     if (checkinUpdates.length > 0) {
