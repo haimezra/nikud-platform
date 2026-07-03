@@ -8,12 +8,21 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#0A0E1A;--surface:#111827;--card:#1C2333;--border:#2A3450;
-  --accent:#6C63FF;--accent2:#FF6B6B;--gold:#FFD166;--green:#06D6A0;
-  --text:#E8EBF4;--muted:#8892AA;--r:16px;
+  --bg:#0B0620;--surface:rgba(255,255,255,0.04);--card:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.14);
+  --accent:#3DE0FF;--accent2:#FF3DBB;--gold:#FFC93D;--green:#06D6A0;
+  --text:#F3EFFF;--muted:#C8BEEA;--r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh}
+body{
+  color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh;
+  background:
+    radial-gradient(ellipse 60% 45% at 90% 0%, #FF3DBB2e 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 0% 12%, #3DE0FF2e 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 50% 100%, #7C4DFF26 0%, transparent 55%),
+    var(--bg);
+  background-attachment:fixed;
+}
+.card,.store-item{backdrop-filter:blur(8px)}
 
 nav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(10,14,26,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
 .logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
@@ -69,7 +78,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 .expired-screen p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
 .expired-screen a{display:inline-block;padding:14px 30px;background:var(--accent);color:#fff;text-decoration:none;border-radius:99px;font-weight:700;font-size:0.95rem}
 
-.demo-banner{background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.4);border-radius:12px;padding:12px 18px;margin-bottom:18px;font-size:0.85rem;color:var(--gold);display:flex;align-items:center;gap:10px}
+.demo-banner{background:rgba(255,201,61,0.12);border:1px solid rgba(255,201,61,0.4);border-radius:12px;padding:12px 18px;margin-bottom:18px;font-size:0.85rem;color:var(--gold);display:flex;align-items:center;gap:10px}
 
 .empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
 
@@ -399,7 +408,7 @@ async function loadLeaderboard(schoolId, className, currentUserId) {
 
   if (!data || data.length === 0) return
 
-  const colors = ['#6C63FF,#9B5DE5', '#06D6A0,#0CB', '#FFD166,#F4A261', '#FF6B6B,#E63']
+  const colors = ['#3DE0FF,#7C4DFF', '#06D6A0,#0CB', '#FFC93D,#FF3DBB', '#FF3DBB,#7C4DFF']
   document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
     <div class="lb-item">
       <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
