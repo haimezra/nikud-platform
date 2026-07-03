@@ -281,6 +281,7 @@ async function refreshActiveLessonAndCheckin() {
 
 function renderCheckinCard() {
   const card = document.getElementById('checkinCard')
+
   if (!activeLesson) {
     card.innerHTML = `
       <h3>📍 צ'ק-אין לשיעור</h3>
