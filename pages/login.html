@@ -8,19 +8,23 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#0A0E1A;--surface:#111827;--card:#1C2333;--border:#2A3450;
-  --accent:#6C63FF;--accent2:#FF6B6B;--gold:#FFD166;--green:#06D6A0;
-  --text:#E8EBF4;--muted:#8892AA;--r:16px;
+  --bg:#0B0620;--surface:rgba(255,255,255,0.04);--card:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.16);
+  --accent:#2E6FFF;--accent2:#FF3DBB;--gold:#FFC93D;--green:#06D6A0;
+  --text:#F3EFFF;--muted:#C8BEEA;--r:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;
+  color:var(--text);font-family:'Heebo',sans-serif;
   min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;
-  background:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(108,99,255,0.18) 0%, transparent 70%);
+  background:
+    radial-gradient(ellipse 60% 45% at 10% 0%, #FF3DBB33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 10%, #2E6FFF33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 50% 100%, #7C4DFF2e 0%, transparent 55%),
+    var(--bg);
 }
 .auth-box{
   background:var(--card);border:1px solid var(--border);border-radius:24px;
-  padding:40px;width:100%;max-width:420px;
+  padding:40px;width:100%;max-width:420px;backdrop-filter:blur(10px);
 }
 .logo{text-align:center;font-size:1.8rem;font-weight:900;color:var(--accent);margin-bottom:8px}
 .logo span{color:var(--gold)}
@@ -52,11 +56,11 @@ body{
   color:#fff;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;
   cursor:pointer;margin-top:8px;transition:all 0.2s;
 }
-.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,99,255,0.4)}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(46,111,255,0.4)}
 .submit-btn:disabled{opacity:0.5;cursor:not-allowed}
 
 .error-msg{
-  background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.3);
+  background:rgba(255,61,187,0.12);border:1px solid rgba(255,61,187,0.3);
   color:var(--accent2);padding:10px 14px;border-radius:10px;font-size:0.85rem;
   margin-bottom:16px;display:none;
 }
@@ -73,7 +77,7 @@ body{
 
 .hidden{display:none}
 .setup-note{
-  background:rgba(255,209,102,0.08);border:1px solid rgba(255,209,102,0.25);
+  background:rgba(255,201,61,0.08);border:1px solid rgba(255,201,61,0.25);
   border-radius:10px;padding:12px 14px;font-size:0.78rem;color:var(--gold);
   margin-bottom:20px;line-height:1.5;
 }
