@@ -14,7 +14,7 @@
   --card: rgba(255,255,255,0.06);
   --border: rgba(255,255,255,0.14);
   --accent: #2E6FFF;
-  --accent2: #FF3DBB;
+  --accent2: #FF8A3D;
   --gold: #FFC93D;
   --green: #06D6A0;
   --text: #F3EFFF;
@@ -25,7 +25,7 @@
 html{scroll-behavior:smooth}
 body{
   background:
-    radial-gradient(ellipse 60% 45% at 12% 0%, #FF3DBB33 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 12% 0%, #FF8A3D33 0%, transparent 55%),
     radial-gradient(ellipse 55% 45% at 100% 12%, #2E6FFF33 0%, transparent 55%),
     radial-gradient(ellipse 55% 45% at 45% 100%, #7C4DFF2e 0%, transparent 55%),
     var(--bg);
@@ -45,7 +45,7 @@ nav{
 }
 .logo{
   font-size:1.7rem;font-weight:900;letter-spacing:-1px;text-decoration:none;
-  background:linear-gradient(90deg,#1A4FCC,#6FE0FF,#2E6FFF,#1A4FCC,#6FE0FF);
+  background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
   background-size:300% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;
   animation:logoWave 5s ease-in-out infinite;
@@ -70,7 +70,7 @@ nav{
   padding:120px 20px 80px;
   background:
     radial-gradient(ellipse 70% 60% at 50% -10%, rgba(46,111,255,0.22) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,61,187,0.1) 0%, transparent 60%);
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,138,61,0.1) 0%, transparent 60%);
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
@@ -156,7 +156,13 @@ section{padding:90px 20px}
 /* HOW IT WORKS */
 .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;margin-top:50px;background:var(--border);border-radius:var(--r);overflow:hidden}
 .how-step{background:var(--card);padding:32px 28px}
-.step-num{font-size:3rem;font-weight:900;color:rgba(46,111,255,0.2);line-height:1;margin-bottom:16px}
+.step-num{
+  font-size:3rem;font-weight:900;line-height:1;margin-bottom:16px;
+  background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:logoWave 5s ease-in-out infinite;
+}
 .step-icon{font-size:1.8rem;margin-bottom:12px}
 .how-step h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
 .how-step p{font-size:0.88rem;color:var(--muted);line-height:1.6}
@@ -227,7 +233,7 @@ section{padding:90px 20px}
 
 /* CTA SECTION */
 .cta-section{
-  background:linear-gradient(135deg,rgba(46,111,255,0.15),rgba(255,61,187,0.08));
+  background:linear-gradient(135deg,rgba(46,111,255,0.15),rgba(255,138,61,0.08));
   border:1px solid rgba(46,111,255,0.2);
   border-radius:24px;margin:0 20px 80px;padding:60px 20px;text-align:center;
   max-width:1060px;margin:0 auto 80px;
@@ -243,7 +249,7 @@ footer{
 }
 .footer-logo{
   font-size:1.3rem;font-weight:900;
-  background:linear-gradient(90deg,#1A4FCC,#6FE0FF,#2E6FFF,#1A4FCC,#6FE0FF);
+  background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
   background-size:300% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;
   animation:logoWave 5s ease-in-out infinite;
@@ -329,9 +335,9 @@ footer{
 <!-- HERO -->
 <section class="hero">
   <div class="hero-badge">🟢 nikud</div>
-  <h1>הגעת לשיעור או לעבודה?<br>מגיע לך <em>לזכות.</em></h1>
+  <h1>מניעים ביצועים.<br>מתגמלים <em>הצלחה.</em></h1>
   <p class="hero-sub">תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות. המורה מאשרת בסוף כל שיעור. הנקודות הופכות לפרסים אמיתיים.</p>
-  <p style="font-size:0.95rem;color:#B8BFD4;max-width:520px;margin:-16px auto 40px;line-height:1.75;padding-top:18px;border-top:1px solid var(--border)">ניקוד★ היא פתרון ניהול נוכחות וביצועים מלא: מעקב אחר נוכחות העובדים, הטלת משימות, ומעקב שוטף אחר העמידה בהן - כשכל פעולה מצטברת לנקודות שהעובד יכול להמיר לפרסים אמיתיים.</p>
+  <p style="font-size:0.95rem;color:#B8BFD4;max-width:520px;margin:-16px auto 40px;line-height:1.75;padding-top:18px;border-top:1px solid var(--border)">ניקוד★ היא פתרון ניהול נוכחות וביצועים מלא מעקב אחר נוכחות העובדים, הטלת משימות, ומעקב שוטף אחר העמידה בהן כשכל פעולה מצטברת לנקודות שהעובד יכול להמיר לפרסים אמיתיים. מערכת מתקדמת לניהול עובדים, מעקב ביצועים ותגמולים חברו בין יעדי החברה למוטיבציה של העובדים, ועקבו בזמן אמת אחר נוכחות והספק.</p>
   <div class="hero-btns">
     <a href="login.html" class="btn btn-primary">התחל בחינם ←</a>
     <a href="#how" class="btn btn-outline">איך זה עובד?</a>
@@ -519,7 +525,7 @@ footer{
           <li class="no">דוחות מתקדמים</li>
           <li class="no">התראות להורים</li>
         </ul>
-        <a href="login.html" class="btn btn-outline" style="width:100%;text-align:center">התחל חינם</a>
+        <a href="login.html" class="btn btn-primary" style="width:100%;text-align:center">התחל חינם</a>
       </div>
       <div class="price-card popular">
         <div class="popular-badge">הכי פופולרי</div>
@@ -585,7 +591,7 @@ footer{
         <div class="test-stars">★★★★☆</div>
         <div class="test-quote">"הייתי ספקן, אבל אחרי שבועיים ראיתי את השינוי. הילדים באים בזמן ומשתתפים."</div>
         <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#FFC93D,#FF3DBB)">י</div>
+          <div class="test-avatar" style="background:linear-gradient(135deg,#FFC93D,#FF8A3D)">י</div>
           <div><div class="test-name">יוסי אברהם</div><div class="test-role">מורה לחינוך גופני, ירושלים</div></div>
         </div>
       </div>
