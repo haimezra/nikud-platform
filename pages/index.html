@@ -228,6 +228,30 @@ footer{
 .footer-links a:hover{color:var(--text)}
 .footer-copy{color:var(--muted);font-size:0.82rem;width:100%;text-align:center;padding-top:20px;border-top:1px solid var(--border)}
 
+/* LIVE ACTIVITY TOAST */
+.live-toast{
+  position:fixed;top:50%;left:24px;z-index:500;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:14px 18px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  max-width:320px;
+  transform:translateY(-50%) translateX(-30px);opacity:0;pointer-events:none;
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s;
+}
+.live-toast.show{transform:translateY(-50%) translateX(0);opacity:1}
+.live-toast-icon{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  background:rgba(6,214,160,0.15);
+}
+.live-toast-text{font-size:0.85rem;line-height:1.4}
+.live-toast-text b{color:var(--text)}
+.live-toast-time{font-size:0.72rem;color:var(--muted);margin-top:2px}
+@media(max-width:600px){
+  .live-toast{right:14px;left:14px;max-width:none;top:auto;bottom:14px;transform:translateY(30px)}
+  .live-toast.show{transform:translateY(0)}
+}
+
 /* MOBILE NAV MENU */
 .mobile-menu{
   display:none;position:fixed;inset:0;z-index:190;
@@ -341,7 +365,7 @@ footer{
         <div class="step-num">03</div>
         <div class="step-icon">✅</div>
         <h3>המורה מאשרת בסוף שיעור</h3>
-        <p>רשימת הכיתה מוצגת. המורה מסמנת מי קיבל נקודות ומי בונוס – 30 שניות.</p>
+        <p>רשימת הכיתה מוצגת. למורה יש עד 8 שעות לסמן מי קיבל נקודות ומי בונוס.</p>
       </div>
       <div class="how-step">
         <div class="step-num">04</div>
@@ -459,8 +483,8 @@ footer{
       <div class="price-card">
         <div class="price-name">ניסיון</div>
         <div class="price-amount">חינם</div>
-        <div class="price-period">30 ימים, ללא כרטיס אשראי</div>
-        <div class="price-desc">לבית ספר שרוצה להכיר את המערכת</div>
+        <div class="price-period">15 ימי ניסיון, ללא כרטיס אשראי</div>
+        <div class="price-desc">לבית ספר ועסקים שרוצים להכיר את המערכת</div>
         <div style="font-size:0.78rem;color:var(--accent2);margin:-8px 0 14px">* גרסת דמו - לא ניתן לממש פרסים בפועל</div>
         <ul class="price-features">
           <li>כיתה אחת</li>
@@ -571,7 +595,7 @@ footer{
 <section style="padding:40px 20px 80px">
   <div class="cta-section">
     <h2>מוכן להתחיל?</h2>
-    <p>פיילוט חינמי ל-30 יום. ללא כרטיס אשראי. ביטול בכל עת.</p>
+    <p>פיילוט חינמי ל-15 יום. ללא כרטיס אשראי. ביטול בכל עת.</p>
     <div class="cta-btns">
       <a href="login.html" class="btn btn-primary">הרשמת בית ספר חינם ←</a>
       <a href="https://wa.me/972543771767" target="_blank" class="btn btn-outline">💬 דברו איתנו בוואטסאפ</a>
@@ -579,6 +603,14 @@ footer{
     </div>
   </div>
 </section>
+
+<div class="live-toast" id="liveToast">
+  <div class="live-toast-icon" id="liveToastIcon">🎉</div>
+  <div>
+    <div class="live-toast-text" id="liveToastText"></div>
+    <div class="live-toast-time" id="liveToastTime"></div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -614,6 +646,39 @@ document.addEventListener('click', e => {
     document.getElementById('mobileMenu').classList.remove('open')
   }
 })
+
+// LIVE ACTIVITY TOAST - social proof notifications
+const liveEvents = [
+  { icon: '⭐', text: '<b>נועה</b> קיבלה 25 נקודות על נוכחות ובונוס' },
+  { icon: '🎁', text: '<b>יעל</b> מימשה קופון הנחה' },
+  { icon: '☕', text: '<b>איתי</b> מימש קפה בקפיטריה' },
+  { icon: '📚', text: '<b>דניאל</b> קיבל 20 נקודות נוכחות' },
+  { icon: '🎬', text: '<b>שירה</b> מימשה סרט חינם' },
+  { icon: '🔥', text: '<b>עומר</b> קיבל בונוס רצף 5 ימים' },
+  { icon: '🏢', text: '<b>עובד ממשמרת בוקר</b> קיבל 15 נקודות' },
+  { icon: '🍕', text: '<b>מאיה</b> מימשה פיצה מתנה' },
+  { icon: '✅', text: '<b>אבי</b> הגיע לשיעור' },
+  { icon: '📍', text: '<b>שירן</b> סימנה צ\'ק-אין לשיעור' },
+  { icon: '👍', text: '<b>אלכס</b> אישר נוכחות' },
+]
+const liveTimes = ['לפני רגע', 'לפני 2 דקות', 'לפני 4 דקות', 'לפני 6 דקות']
+
+let liveIndex = 0
+function showLiveToast() {
+  const toast = document.getElementById('liveToast')
+  const ev = liveEvents[liveIndex % liveEvents.length]
+  document.getElementById('liveToastIcon').textContent = ev.icon
+  document.getElementById('liveToastText').innerHTML = ev.text
+  document.getElementById('liveToastTime').textContent = liveTimes[Math.floor(Math.random() * liveTimes.length)]
+  toast.classList.add('show')
+  liveIndex++
+  setTimeout(() => toast.classList.remove('show'), 4500)
+}
+
+setTimeout(() => {
+  showLiveToast()
+  setInterval(showLiveToast, 10000)
+}, 3000)
 </script>
 </body>
 </html>
