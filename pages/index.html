@@ -7,6 +7,7 @@
 <meta name="description" content="תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות – וממירים לפרסים אמיתיים">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0B0620;
@@ -563,7 +564,7 @@ footer{
           <li>קוד הצטרפות ייעודי לבית הספר/לעסק</li>
           <li class="no">כרטיס היסטוריה אישי לכל תלמיד</li>
         </ul>
-        <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%97%D7%91%D7%99%D7%9C%D7%AA%20%D7%94%D7%9E%D7%A0%D7%95%D7%99%20%D7%91-%E2%82%AA299" target="_blank" class="btn btn-primary" style="width:100%;text-align:center">הצטרפות בוואטסאפ ←</a>
+        <button onclick="openQuickSignup('basic')" class="btn btn-primary" style="width:100%;text-align:center;border:none;cursor:pointer;font-family:inherit;font-size:inherit">הצטרפות למנוי ←</button>
       </div>
       <div class="price-card">
         <div class="price-name">מנוי מורחב</div>
@@ -742,5 +743,81 @@ setTimeout(() => {
 }, 3000)
 </script>
 <script src="accessibility-widget.js"></script>
+
+<!-- Quick signup + payment modal (added: replaces WhatsApp redirect for paid plan) -->
+<div id="qsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#12082e;border:1px solid rgba(255,255,255,0.16);border-radius:20px;padding:32px;width:100%;max-width:420px;color:#F3EFFF;font-family:'Heebo',sans-serif">
+    <h3 style="margin-bottom:6px;font-size:1.2rem;font-weight:800">הרשמה מהירה + תשלום</h3>
+    <p style="color:#C8BEEA;font-size:0.85rem;margin-bottom:20px">כמה פרטים ומעבירים אותך ישר לדף התשלום המאובטח</p>
+    <div id="qsError" style="display:none;background:rgba(255,61,187,0.12);border:1px solid rgba(255,61,187,0.3);color:#FF3DBB;padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px"></div>
+    <form onsubmit="submitQuickSignup(event)">
+      <input type="hidden" id="qsPlan">
+      <div style="margin-bottom:12px">
+        <input id="qsSchoolName" placeholder="שם בית הספר/העסק" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="qsName" placeholder="שם מלא" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="qsEmail" type="email" placeholder="אימייל" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
+      </div>
+      <div style="margin-bottom:12px">
+        <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
+      </div>
+      <button type="submit" id="qsSubmitBtn" style="width:100%;padding:14px;background:#2E6FFF;border:none;border-radius:12px;color:#fff;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit">המשך לתשלום ←</button>
+      <div onclick="closeQuickSignup()" style="text-align:center;margin-top:14px;color:#C8BEEA;font-size:0.82rem;cursor:pointer">ביטול</div>
+    </form>
+  </div>
+</div>
+
+<script>
+const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const QS_SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+const qsClient = window.supabase.createClient(QS_SUPABASE_URL, QS_SUPABASE_KEY)
+
+function openQuickSignup(plan) {
+  document.getElementById('qsPlan').value = plan
+  document.getElementById('qsModal').style.display = 'flex'
+}
+function closeQuickSignup() {
+  document.getElementById('qsModal').style.display = 'none'
+}
+
+async function submitQuickSignup(e) {
+  e.preventDefault()
+  const plan = document.getElementById('qsPlan').value
+  const schoolName = document.getElementById('qsSchoolName').value
+  const name = document.getElementById('qsName').value
+  const email = document.getElementById('qsEmail').value
+  const password = document.getElementById('qsPassword').value
+  const errBox = document.getElementById('qsError')
+  const btn = document.getElementById('qsSubmitBtn')
+  errBox.style.display = 'none'
+  btn.disabled = true
+  btn.textContent = 'רגע...'
+
+  try {
+    const { data: school, error: schoolErr } = await qsClient
+      .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
+    if (schoolErr) throw schoolErr
+
+    const { data: authData, error: authErr } = await qsClient.auth.signUp({ email, password })
+    if (authErr) throw authErr
+
+    const { error: profileErr } = await qsClient.from('users').insert({
+      id: authData.user.id, name, email, role: 'principal', school_id: school.id, points: 0
+    })
+    if (profileErr) throw profileErr
+
+    const params = new URLSearchParams({ mode: 'start', school_id: school.id, plan, email, name })
+    window.location.href = `https://iyibnkdstmijttvprpxk.supabase.co/functions/v1/hyp-payment?${params.toString()}`
+  } catch (err) {
+    errBox.textContent = err.message || 'משהו השתבש, נסה שוב'
+    errBox.style.display = 'block'
+    btn.disabled = false
+    btn.textContent = 'המשך לתשלום ←'
+  }
+}
+</script>
 </body>
 </html>
