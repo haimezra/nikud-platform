@@ -274,6 +274,7 @@ tr.clickable{cursor:pointer}
         <tbody id="teacherActivityBody"></tbody>
       </table>
       <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מורים להציג.</div>
+      <div class="empty-state hidden" id="teacherActivityLocked">🔒 דוח פעילות מורים זמין רק במנוי הפרימיום (₪699). <a href="https://wa.me/972543771767" target="_blank" style="color:var(--accent)">שדרגו עכשיו</a></div>
     </div>
   </div>
 
@@ -311,6 +312,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 let currentUser = null
 let currentSchoolId = null
 let currentInviteCode = null
+let currentSchoolPlan = 'trial'
 let allStudents = []
 let allTeachers = []
 let allLessons = []
@@ -495,6 +497,18 @@ async function promptParentPhone(studentId, studentName) {
 }
 
 function renderTeacherActivity() {
+  const tableWrap = document.getElementById('teacherActivityBody').closest('table')
+  const lockNotice = document.getElementById('teacherActivityLocked')
+
+  if (currentSchoolPlan !== 'premium') {
+    if (tableWrap) tableWrap.classList.add('hidden')
+    if (lockNotice) lockNotice.classList.remove('hidden')
+    document.getElementById('teacherActivityEmpty').classList.add('hidden')
+    return
+  }
+  if (tableWrap) tableWrap.classList.remove('hidden')
+  if (lockNotice) lockNotice.classList.add('hidden')
+
   const lessonsPerTeacher = {}
   const lastActivityPerTeacher = {}
   allLessons.forEach(l => {
@@ -565,6 +579,7 @@ async function loadDashboard() {
 
   document.getElementById('schoolNameLabel').textContent = school ? school.name : 'לא ידוע'
   currentInviteCode = school ? school.invite_code : null
+  currentSchoolPlan = school ? school.plan : 'trial'
   document.getElementById('statCode').textContent = currentInviteCode || '—'
 
   // Load teachers + students of this school
