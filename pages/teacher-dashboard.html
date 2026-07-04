@@ -174,6 +174,7 @@ const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 let supabaseClient = null
 let currentUser = null
+let currentSchoolPlan = 'trial'
 let currentLesson = null
 let students = []
 const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
@@ -234,6 +235,9 @@ async function init() {
 
   currentUser = profile
   document.getElementById('userName').textContent = profile.name
+
+  const { data: school } = await supabaseClient.from('schools').select('plan').eq('id', profile.school_id).single()
+  currentSchoolPlan = school ? school.plan : 'trial'
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('mainContent').classList.remove('hidden')
@@ -447,6 +451,10 @@ async function loadPersonalBonusUsage(studentIds) {
 }
 
 async function givePersonalBonus(studentId, studentName) {
+  if (currentSchoolPlan !== 'premium') {
+    showToast('🔒 בונוסים אישיים זמינים רק במנוי הפרימיום (₪699)', true)
+    return
+  }
   const used = personalBonusUsed[studentId] || 0
   if (used + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP) {
     showToast(`❌ ${studentName} כבר קיבל/ה ${used} נקודות בונוס אישי החודש (מקסימום ${PERSONAL_BONUS_MONTHLY_CAP})`, true)
@@ -504,7 +512,7 @@ function renderList() {
       <div class="stu-info">
         <div class="stu-name">${s.name} ${checkinBadge}</div>
         <div class="stu-personal-bonus">
-          <button class="pb-btn" ${((personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP || totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">🎁 בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
+          <button class="pb-btn" ${(currentSchoolPlan !== 'premium' || (personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP || totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">${currentSchoolPlan !== 'premium' ? '🔒' : '🎁'} בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
           <span class="pb-count">${personalBonusUsed[s.id]||0}/${PERSONAL_BONUS_MONTHLY_CAP} בונוס אישי</span>
           ${capLabel}
         </div>
