@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>שדרוג מנוי – ניקוד★</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0B0620;--surface:rgba(255,255,255,0.04);--card:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.16);
+  --accent:#2E6FFF;--gold:#FFC93D;--green:#06D6A0;--red:#FF8A3D;
+  --text:#F3EFFF;--muted:#C8BEEA;--r:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  background:
+    radial-gradient(ellipse 60% 45% at 10% 0%, #FF8A3D33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 10%, #2E6FFF33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 50% 100%, #7C4DFF2e 0%, transparent 55%),
+    var(--bg);
+}
+.box{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:40px;width:100%;max-width:520px;backdrop-filter:blur(10px);text-align:center;
+}
+.logo{font-size:1.6rem;font-weight:900;margin-bottom:6px}
+.logo em{font-style:normal;color:var(--gold)}
+h1{font-size:1.3rem;font-weight:800;margin-bottom:6px}
+.sub{color:var(--muted);font-size:0.88rem;margin-bottom:28px}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.plan{
+  border:1.5px solid var(--border);border-radius:16px;padding:20px 14px;cursor:pointer;
+  transition:all 0.2s;background:var(--surface);
+}
+.plan:hover{transform:translateY(-2px)}
+.plan.selected{border-color:var(--accent);background:rgba(46,111,255,0.08)}
+.plan-name{font-weight:800;font-size:0.95rem;margin-bottom:4px}
+.plan-price{font-size:1.6rem;font-weight:900;color:var(--accent)}
+.plan-price small{font-size:0.7rem;color:var(--muted);font-weight:400}
+.plan-desc{font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.5}
+.pay-btn{
+  width:100%;padding:14px;background:var(--accent);border:none;border-radius:12px;
+  color:#fff;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;
+}
+.pay-btn:disabled{opacity:0.5;cursor:not-allowed}
+.note{font-size:0.74rem;color:var(--muted);margin-top:16px;line-height:1.6}
+.loading{color:var(--muted);padding:40px 0}
+.err{background:rgba(255,138,61,0.1);border:1px solid rgba(255,138,61,0.35);border-radius:12px;padding:12px;font-size:0.82rem;color:var(--red);margin-bottom:16px;display:none}
+.school-line{font-size:0.85rem;color:var(--muted);margin-bottom:22px}
+.school-line strong{color:var(--text)}
+.back-link{display:inline-block;margin-top:18px;color:var(--muted);font-size:0.82rem;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="logo">ניקוד<em>★</em></div>
+
+  <div id="loadingState" class="loading">טוען את פרטי בית הספר שלך...</div>
+
+  <div id="payArea" style="display:none">
+    <h1>שדרוג מנוי</h1>
+    <div class="school-line">עבור: <strong id="schoolName">—</strong></div>
+    <div class="err" id="errBox"></div>
+
+    <div class="plans">
+      <div class="plan" data-plan="basic" onclick="selectPlan('basic', this)">
+        <div class="plan-name">מנוי</div>
+        <div class="plan-price">₪299<small> / חודש</small></div>
+        <div class="plan-desc">עד 2 כיתות, 60 תלמידים, חנות פרסים, התראות</div>
+      </div>
+      <div class="plan" data-plan="premium" onclick="selectPlan('premium', this)">
+        <div class="plan-name">מנוי מורחב</div>
+        <div class="plan-price">₪699<small> / חודש</small></div>
+        <div class="plan-desc">עד 5 כיתות, כל הפיצ'רים, דוחות מתקדמים, בונוסים אישיים</div>
+      </div>
+    </div>
+
+    <button class="pay-btn" id="payBtn" disabled onclick="goToPayment()">בחר חבילה כדי להמשיך</button>
+    <div class="note">🔒 התשלום מתבצע בדף מאובטח של Hyp (חיוב חודשי מתחדש בהוראת קבע, ניתן לביטול בכל עת). חשבונית תישלח למייל אוטומטית.</div>
+  </div>
+
+  <a href="principal.html" class="back-link">← חזרה לדשבורד</a>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+const PAYMENT_FN = 'https://iyibnkdstmijttvprpxk.supabase.co/functions/v1/hyp-payment'
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let schoolId = null
+let userEmail = ''
+let userName = ''
+let selectedPlan = null
+
+async function init() {
+  const { data: { user } } = await supabaseClient.auth.getUser()
+  if (!user) { window.location.href = 'login.html'; return }
+
+  const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
+  if (!profile || profile.role !== 'principal') {
+    document.getElementById('loadingState').textContent = 'רק מנהל בית הספר/העסק יכול לשדרג את המנוי.'
+    return
+  }
+
+  schoolId = profile.school_id
+  userEmail = profile.email || ''
+  userName = profile.name || ''
+
+  const { data: school } = await supabaseClient.from('schools').select('name, plan').eq('id', schoolId).single()
+  document.getElementById('schoolName').textContent = school ? school.name : '—'
+
+  if (school && school.plan === 'premium') {
+    document.getElementById('loadingState').textContent = '✅ בית הספר שלך כבר במנוי המורחב - הכל פתוח!'
+    return
+  }
+
+  document.getElementById('loadingState').style.display = 'none'
+  document.getElementById('payArea').style.display = 'block'
+}
+
+function selectPlan(plan, el) {
+  selectedPlan = plan
+  document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'))
+  el.classList.add('selected')
+  const btn = document.getElementById('payBtn')
+  btn.disabled = false
+  btn.textContent = plan === 'basic' ? 'המשך לתשלום ₪299/חודש ←' : 'המשך לתשלום ₪699/חודש ←'
+}
+
+function goToPayment() {
+  if (!selectedPlan || !schoolId) return
+  const params = new URLSearchParams({
+    mode: 'start',
+    school_id: schoolId,
+    plan: selectedPlan,
+    email: userEmail,
+    name: userName,
+  })
+  window.location.href = `${PAYMENT_FN}?${params.toString()}`
+}
+
+init()
+</script>
+</body>
+</html>

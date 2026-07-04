@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סטטוס תשלום – ניקוד★</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0620;--card:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.16);
+  --accent:#2E6FFF;--gold:#FFC93D;--green:#06D6A0;--red:#FF8A3D;
+  --text:#F3EFFF;--muted:#C8BEEA;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  background:
+    radial-gradient(ellipse 60% 45% at 10% 0%, #FF8A3D33 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 100% 10%, #2E6FFF33 0%, transparent 55%),
+    var(--bg);
+}
+.box{
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  padding:48px 40px;width:100%;max-width:460px;backdrop-filter:blur(10px);text-align:center;
+}
+.icon{font-size:3.5rem;margin-bottom:16px}
+h1{font-size:1.4rem;font-weight:900;margin-bottom:10px}
+p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:26px}
+.btn{
+  display:inline-block;padding:13px 28px;background:var(--accent);border-radius:12px;
+  color:#fff;font-weight:700;text-decoration:none;font-size:0.95rem;
+}
+</style>
+</head>
+<body>
+<div class="box" id="box">
+  <div class="icon" id="icon">⏳</div>
+  <h1 id="title">בודק את סטטוס התשלום...</h1>
+  <p id="msg"></p>
+  <a href="principal.html" class="btn" id="btn">חזרה לדשבורד</a>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search)
+const status = params.get('status')
+const plan = params.get('plan')
+
+const el = (id) => document.getElementById(id)
+
+if (status === 'success') {
+  el('icon').textContent = '🎉'
+  el('title').textContent = 'התשלום התקבל - המנוי הופעל!'
+  el('msg').textContent = plan === 'premium'
+    ? 'המנוי המורחב (₪699) פעיל עכשיו. כל הפיצ\'רים נפתחו אוטומטית - דוחות מתקדמים, בונוסים אישיים, והכל. חשבונית נשלחה למייל.'
+    : 'המנוי (₪299) פעיל עכשיו. חנות הפרסים וכל התכונות של החבילה נפתחו אוטומטית. חשבונית נשלחה למייל.'
+} else if (status === 'failed') {
+  el('icon').textContent = '❌'
+  el('title').textContent = 'התשלום לא הושלם'
+  el('msg').textContent = 'העסקה נדחתה או בוטלה (קוד: ' + (params.get('code') || 'לא ידוע') + '). אפשר לנסות שוב, או ליצור קשר בוואטסאפ 054-3771767.'
+  el('btn').href = 'payment.html'
+  el('btn').textContent = 'נסה שוב'
+} else if (status === 'verify_failed') {
+  el('icon').textContent = '⚠️'
+  el('title').textContent = 'התשלום התקבל אבל האימות נכשל'
+  el('msg').textContent = 'אם חויבת - אל דאגה, המנוי יופעל ידנית בהקדם. צור קשר בוואטסאפ 054-3771767 ונטפל בזה מיד.'
+} else if (status === 'db_error' || status === 'bad_order') {
+  el('icon').textContent = '⚠️'
+  el('title').textContent = 'התשלום עבר אך ההפעלה נתקלה בתקלה'
+  el('msg').textContent = 'החיוב בוצע בהצלחה אבל הפעלת המנוי האוטומטית נכשלה. צור קשר בוואטסאפ 054-3771767 והמנוי יופעל ידנית מיד.'
+} else {
+  el('icon').textContent = '🤔'
+  el('title').textContent = 'סטטוס לא ידוע'
+  el('msg').textContent = 'לא הצלחנו לזהות את סטטוס התשלום. אם ביצעת תשלום, צור קשר בוואטסאפ 054-3771767.'
+}
+</script>
+</body>
+</html>
