@@ -227,7 +227,7 @@ tr.clickable{cursor:pointer}
       </div>
       <table>
         <thead>
-          <tr><th>שם</th><th>כיתה</th><th>אימייל</th><th>נקודות</th></tr>
+          <tr><th>שם</th><th>כיתה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr>
         </thead>
         <tbody id="studentsBody"></tbody>
       </table>
@@ -255,7 +255,7 @@ tr.clickable{cursor:pointer}
       </div>
       <table>
         <thead>
-          <tr><th>שם</th><th>כיתה</th><th>שיעורים שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th></tr>
+          <tr><th>שם</th><th>כיתה</th><th>שיעורים שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr>
         </thead>
         <tbody id="attendanceBody"></tbody>
       </table>
@@ -349,6 +349,7 @@ function renderRow(user, kind) {
       <td>${escapeHtml(user.name || '—')}</td>
       <td>${escapeHtml(user.class_name || '—')}</td>
       <td>${escapeHtml(user.email || '—')}</td>
+      <td>${escapeHtml(user.phone || '—')}</td>
       <td class="points-tag">${user.points ?? 0}</td>
     </tr>`
   }
@@ -457,16 +458,40 @@ function renderAttendanceReport() {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--accent2)'
     const atRisk = r.pct < AT_RISK_THRESHOLD
     const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(255,209,102,0.15);color:var(--gold);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(255,201,61,0.15);color:var(--gold);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
       : ''
+    const phone = r.student.parent_phone || ''
+    const alertCell = (atRisk || r.decliningTrend)
+      ? phone
+        ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
+        : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${r.student.name.replace(/'/g,"")}')">📱 הוסף טלפון</button>`
+      : '<span style="color:var(--muted);font-size:0.78rem">—</span>'
     return `<tr class="${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
       <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
+      <td>${alertCell}</td>
     </tr>`
   }).join('')
+}
+
+function buildWhatsappAlertLink(phone, name, pct) {
+  const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^0/, '972')
+  const msg = encodeURIComponent(`שלום, זו הודעה מבית הספר לגבי ${name} - הנוכחות עומדת על ${pct}% ואנו רוצים לעדכן ולוודא שהכל בסדר. נשמח לשוחח בהקדם.`)
+  return `https://wa.me/${cleanPhone}?text=${msg}`
+}
+
+async function promptParentPhone(studentId, studentName) {
+  const phone = prompt(`הזן/י מספר טלפון (הורה/איש קשר) עבור ${studentName}:`)
+  if (!phone) return
+  const { error } = await supabaseClient.from('users').update({ parent_phone: phone }).eq('id', studentId)
+  if (error) { showToast(error.message, 'error'); return }
+  const student = allStudents.find(s => s.id === studentId)
+  if (student) student.parent_phone = phone
+  showToast('הטלפון נשמר', 'success')
+  renderAttendanceReport()
 }
 
 function renderTeacherActivity() {
