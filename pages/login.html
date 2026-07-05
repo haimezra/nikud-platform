@@ -192,17 +192,10 @@ function setRole(role, btn) {
   updateFormFields()
 }
 
-function setRole(role, btn) {
-  currentRole = role
-  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'))
-  btn.classList.add('active')
-  updateFormFields()
-}
-
 function setMode(mode, btn) {
   currentMode = mode
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'))
-  btn.classList.add('active')
+  if (btn) btn.classList.add('active')
   document.getElementById('registerNotice').classList.add('hidden')
   document.getElementById('authForm').classList.remove('hidden')
   document.getElementById('registerFields').classList.toggle('hidden', mode === 'login')
@@ -210,7 +203,7 @@ function setMode(mode, btn) {
   updateFormFields()
 }
 
-// כל לחיצה על "הרשמה" - מפנה למחירון (ההרשמה מתבצעת רק שם)
+// כל לחיצה ידנית על "הרשמה" - מפנה למחירון (ההרשמה מתבצעת רק שם)
 function showRegisterNotice() {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'))
   document.querySelectorAll('.mode-btn')[1].classList.add('active')
@@ -337,6 +330,27 @@ async function handleSubmit(e) {
     btn.textContent = currentMode === 'login' ? 'כניסה' : 'הרשמה'
   }
 }
+
+// --- זיהוי הגעה מהמחירון ---
+// כשהמחירון מפנה לכאן עם ?register=1&role=student (או teacher/principal)
+// נפתח ישר את טופס ההרשמה האמיתי, במקום הודעת ההפניה למחירון.
+// כניסה ישירה לדף (או לחיצה ידנית על טאב "הרשמה") ממשיכה להציג את ההודעה כרגיל.
+function initFromQueryParams() {
+  const params = new URLSearchParams(window.location.search)
+  const wantsRegister = params.get('register') === '1' || params.get('mode') === 'register'
+  if (!wantsRegister) return
+
+  const roleParam = params.get('role') || 'student'
+  const roleIndexByName = { student: 0, teacher: 1, principal: 2 }
+  const roleIdx = roleIndexByName.hasOwnProperty(roleParam) ? roleIndexByName[roleParam] : 0
+  const roleButtons = document.querySelectorAll('.role-tab')
+  setRole(roleParam, roleButtons[roleIdx])
+
+  const modeButtons = document.querySelectorAll('.mode-btn')
+  setMode('register', modeButtons[1])
+}
+
+window.addEventListener('DOMContentLoaded', initFromQueryParams)
 </script>
 </body>
 </html>
