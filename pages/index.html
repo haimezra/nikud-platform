@@ -7,7 +7,6 @@
 <meta name="description" content="תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות – וממירים לפרסים אמיתיים">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
   --bg: #0B0620;
@@ -744,12 +743,12 @@ setTimeout(() => {
 </script>
 <script src="accessibility-widget.js"></script>
 
-<!-- Quick signup + payment modal (added: replaces WhatsApp redirect for paid plan) -->
+<!-- Quick signup + payment modal -->
 <div id="qsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
   <div style="background:#12082e;border:1px solid rgba(255,255,255,0.16);border-radius:20px;padding:32px;width:100%;max-width:420px;color:#F3EFFF;font-family:'Heebo',sans-serif">
     <h3 style="margin-bottom:6px;font-size:1.2rem;font-weight:800">הרשמה מהירה + תשלום</h3>
     <p style="color:#C8BEEA;font-size:0.85rem;margin-bottom:20px">כמה פרטים ומעבירים אותך ישר לדף התשלום המאובטח</p>
-    <div id="qsError" style="display:none;background:rgba(255,61,187,0.12);border:1px solid rgba(255,61,187,0.3);color:#FF3DBB;padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px"></div>
+    <div id="qsError" style="display:none;background:rgba(255,138,61,0.12);border:1px solid rgba(255,138,61,0.35);color:#FF8A3D;padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px"></div>
     <form onsubmit="submitQuickSignup(event)">
       <input type="hidden" id="qsPlan">
       <div style="margin-bottom:12px">
@@ -797,19 +796,40 @@ async function submitQuickSignup(e) {
   btn.textContent = 'רגע...'
 
   try {
-    const { data: school, error: schoolErr } = await qsClient
-      .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
-    if (schoolErr) throw schoolErr
-
+    // שלב 1: הרשמה/התחברות קודם - כך כישלון לא משאיר "בית ספר יתום"
+    let userId = null
     const { data: authData, error: authErr } = await qsClient.auth.signUp({ email, password })
-    if (authErr) throw authErr
+    if (authErr) {
+      // אם המשתמש כבר קיים (למשל ניסיון חוזר אחרי תקלה) - מנסים להתחבר במקום
+      if ((authErr.message || '').toLowerCase().includes('already')) {
+        const { data: signInData, error: signInErr } = await qsClient.auth.signInWithPassword({ email, password })
+        if (signInErr) throw new Error('האימייל כבר רשום - נסה סיסמה נכונה או כתובת אחרת')
+        userId = signInData.user.id
+      } else {
+        throw authErr
+      }
+    } else {
+      userId = authData.user.id
+    }
 
-    const { error: profileErr } = await qsClient.from('users').insert({
-      id: authData.user.id, name, email, role: 'principal', school_id: school.id, points: 0
-    })
-    if (profileErr) throw profileErr
+    // שלב 2: בודקים אם למשתמש כבר יש פרופיל ובית ספר (ניסיון חוזר) - אם כן מדלגים ישר לתשלום
+    const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
+    let schoolId = existingProfile ? existingProfile.school_id : null
 
-    const params = new URLSearchParams({ mode: 'start', school_id: school.id, plan, email, name })
+    // שלב 3: יצירת בית ספר + פרופיל רק אם עדיין אין
+    if (!schoolId) {
+      const { data: school, error: schoolErr } = await qsClient
+        .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
+      if (schoolErr) throw schoolErr
+      schoolId = school.id
+
+      const { error: profileErr } = await qsClient.from('users').insert({
+        id: userId, name, email, role: 'principal', school_id: schoolId, points: 0
+      })
+      if (profileErr) throw profileErr
+    }
+
+    const params = new URLSearchParams({ mode: 'start', school_id: schoolId, plan, email, name })
     window.location.href = `https://iyibnkdstmijttvprpxk.supabase.co/functions/v1/hyp-payment?${params.toString()}`
   } catch (err) {
     errBox.textContent = err.message || 'משהו השתבש, נסה שוב'
