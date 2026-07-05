@@ -94,14 +94,20 @@ body{
   </div>
 
   <div class="role-tabs">
-    <button class="role-tab active" onclick="setRole('student', this)">תלמיד</button>
-    <button class="role-tab" onclick="setRole('teacher', this)">מורה</button>
-    <button class="role-tab" onclick="setRole('principal', this)">מנהל בית ספר</button>
+    <button class="role-tab active" onclick="setRole('student', this)">תלמיד/עובד</button>
+    <button class="role-tab" onclick="setRole('teacher', this)">מורה/מנהל</button>
+    <button class="role-tab" onclick="setRole('principal', this)">מנהל בית ספר/מעסיק</button>
   </div>
 
   <div class="mode-toggle">
     <button class="mode-btn active" onclick="setMode('login', this)">כניסה</button>
-    <button class="mode-btn" onclick="setMode('register', this)">הרשמה</button>
+    <button class="mode-btn" onclick="showRegisterNotice()">הרשמה</button>
+  </div>
+
+  <div id="registerNotice" class="hidden" style="background:rgba(46,111,255,0.06);border:1px solid rgba(46,111,255,0.25);border-radius:14px;padding:18px 20px;margin-bottom:18px;font-size:0.92rem;line-height:1.75;color:var(--text)">
+    ההרשמה למערכת מתבצעת דרך <a href="index.html#pricing" style="color:#2E6FFF;font-weight:700;text-decoration:none">עמוד התוכניות והמחירים</a>.<br>
+    בחרו את התוכנית המתאימה - <b>"התחל חינם"</b> ל-15 ימי ניסיון, או <b>"הצטרפות למנוי"</b> למנוי מלא - וההרשמה תתבצע אוטומטית כחלק מהתהליך.
+    <a href="index.html#pricing" class="submit-btn" style="display:block;text-align:center;margin-top:14px;text-decoration:none">למעבר לתוכניות ←</a>
   </div>
 
   <div class="error-msg" id="errorMsg"></div>
@@ -186,13 +192,32 @@ function setRole(role, btn) {
   updateFormFields()
 }
 
+function setRole(role, btn) {
+  currentRole = role
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'))
+  btn.classList.add('active')
+  updateFormFields()
+}
+
 function setMode(mode, btn) {
   currentMode = mode
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
+  document.getElementById('registerNotice').classList.add('hidden')
+  document.getElementById('authForm').classList.remove('hidden')
   document.getElementById('registerFields').classList.toggle('hidden', mode === 'login')
   document.getElementById('submitBtn').textContent = mode === 'login' ? 'כניסה' : 'הרשמה'
   updateFormFields()
+}
+
+// כל לחיצה על "הרשמה" - מפנה למחירון (ההרשמה מתבצעת רק שם)
+function showRegisterNotice() {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.mode-btn')[1].classList.add('active')
+  document.getElementById('authForm').classList.add('hidden')
+  document.getElementById('registerNotice').classList.remove('hidden')
+  document.getElementById('errorMsg').classList.remove('show')
+  document.getElementById('successMsg').classList.remove('show')
 }
 
 function updateFormFields() {
