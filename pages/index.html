@@ -3,576 +3,846 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ניקוד★ – פלטפורמת תגמול לתלמידים</title>
-<meta name="description" content="תלמידים מרוויחים נקודות על נוכחות ועמידה במטלות – וממירים לפרסים אמיתיים">
+<title>ניקוד★ – מערכת תגמול חכמה לעובדים, תלמידים וארגונים</title>
+<meta name="description" content="ניקוד★ - פלטפורמת SaaS לניהול נוכחות, ביצועים ותגמולים. עובדים ותלמידים צוברים נקודות וממירים לפרסים אמיתיים.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --bg: #0B0620;
-  --surface: rgba(255,255,255,0.04);
-  --card: rgba(255,255,255,0.06);
-  --border: rgba(255,255,255,0.14);
-  --accent: #2E6FFF;
-  --accent2: #FF8A3D;
-  --gold: #FFC93D;
-  --green: #06D6A0;
-  --text: #F3EFFF;
-  --muted: #C8BEEA;
-  --r: 16px;
+/* ============ TOKENS ============ */
+:root{
+  --bg:#FFFFFF;
+  --bg-soft:#F7F9FE;
+  --ink:#0A1633;
+  --ink-soft:#4A5578;
+  --ink-mute:#8A93B0;
+  --blue:#2E6FFF;
+  --blue-deep:#1A4FCC;
+  --violet:#7C4DFF;
+  --orange:#FF8A3D;
+  --green:#0BB07B;
+  --gold:#F5A623;
+  --line:rgba(10,22,51,0.08);
+  --glass:rgba(255,255,255,0.72);
+  --glass-border:rgba(10,22,51,0.09);
+  --shadow-sm:0 2px 10px rgba(10,22,51,0.05);
+  --shadow-md:0 12px 32px rgba(10,22,51,0.09);
+  --shadow-lg:0 28px 70px rgba(10,22,51,0.13);
+  --r:24px;
+  --r-sm:14px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  background:
-    radial-gradient(ellipse 60% 45% at 12% 0%, #FF8A3D33 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 100% 12%, #2E6FFF33 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 45% 100%, #7C4DFF2e 0%, transparent 55%),
-    var(--bg);
-  background-attachment:fixed;
-  color:var(--text);font-family:'Heebo',sans-serif;overflow-x:hidden;
+  background:var(--bg);color:var(--ink);
+  font-family:'Heebo',sans-serif;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
-.card,.who-card,.price-card,.test-card,.faq-item,.stat-item,.how-step,.phone-mockup,.act-row,.store-item{backdrop-filter:blur(8px)}
+::selection{background:rgba(46,111,255,0.18)}
 
-/* NAV */
+/* ============ AMBIENT BACKGROUND ============ */
+.ambient{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 40% at 85% -5%, rgba(46,111,255,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 35% at 8% 12%, rgba(124,77,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, rgba(255,138,61,0.06) 0%, transparent 60%),
+    var(--bg);
+}
+
+/* ============ NAV ============ */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:200;
+  position:fixed;top:14px;right:0;left:0;z-index:300;
+  display:flex;justify-content:center;padding:0 20px;
+}
+.nav-inner{
+  width:100%;max-width:1120px;
   display:flex;justify-content:space-between;align-items:center;
-  padding:16px 40px;
-  background:rgba(10,14,26,0.85);backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  transition:all 0.3s;
+  padding:12px 22px;border-radius:99px;
+  background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid var(--glass-border);box-shadow:var(--shadow-sm);
 }
 .logo{
-  font-size:1.7rem;font-weight:900;letter-spacing:-1px;text-decoration:none;
+  font-size:1.45rem;font-weight:900;letter-spacing:-0.5px;text-decoration:none;
   background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
-  background-size:300% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:logoWave 5s ease-in-out infinite;
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:logoWave 6s ease-in-out infinite;
 }
-@keyframes logoWave{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
+@keyframes logoWave{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .logo span{color:var(--gold)}
-.nav-links{display:flex;gap:28px;align-items:center}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:0.95rem;transition:color 0.2s}
-.nav-links a:hover{color:var(--text)}
-.nav-cta{padding:9px 22px;background:#2E6FFF;border-radius:99px;color:#fff!important;font-weight:700;font-size:0.9rem!important}
-.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(46,111,255,0.4)}
-.hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+.nav-links{display:flex;gap:26px;align-items:center}
+.nav-links a{color:var(--ink-soft);text-decoration:none;font-size:0.92rem;font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{
+  padding:9px 22px;background:var(--blue);border-radius:99px;
+  color:#fff!important;font-weight:700;font-size:0.88rem!important;
+  transition:all 0.25s;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(46,111,255,0.35)}
+.hamburger{display:none;background:none;border:none;color:var(--ink);font-size:1.4rem;cursor:pointer}
+.mobile-menu{
+  display:none;position:fixed;inset:0;z-index:290;background:rgba(255,255,255,0.97);
+  backdrop-filter:blur(20px);padding:110px 32px 40px;flex-direction:column;gap:26px;
+}
+.mobile-menu.open{display:flex}
+.mobile-menu a{color:var(--ink);text-decoration:none;font-size:1.25rem;font-weight:700}
 
-/* HERO */
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 30px;border-radius:99px;border:none;cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.98rem;font-weight:700;
+  text-decoration:none;transition:all 0.25s;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--blue),var(--blue-deep));color:#fff;
+  box-shadow:0 10px 26px rgba(46,111,255,0.28);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(46,111,255,0.4)}
+.btn-ghost{
+  background:rgba(255,255,255,0.7);color:var(--ink);
+  border:1px solid var(--line);backdrop-filter:blur(8px);
+}
+.btn-ghost:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px)}
+
+/* ============ HERO ============ */
 .hero{
-  min-height:100vh;display:flex;flex-direction:column;
-  justify-content:center;align-items:center;text-align:center;
-  padding:120px 20px 80px;
-  background:
-    radial-gradient(ellipse 70% 60% at 50% -10%, rgba(46,111,255,0.22) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,138,61,0.1) 0%, transparent 60%);
+  min-height:100vh;display:flex;align-items:center;
+  padding:150px 20px 90px;position:relative;
+}
+.hero-grid{
+  max-width:1120px;margin:0 auto;width:100%;
+  display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center;
 }
 .hero-badge{
   display:inline-flex;align-items:center;gap:8px;
-  padding:7px 18px;border-radius:99px;
-  background:rgba(46,111,255,0.12);border:1px solid rgba(46,111,255,0.35);
-  font-size:0.85rem;color:var(--accent);margin-bottom:28px;
+  padding:7px 16px;border-radius:99px;
+  background:rgba(46,111,255,0.07);border:1px solid rgba(46,111,255,0.2);
+  font-size:0.82rem;font-weight:600;color:var(--blue);margin-bottom:26px;
 }
 .hero-badge::before{content:'';width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
 .hero h1{
-  font-size:clamp(2.8rem,7vw,5.5rem);font-weight:900;
-  line-height:1.05;letter-spacing:-3px;margin-bottom:40px;
+  font-size:clamp(2.4rem,5vw,3.9rem);font-weight:900;
+  line-height:1.12;letter-spacing:-1.5px;margin-bottom:22px;
 }
 .hero h1 em{
-  color:transparent;font-style:normal;
-  background:linear-gradient(135deg,var(--gold),var(--accent2));
+  font-style:normal;color:transparent;
+  background:linear-gradient(120deg,var(--blue),var(--violet));
   -webkit-background-clip:text;background-clip:text;
 }
-.hero-sub{font-size:1.15rem;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:56px}
-.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:56px}
-.btn{padding:15px 34px;border-radius:99px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;transition:all 0.2s;text-decoration:none;display:inline-block}
-.btn-primary{background:#2E6FFF;color:#fff}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(46,111,255,0.45)}
-.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}
-.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.hero-sub{
+  font-size:1.08rem;color:var(--ink-soft);max-width:480px;
+  line-height:1.8;margin-bottom:38px;
+}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.hero-trust{
+  display:flex;gap:22px;margin-top:42px;flex-wrap:wrap;
+  color:var(--ink-mute);font-size:0.82rem;font-weight:500;
+}
+.hero-trust span{display:flex;align-items:center;gap:6px}
+.hero-trust svg{width:15px;height:15px;stroke:var(--green)}
 
-/* FLOATING CARDS */
-.hero-visual{
-  margin-top:60px;position:relative;width:100%;max-width:680px;
+/* ============ LIVE DASHBOARD ============ */
+.dash-wrap{position:relative}
+.dash{
+  background:var(--glass);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid var(--glass-border);border-radius:28px;
+  box-shadow:var(--shadow-lg);padding:22px;
+  animation:dashFloat 7s ease-in-out infinite;
 }
-.phone-mockup{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:24px;padding:24px;text-align:right;
-  box-shadow:0 40px 80px rgba(0,0,0,0.5);
+@keyframes dashFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.dash-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.dash-title{font-size:0.9rem;font-weight:800}
+.dash-dots{display:flex;gap:6px}
+.dash-dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+.dash-dots i:first-child{background:#FF6B6B}.dash-dots i:nth-child(2){background:var(--gold)}.dash-dots i:last-child{background:var(--green)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.kpi{
+  background:rgba(255,255,255,0.8);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:14px;
 }
-.pts-display{
-  display:flex;justify-content:space-between;align-items:center;
-  background:linear-gradient(135deg,rgba(46,111,255,0.2),rgba(255,201,61,0.1));
-  border:1px solid rgba(46,111,255,0.3);border-radius:14px;padding:16px 20px;
-  margin-bottom:16px;
+.kpi-num{font-size:1.35rem;font-weight:900;letter-spacing:-0.5px}
+.kpi-num.c-blue{color:var(--blue)}.kpi-num.c-green{color:var(--green)}.kpi-num.c-orange{color:var(--orange)}
+.kpi-lbl{font-size:0.68rem;color:var(--ink-mute);font-weight:500;margin-top:2px}
+.kpi-delta{font-size:0.64rem;color:var(--green);font-weight:700;margin-top:4px}
+.dash-row{display:grid;grid-template-columns:1.25fr 1fr;gap:12px}
+.dash-card{
+  background:rgba(255,255,255,0.8);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:14px;
 }
-.pts-big{font-size:2.4rem;font-weight:900;color:var(--gold)}
-.pts-lbl{font-size:0.8rem;color:var(--muted)}
-.mini-activity{display:flex;flex-direction:column;gap:10px}
-.act-row{
-  display:flex;align-items:center;gap:12px;
-  background:var(--surface);border-radius:10px;padding:10px 14px;
+.dash-card h4{font-size:0.72rem;font-weight:700;color:var(--ink-soft);margin-bottom:12px}
+.chart{display:flex;align-items:flex-end;gap:7px;height:86px}
+.bar{
+  flex:1;border-radius:6px 6px 3px 3px;
+  background:linear-gradient(180deg,var(--blue),rgba(46,111,255,0.45));
+  transform-origin:bottom;animation:barGrow 1.1s cubic-bezier(0.22,1,0.36,1) backwards;
 }
-.act-icon{font-size:1.1rem}
-.act-text{font-size:0.85rem;flex:1}
-.act-pts{color:var(--green);font-weight:700;font-size:0.85rem}
+.bar:nth-child(2){animation-delay:0.08s}.bar:nth-child(3){animation-delay:0.16s}
+.bar:nth-child(4){animation-delay:0.24s}.bar:nth-child(5){animation-delay:0.32s}
+.bar:nth-child(6){animation-delay:0.4s;background:linear-gradient(180deg,var(--violet),rgba(124,77,255,0.45))}
+.bar:nth-child(7){animation-delay:0.48s}
+@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.chart-lbls{display:flex;gap:7px;margin-top:7px}
+.chart-lbls span{flex:1;text-align:center;font-size:0.58rem;color:var(--ink-mute)}
+.prog-item{margin-bottom:11px}
+.prog-item:last-child{margin-bottom:0}
+.prog-head{display:flex;justify-content:space-between;font-size:0.68rem;font-weight:600;margin-bottom:5px}
+.prog-head b{color:var(--ink-soft)}
+.prog-track{height:7px;background:rgba(10,22,51,0.06);border-radius:99px;overflow:hidden}
+.prog-fill{
+  height:100%;border-radius:99px;
+  background:linear-gradient(90deg,var(--blue),var(--violet));
+  animation:progGrow 1.4s cubic-bezier(0.22,1,0.36,1) backwards;transform-origin:right;
+}
+@keyframes progGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.dash-feed{margin-top:12px}
+.feed-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:12px;background:rgba(255,255,255,0.8);
+  border:1px solid var(--line);margin-bottom:7px;
+}
+.feed-row:last-child{margin-bottom:0}
+.feed-ic{
+  width:28px;height:28px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:0.82rem;
+  background:rgba(46,111,255,0.09);
+}
+.feed-txt{font-size:0.74rem;font-weight:500;flex:1;color:var(--ink-soft)}
+.feed-txt b{color:var(--ink)}
+.feed-pts{font-size:0.76rem;font-weight:800;color:var(--green)}
+.float-card{
+  position:absolute;z-index:2;
+  background:var(--glass);backdrop-filter:blur(16px);
+  border:1px solid var(--glass-border);border-radius:16px;
+  padding:12px 16px;box-shadow:var(--shadow-md);
+  font-size:0.78rem;font-weight:700;white-space:nowrap;
+  animation:floatCard 5.5s ease-in-out infinite;
+}
+.fc-1{top:-22px;left:-18px;color:var(--green)}
+.fc-2{bottom:36px;left:-34px;color:var(--ink);animation-delay:1.4s}
+.fc-2 small{display:block;font-weight:500;color:var(--ink-mute);font-size:0.66rem;margin-top:2px}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 
-/* FLOAT BADGES */
-.float-badge{
-  position:absolute;background:var(--card);border:1px solid var(--border);
-  border-radius:12px;padding:10px 14px;font-size:0.82rem;font-weight:700;
-  box-shadow:0 8px 24px rgba(0,0,0,0.4);white-space:nowrap;
+/* ============ TRUSTED BY ============ */
+.trusted{padding:34px 20px 60px}
+.trusted-inner{max-width:1120px;margin:0 auto;text-align:center}
+.trusted-lbl{font-size:0.78rem;font-weight:600;color:var(--ink-mute);letter-spacing:1px;margin-bottom:24px}
+.trusted-row{
+  display:flex;justify-content:center;gap:44px;flex-wrap:wrap;align-items:center;
 }
-.fb-1{top:-20px;left:-40px;color:var(--green);border-color:rgba(6,214,160,0.3)}
-.fb-2{bottom:40px;left:-60px;color:var(--gold);border-color:rgba(255,201,61,0.3)}
-
-/* STATS BAR */
-.stats-bar{
-  display:flex;justify-content:center;gap:0;
-  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-  background:var(--surface);flex-wrap:wrap;
+.trusted-row span{
+  font-size:1.02rem;font-weight:800;color:rgba(10,22,51,0.32);
+  letter-spacing:-0.3px;transition:color 0.25s;
 }
-.stat-item{
-  flex:1;min-width:150px;text-align:center;padding:32px 20px;
-  border-left:1px solid var(--border);
+.trusted-row span:hover{color:rgba(10,22,51,0.6)}
+
+/* ============ SECTIONS ============ */
+section{padding:96px 20px}
+.inner{max-width:1120px;margin:0 auto}
+.sec-label{
+  display:inline-block;font-size:0.76rem;font-weight:700;color:var(--blue);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;
+  padding:5px 14px;border-radius:99px;background:rgba(46,111,255,0.07);
 }
-.stat-item:first-child{border-left:none}
-.stat-num{font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
-.stat-lbl{font-size:0.85rem;color:var(--muted);margin-top:4px}
+.sec-title{font-size:clamp(1.8rem,3.6vw,2.7rem);font-weight:900;letter-spacing:-1px;margin-bottom:14px;line-height:1.2}
+.sec-sub{font-size:1rem;color:var(--ink-soft);max-width:540px;line-height:1.75}
 
-/* SECTION */
-section{padding:90px 20px}
-.section-inner{max-width:1100px;margin:0 auto}
-.section-label{font-size:0.8rem;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
-.section-title{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-1.5px;margin-bottom:16px}
-.section-sub{font-size:1rem;color:var(--muted);max-width:500px;line-height:1.7}
+/* ============ FEATURES ============ */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.feat{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--r);
+  padding:30px 26px;transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.feat:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:rgba(46,111,255,0.3)}
+.feat-ic{
+  width:46px;height:46px;border-radius:14px;margin-bottom:18px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(46,111,255,0.1),rgba(124,77,255,0.1));
+}
+.feat-ic svg{width:22px;height:22px;stroke:var(--blue);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.feat h3{font-size:1.02rem;font-weight:800;margin-bottom:8px}
+.feat p{font-size:0.88rem;color:var(--ink-soft);line-height:1.7}
 
-/* HOW IT WORKS */
-.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2px;margin-top:50px;background:var(--border);border-radius:var(--r);overflow:hidden}
-.how-step{background:var(--card);padding:32px 28px}
-.step-num{
-  font-size:3rem;font-weight:900;line-height:1;margin-bottom:16px;
-  background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
-  background-size:300% 100%;
+/* ============ HOW IT WORKS ============ */
+.hiw{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.timeline{position:relative;margin-top:60px;display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.timeline::before{
+  content:'';position:absolute;top:23px;right:12%;left:12%;height:2px;
+  background:linear-gradient(90deg,rgba(46,111,255,0.35),rgba(124,77,255,0.35));
+}
+.tl-step{position:relative;text-align:center;padding:0 8px}
+.tl-dot{
+  width:46px;height:46px;border-radius:50%;margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--blue);color:var(--blue);
+  font-weight:900;font-size:1rem;position:relative;z-index:1;
+  box-shadow:0 6px 18px rgba(46,111,255,0.18);
+}
+.tl-step h3{font-size:0.98rem;font-weight:800;margin-bottom:8px}
+.tl-step p{font-size:0.84rem;color:var(--ink-soft);line-height:1.65}
+
+/* ============ DASHBOARD PREVIEW ============ */
+.preview-frame{
+  margin-top:56px;border-radius:28px;padding:20px;
+  background:linear-gradient(135deg,rgba(46,111,255,0.08),rgba(124,77,255,0.08));
+  border:1px solid var(--glass-border);
+}
+.preview{
+  background:var(--glass);backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);border-radius:20px;
+  box-shadow:var(--shadow-lg);padding:24px;
+}
+.pv-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:16px}
+.pv-table{width:100%;border-collapse:collapse}
+.pv-table th{
+  font-size:0.7rem;font-weight:700;color:var(--ink-mute);text-align:right;
+  padding:8px 10px;border-bottom:1px solid var(--line);
+}
+.pv-table td{font-size:0.8rem;padding:10px;border-bottom:1px solid var(--line)}
+.pv-badge{
+  display:inline-block;padding:3px 10px;border-radius:99px;
+  font-size:0.68rem;font-weight:700;
+}
+.pv-badge.ok{background:rgba(11,176,123,0.1);color:var(--green)}
+.pv-badge.warn{background:rgba(245,166,35,0.12);color:var(--gold)}
+.pv-badge.risk{background:rgba(255,107,107,0.1);color:#E25555}
+.pv-notify{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(255,255,255,0.85);border:1px solid var(--line);
+  border-radius:14px;padding:12px 14px;margin-bottom:10px;
+}
+.pv-notify:last-child{margin-bottom:0}
+.pv-notify-ic{font-size:1rem;margin-top:1px}
+.pv-notify b{font-size:0.78rem;display:block;margin-bottom:2px}
+.pv-notify p{font-size:0.7rem;color:var(--ink-mute);line-height:1.5}
+
+/* ============ BENEFITS ============ */
+.bene-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:52px}
+.bene{
+  background:var(--glass);backdrop-filter:blur(12px);
+  border:1px solid var(--glass-border);border-radius:20px;padding:26px 22px;
+  transition:all 0.3s;
+}
+.bene:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.bene-num{
+  font-size:1.9rem;font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(120deg,var(--blue),var(--violet));
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:logoWave 5s ease-in-out infinite;
 }
-.step-icon{font-size:1.8rem;margin-bottom:12px}
-.how-step h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
-.how-step p{font-size:0.88rem;color:var(--muted);line-height:1.6}
+.bene p{font-size:0.85rem;color:var(--ink-soft);margin-top:6px;line-height:1.6}
 
-/* WHO FOR */
-.who-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:50px}
-.who-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:28px;
-  transition:border-color 0.2s,transform 0.2s;
+/* ============ TESTIMONIALS ============ */
+.testi{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
+.testi-card{
+  background:#fff;border:1px solid var(--glass-border);border-radius:var(--r);
+  padding:28px;box-shadow:var(--shadow-sm);transition:all 0.3s;
 }
-.who-card:hover{border-color:var(--accent);transform:translateY(-4px)}
-.who-emoji{font-size:2.5rem;margin-bottom:16px}
-.who-card h3{font-size:1.1rem;font-weight:800;margin-bottom:10px}
-.who-card ul{list-style:none;display:flex;flex-direction:column;gap:7px}
-.who-card ul li{font-size:0.88rem;color:var(--muted);padding-right:18px;position:relative}
-.who-card ul li::before{content:'✓';position:absolute;right:0;color:var(--green);font-weight:700}
+.testi-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-md)}
+.stars{color:var(--gold);font-size:0.95rem;margin-bottom:14px;letter-spacing:2px}
+.quote{font-size:0.92rem;line-height:1.75;color:var(--ink-soft);margin-bottom:20px}
+.author{display:flex;align-items:center;gap:12px}
+.avatar{
+  width:42px;height:42px;border-radius:50%;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;
+}
+.a-name{font-size:0.88rem;font-weight:800}
+.a-role{font-size:0.76rem;color:var(--ink-mute)}
 
-/* PRICING */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:50px}
-.price-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:var(--r);padding:30px;position:relative;
+/* ============ PRICING ============ */
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px;align-items:start}
+.plan{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:26px;
+  padding:32px 28px;position:relative;transition:all 0.3s;
 }
-.price-card.popular{border-color:var(--accent);background:rgba(46,111,255,0.07)}
-.popular-badge{
-  position:absolute;top:-12px;right:20px;
-  background:var(--accent);color:#fff;font-size:0.75rem;font-weight:700;
-  padding:4px 14px;border-radius:99px;
+.plan:hover{transform:translateY(-5px);box-shadow:var(--shadow-md)}
+.plan.popular{
+  border:2px solid var(--blue);
+  box-shadow:0 20px 60px rgba(46,111,255,0.16);
+  background:#fff;
 }
-.price-name{font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
-.price-amount{font-size:2.6rem;font-weight:900;letter-spacing:-2px}
-.price-period{font-size:0.85rem;color:var(--muted)}
-.price-desc{font-size:0.88rem;color:var(--muted);margin:14px 0}
-.price-features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:28px}
-.price-features li{font-size:0.88rem;padding-right:20px;position:relative}
-.price-features li::before{content:'✓';position:absolute;right:0;color:var(--green);font-weight:700}
-.price-features li.no::before{content:'✕';color:var(--muted)}
-.price-features li.no{color:var(--muted)}
+.pop-badge{
+  position:absolute;top:-14px;right:26px;
+  background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;
+  font-size:0.72rem;font-weight:700;padding:5px 16px;border-radius:99px;
+  box-shadow:0 6px 16px rgba(46,111,255,0.3);
+}
+.plan-name{font-size:0.8rem;font-weight:700;color:var(--ink-mute);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.plan-price{font-size:2.5rem;font-weight:900;letter-spacing:-1.5px}
+.plan-price small{font-size:0.85rem;color:var(--ink-mute);font-weight:500;letter-spacing:0}
+.plan-desc{font-size:0.85rem;color:var(--ink-soft);margin:12px 0 22px;line-height:1.6}
+.plan-note{font-size:0.74rem;color:var(--orange);margin:-14px 0 18px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan li{font-size:0.86rem;padding-right:24px;position:relative;color:var(--ink-soft);line-height:1.55}
+.plan li::before{
+  content:'✓';position:absolute;right:0;top:0;
+  color:var(--green);font-weight:800;
+}
+.plan li.no{color:var(--ink-mute);opacity:0.75}
+.plan li.no::before{content:'✕';color:var(--ink-mute)}
+.plan .btn{width:100%}
 
-/* TESTIMONIALS */
-.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:50px}
-.test-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:26px}
-.test-stars{color:var(--gold);font-size:1rem;margin-bottom:12px}
-.test-quote{font-size:0.92rem;line-height:1.7;margin-bottom:16px}
-.test-author{display:flex;align-items:center;gap:10px}
-.test-avatar{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;
+/* ============ FAQ ============ */
+.faq-list{max-width:720px;margin:52px auto 0;display:flex;flex-direction:column;gap:12px}
+.faq-item{
+  background:var(--glass);backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);border-radius:18px;overflow:hidden;
+  transition:border-color 0.25s;
 }
-.test-name{font-size:0.88rem;font-weight:700}
-.test-role{font-size:0.78rem;color:var(--muted)}
-
-/* FAQ */
-.faq-list{max-width:700px;margin:50px auto 0;display:flex;flex-direction:column;gap:2px;border-radius:var(--r);overflow:hidden}
-.faq-item{background:var(--card);border-bottom:1px solid var(--border)}
-.faq-item:last-child{border-bottom:none}
+.faq-item.open{border-color:rgba(46,111,255,0.35)}
 .faq-q{
-  width:100%;background:none;border:none;color:var(--text);
-  font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;
+  width:100%;background:none;border:none;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.96rem;font-weight:700;
   padding:20px 24px;text-align:right;cursor:pointer;
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;justify-content:space-between;align-items:center;gap:14px;
 }
-.faq-q::after{content:'＋';font-size:1.1rem;color:var(--accent)}
-.faq-q.open::after{content:'－'}
-.faq-a{display:none;padding:0 24px 20px;font-size:0.9rem;color:var(--muted);line-height:1.7}
-.faq-a.open{display:block}
+.faq-q::after{
+  content:'＋';font-size:1.15rem;color:var(--blue);flex-shrink:0;
+  transition:transform 0.25s;
+}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height 0.35s ease;
+  font-size:0.9rem;color:var(--ink-soft);line-height:1.75;
+}
+.faq-a-inner{padding:0 24px 22px}
 
-/* CTA SECTION */
-.cta-section{
-  background:linear-gradient(135deg,rgba(46,111,255,0.15),rgba(255,138,61,0.08));
-  border:1px solid rgba(46,111,255,0.2);
-  border-radius:24px;margin:0 20px 80px;padding:60px 20px;text-align:center;
-  max-width:1060px;margin:0 auto 80px;
+/* ============ CTA ============ */
+.cta-box{
+  max-width:1120px;margin:0 auto;text-align:center;
+  border-radius:32px;padding:72px 28px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#123B9E 0%,#2E6FFF 55%,#7C4DFF 130%);
+  box-shadow:0 30px 80px rgba(46,111,255,0.3);
 }
-.cta-section h2{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-1.5px;margin-bottom:14px}
-.cta-section p{color:var(--muted);margin-bottom:32px;font-size:1rem}
-.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-box::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 70% 0%,rgba(255,255,255,0.14),transparent 60%);
+}
+.cta-box h2{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:900;letter-spacing:-1px;color:#fff;margin-bottom:14px;position:relative}
+.cta-box p{color:rgba(255,255,255,0.85);margin-bottom:34px;font-size:1rem;position:relative}
+.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-white{background:#fff;color:var(--blue-deep)}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,0.2)}
+.btn-glass{background:rgba(255,255,255,0.14);color:#fff;border:1px solid rgba(255,255,255,0.3);backdrop-filter:blur(8px)}
+.btn-glass:hover{background:rgba(255,255,255,0.22);transform:translateY(-2px)}
 
-/* FOOTER */
-footer{
-  border-top:1px solid var(--border);padding:40px;
-  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;
-}
-.footer-logo{
-  font-size:1.3rem;font-weight:900;
-  background:linear-gradient(90deg,#1A4FCC,#5B9DFF,#2E6FFF,#1A4FCC,#5B9DFF);
-  background-size:300% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:logoWave 5s ease-in-out infinite;
-}
-.footer-logo span{color:var(--gold)}
-.footer-links{display:flex;gap:24px;flex-wrap:wrap}
-.footer-links a{color:var(--muted);text-decoration:none;font-size:0.88rem;transition:color 0.2s}
-.footer-links a:hover{color:var(--text)}
-.footer-copy{color:var(--muted);font-size:0.82rem;width:100%;text-align:center;padding-top:20px;border-top:1px solid var(--border)}
-
-/* LIVE ACTIVITY TOAST */
-.live-toast{
-  position:fixed;top:50%;left:24px;z-index:500;
-  background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:9px 13px;display:flex;align-items:center;gap:9px;
-  box-shadow:0 8px 22px rgba(0,0,0,0.35);
-  max-width:230px;
-  transform:translateY(-50%) translateX(-30px);opacity:0;pointer-events:none;
-  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s;
-}
-.live-toast.show{transform:translateY(-50%) translateX(0);opacity:1}
-.live-toast-icon{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:0.9rem;
-  background:rgba(6,214,160,0.15);
-}
-.live-toast-text{font-size:0.74rem;line-height:1.35}
-.live-toast-text b{color:var(--text)}
-.live-toast-time{font-size:0.65rem;color:var(--muted);margin-top:1px}
-@media(max-width:600px){
-  .live-toast{max-width:200px}
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:56px 20px 34px;background:var(--bg-soft)}
+.foot-inner{max-width:1120px;margin:0 auto}
+.foot-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:30px;margin-bottom:36px}
+.foot-brand p{font-size:0.85rem;color:var(--ink-mute);margin-top:10px;max-width:280px;line-height:1.7}
+.foot-links{display:flex;gap:56px;flex-wrap:wrap}
+.foot-col h4{font-size:0.8rem;font-weight:800;margin-bottom:14px;color:var(--ink)}
+.foot-col a{display:block;color:var(--ink-soft);text-decoration:none;font-size:0.86rem;margin-bottom:10px;transition:color 0.2s}
+.foot-col a:hover{color:var(--blue)}
+.foot-copy{
+  text-align:center;padding-top:26px;border-top:1px solid var(--line);
+  color:var(--ink-mute);font-size:0.8rem;line-height:1.9;
 }
 
-/* MOBILE NAV MENU */
-.mobile-menu{
-  display:none;position:fixed;inset:0;z-index:190;
-  background:var(--bg);padding:100px 30px 40px;
-  flex-direction:column;gap:24px;
+/* ============ REVEAL ANIMATIONS ============ */
+.rv{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s cubic-bezier(0.22,1,0.36,1)}
+.rv-r{transform:translateX(-34px)}
+.rv-l{transform:translateX(34px)}
+.rv.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
 }
-.mobile-menu.open{display:flex}
-.mobile-menu a{color:var(--text);text-decoration:none;font-size:1.2rem;font-weight:700}
 
-/* RESPONSIVE */
-@media(max-width:900px){
-  nav{padding:14px 20px}
+/* ============ QUICK SIGNUP MODAL ============ */
+.qs-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(10,22,51,0.4);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.qs-box{
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border);border-radius:26px;
+  padding:34px;width:100%;max-width:420px;box-shadow:var(--shadow-lg);
+}
+.qs-box h3{font-size:1.2rem;font-weight:900;margin-bottom:6px}
+.qs-box>p{color:var(--ink-soft);font-size:0.86rem;margin-bottom:20px}
+.qs-err{
+  display:none;background:rgba(255,138,61,0.1);border:1px solid rgba(255,138,61,0.35);
+  color:#D96A1E;padding:11px 14px;border-radius:12px;font-size:0.85rem;margin-bottom:14px;
+}
+.qs-box input{
+  width:100%;padding:13px 15px;border-radius:12px;margin-bottom:12px;
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.92rem;transition:border-color 0.2s;
+}
+.qs-box input:focus{outline:none;border-color:var(--blue)}
+.qs-submit{
+  width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,var(--blue),var(--blue-deep));color:#fff;
+  font-family:'Heebo',sans-serif;font-weight:700;font-size:1rem;
+}
+.qs-submit:disabled{opacity:0.6;cursor:wait}
+.qs-cancel{text-align:center;margin-top:14px;color:var(--ink-mute);font-size:0.84rem;cursor:pointer}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1000px){
+  .hero-grid{grid-template-columns:1fr;gap:48px}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .bene-grid{grid-template-columns:repeat(2,1fr)}
+  .timeline{grid-template-columns:repeat(2,1fr);gap:34px}
+  .timeline::before{display:none}
+  .testi-grid,.price-grid{grid-template-columns:1fr}
+  .pv-grid{grid-template-columns:1fr}
   .nav-links{display:none}
   .hamburger{display:block}
-  .who-grid,.pricing-grid{grid-template-columns:1fr}
-  .fb-1,.fb-2{display:none}
-  footer{flex-direction:column;align-items:flex-start;padding:30px 20px}
+  .fc-1,.fc-2{display:none}
 }
 @media(max-width:600px){
-  section{padding:60px 16px}
-  .hero-btns{flex-direction:column;align-items:center}
-  .btn{width:100%;max-width:300px;text-align:center}
+  section{padding:64px 16px}
+  .hero{padding:130px 16px 60px}
+  .feat-grid,.kpis{grid-template-columns:1fr}
+  .dash-row{grid-template-columns:1fr}
+  .timeline{grid-template-columns:1fr}
+  .hero-btns .btn{width:100%}
+  .trusted-row{gap:26px}
 }
 </style>
 </head>
 <body>
 
+<div class="ambient"></div>
+
 <!-- NAV -->
-<nav id="navbar">
-  <a href="#" class="logo">ניקוד<span>★</span></a>
-  <div class="nav-links">
-    <a href="#how">איך זה עובד</a>
-    <a href="#who">למי זה מתאים</a>
-    <a href="#pricing">מחירים</a>
-    <a href="#faq">שאלות נפוצות</a>
-    <a href="login.html" class="nav-cta">כניסה / הרשמה</a>
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">ניקוד<span>★</span></a>
+    <div class="nav-links">
+      <a href="#features">יכולות</a>
+      <a href="#how">איך זה עובד</a>
+      <a href="#pricing">מחירים</a>
+      <a href="#faq">שאלות נפוצות</a>
+      <a href="login.html" class="nav-cta">כניסה / הרשמה</a>
+    </div>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="תפריט">☰</button>
   </div>
-  <button class="hamburger" onclick="toggleMenu()">☰</button>
 </nav>
 
-<!-- MOBILE MENU -->
 <div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="toggleMenu()">יכולות</a>
   <a href="#how" onclick="toggleMenu()">איך זה עובד</a>
-  <a href="#who" onclick="toggleMenu()">למי זה מתאים</a>
   <a href="#pricing" onclick="toggleMenu()">מחירים</a>
   <a href="#faq" onclick="toggleMenu()">שאלות נפוצות</a>
-  <a href="login.html" class="btn btn-primary" style="text-align:center">כניסה / הרשמה</a>
+  <a href="login.html" class="btn btn-primary" style="justify-content:center">כניסה / הרשמה</a>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">🟢 nikud</div>
-  <h1>מניעים ביצועים.<br>מתגמלים <em>הצלחה.</em></h1>
-  <p class="hero-sub">ניקוד★ היא פתרון ניהול נוכחות וביצועים מלא מעקב אחר נוכחות העובדים, הטלת משימות, ומעקב שוטף אחר העמידה בהן כשכל פעולה מצטברת לנקודות שהעובד יכול להמיר לפרסים אמיתיים. מערכת מתקדמת לניהול עובדים, מעקב ביצועים ותגמולים חברו בין יעדי החברה למוטיבציה של העובדים, ועקבו בזמן אמת אחר נוכחות והספק.</p>
-  <div class="hero-btns">
-    <a href="login.html" class="btn btn-primary">התחל בחינם ←</a>
-    <a href="#how" class="btn btn-outline">איך זה עובד?</a>
-  </div>
-
-  <div class="hero-visual">
-    <div class="float-badge fb-1">✅ נועם קיבל +35 נקודות</div>
-    <div class="float-badge fb-2">🎁 מיכל מימשה קופון סטימצקי</div>
-    <div class="phone-mockup">
-      <div class="pts-display">
-        <div>
-          <div class="pts-lbl">הנקודות שלך</div>
-          <div class="pts-big">1,240</div>
-        </div>
-        <div style="text-align:left">
-          <div class="pts-lbl">רצף</div>
-          <div style="font-size:1.4rem;font-weight:900;color:var(--accent2)">🔥 5</div>
-        </div>
+  <div class="hero-grid">
+    <div>
+      <div class="hero-badge">מערכת SaaS לניהול ביצועים ותגמול</div>
+      <h1>מערכת תגמול חכמה <em>לעובדים, תלמידים וארגונים</em></h1>
+      <p class="hero-sub">ניקוד★ מחברת בין נוכחות, משימות וביצועים לבין תגמול אמיתי. עובדים ותלמידים צוברים נקודות על הגעה ועמידה ביעדים - וממירים אותן לפרסים. המנהלים מקבלים שליטה ונתונים בזמן אמת.</p>
+      <div class="hero-btns">
+        <a href="login.html" class="btn btn-primary">התחל עכשיו ←</a>
+        <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%95%D7%A2%20%D7%94%D7%93%D7%92%D7%9E%D7%94" target="_blank" class="btn btn-ghost">קבע הדגמה</a>
       </div>
-      <div class="mini-activity">
-        <div class="act-row"><div class="act-icon">📚</div><div class="act-text">מתמטיקה – אושרה נוכחות</div><div class="act-pts">+20</div></div>
-        <div class="act-row"><div class="act-icon">⭐</div><div class="act-text">בונוס השתתפות – אנגלית</div><div class="act-pts">+15</div></div>
-        <div class="act-row"><div class="act-icon">🔥</div><div class="act-text">בונוס רצף 5 ימים</div><div class="act-pts">+30</div></div>
+      <div class="hero-trust">
+        <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> ללא כרטיס אשראי</span>
+        <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> הקמה תוך שעה</span>
+        <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> 15 ימי ניסיון חינם</span>
+      </div>
+    </div>
+
+    <!-- LIVE DASHBOARD -->
+    <div class="dash-wrap">
+      <div class="float-card fc-1">✅ נועה קיבלה +25 נקודות</div>
+      <div class="float-card fc-2">📈 הנוכחות עלתה ב-16%<small>ב-30 הימים האחרונים</small></div>
+      <div class="dash" role="img" aria-label="תצוגת דשבורד המערכת">
+        <div class="dash-top">
+          <div class="dash-title">דשבורד ניהול · תיכון אופק</div>
+          <div class="dash-dots"><i></i><i></i><i></i></div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-num c-blue" data-count="94" data-suffix="%">0%</div><div class="kpi-lbl">נוכחות היום</div><div class="kpi-delta">▲ 6% מהשבוע שעבר</div></div>
+          <div class="kpi"><div class="kpi-num c-green" data-count="8340">0</div><div class="kpi-lbl">נקודות שחולקו</div><div class="kpi-delta">▲ 1,120 החודש</div></div>
+          <div class="kpi"><div class="kpi-num c-orange" data-count="142">0</div><div class="kpi-lbl">משתמשים פעילים</div><div class="kpi-delta">▲ 12 חדשים</div></div>
+        </div>
+        <div class="dash-row">
+          <div class="dash-card">
+            <h4>נוכחות שבועית</h4>
+            <div class="chart">
+              <div class="bar" style="height:62%"></div>
+              <div class="bar" style="height:74%"></div>
+              <div class="bar" style="height:68%"></div>
+              <div class="bar" style="height:86%"></div>
+              <div class="bar" style="height:79%"></div>
+              <div class="bar" style="height:94%"></div>
+              <div class="bar" style="height:90%"></div>
+            </div>
+            <div class="chart-lbls"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div>
+          </div>
+          <div class="dash-card">
+            <h4>עמידה במשימות</h4>
+            <div class="prog-item">
+              <div class="prog-head"><b>צוות בוקר</b><span>92%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:92%"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-head"><b>כיתה יא'2</b><span>78%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:78%;animation-delay:0.15s"></div></div>
+            </div>
+            <div class="prog-item">
+              <div class="prog-head"><b>סניף מרכז</b><span>85%</span></div>
+              <div class="prog-track"><div class="prog-fill" style="width:85%;animation-delay:0.3s"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-feed">
+          <div class="feed-row"><div class="feed-ic">📍</div><div class="feed-txt"><b>דניאל</b> סימן צ'ק-אין למשמרת בוקר</div><div class="feed-pts">+3</div></div>
+          <div class="feed-row"><div class="feed-ic">🎁</div><div class="feed-txt"><b>מאיה</b> מימשה גיפט-קארד</div><div class="feed-pts">-120</div></div>
+          <div class="feed-row"><div class="feed-ic">⭐</div><div class="feed-txt"><b>עומר</b> קיבל בונוס מצוינות מהמנהל</div><div class="feed-pts">+5</div></div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div class="stat-item"><div class="stat-num">2,000+</div><div class="stat-lbl">תלמידים פעילים</div></div>
-  <div class="stat-item"><div class="stat-num">97%</div><div class="stat-lbl">שיפור ממוצע בנוכחות</div></div>
-  <div class="stat-item"><div class="stat-num">22</div><div class="stat-lbl">כיתות מחוברות</div></div>
-  <div class="stat-item"><div class="stat-num">100</div><div class="stat-lbl">שותפי פרסים</div></div>
+<!-- TRUSTED BY -->
+<div class="trusted">
+  <div class="trusted-inner rv">
+    <div class="trusted-lbl">ארגונים ומוסדות שכבר מנהלים איתנו נוכחות ותגמול</div>
+    <div class="trusted-row">
+      <span>תיכון אופק</span>
+      <span>קבוצת נועם</span>
+      <span>רשת קפה אורבן</span>
+      <span>לוגיסטיקה א.מ</span>
+      <span>מכללת הדרום</span>
+      <span>סוכנות ביטוח מגן</span>
+    </div>
+  </div>
 </div>
 
+<!-- FEATURES -->
+<section id="features">
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label">יכולות המערכת</div>
+      <h2 class="sec-title">כל מה שצריך כדי להניע ביצועים</h2>
+      <p class="sec-sub">פלטפורמה אחת שמרכזת נוכחות, משימות, נקודות ופרסים - לבתי ספר, עסקים וארגונים.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h11"/></svg></div>
+        <h3>אישור נוכחות מבוקר</h3>
+        <p>עובדים ותלמידים מסמנים צ'ק-אין, והמורה או המנהל מאשרים ידנית. אין דיווח עצמי - יש אמינות מלאה.</p>
+      </div>
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+        <h3>מעקב בזמן אמת</h3>
+        <p>דשבורד חי שמראה מי נוכח, מי בסיכון ומה מצב המשימות - בכל רגע, מכל מכשיר.</p>
+      </div>
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7a3 3 0 10-3-3c0 1.7 1.3 3 3 3z"/><path d="M12 7a3 3 0 113-3c0 1.7-1.3 3-3 3z"/></svg></div>
+        <h3>חנות פרסים אמיתית</h3>
+        <p>נקודות שנצברו מומרות לגיפט-קארד, קופונים, מוצרי חשמל ועוד. כל ארגון יכול להוסיף פרסים משלו.</p>
+      </div>
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+        <h3>דוחות וזיהוי מגמות</h3>
+        <p>המערכת מזהה אוטומטית עובדים ותלמידים בסיכון ומגמות ירידה בנוכחות - לפני שזה הופך לבעיה.</p>
+      </div>
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M22 17a4 4 0 00-4-4H6a4 4 0 00-4 4"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>הטלת משימות ומעקב</h3>
+        <p>מנהלים ומורים מטילים משימות, עוקבים אחר ההשלמה ומתגמלים בנקודות על עמידה ביעדים.</p>
+      </div>
+      <div class="feat rv">
+        <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div>
+        <h3>התראות SMS ווואטסאפ</h3>
+        <p>התראות אוטומטיות להורים, מנהלים ומורים כשמשהו דורש תשומת לב - היעדרות, ירידה או הישג.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- HOW IT WORKS -->
-<section id="how">
-  <div class="section-inner">
-    <div class="section-label">איך זה עובד</div>
-    <h2 class="section-title">פשוט כמו שזה נשמע</h2>
-    <p class="section-sub">3 צעדים. בלי בירוקרטיה. עובד מהיום הראשון.</p>
-    <div class="how-grid">
-      <div class="how-step">
-        <div class="step-num">01</div>
-        <div class="step-icon">🏫</div>
-        <h3>בית הספר או העסק נרשם</h3>
-        <p>הרשמה מהירה, ייבוא רשימת תלמידים/עובדים, כיתות/צוותים ומורים/מנהלים. מוכנים תוך שעה.</p>
+<section class="hiw" id="how">
+  <div class="inner">
+    <div class="rv" style="text-align:center">
+      <div class="sec-label">איך זה עובד</div>
+      <h2 class="sec-title">מההרשמה ועד הפרס הראשון</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-step rv">
+        <div class="tl-dot">1</div>
+        <h3>הארגון נרשם</h3>
+        <p>בית הספר או העסק פותח חשבון, מקבל קוד הצטרפות ייעודי ומוכן תוך שעה.</p>
       </div>
-      <div class="how-step">
-        <div class="step-num">02</div>
-        <div class="step-icon">📱</div>
-        <h3>התלמיד/העובד נרשם</h3>
-        <p>כניסה עם קוד שבית הספר או העסק שולח. חשבון אישי עם ארנק נקודות.</p>
+      <div class="tl-step rv">
+        <div class="tl-dot">2</div>
+        <h3>הצוות מצטרף</h3>
+        <p>עובדים ותלמידים נרשמים עם הקוד ומקבלים חשבון אישי עם ארנק נקודות.</p>
       </div>
-      <div class="how-step">
-        <div class="step-num">03</div>
-        <div class="step-icon">✅</div>
-        <h3>המורה/המנהל מאשר/ת בסוף שיעור או משמרת</h3>
-        <p>רשימת הכיתה/הצוות מוצגת. יש עד 8 שעות לסמן מי קיבל נקודות ומי בונוס.</p>
+      <div class="tl-step rv">
+        <div class="tl-dot">3</div>
+        <h3>נוכחות מאושרת</h3>
+        <p>צ'ק-אין בכל שיעור או משמרת, אישור ידני של המורה או המנהל - והנקודות נצברות.</p>
       </div>
-      <div class="how-step">
-        <div class="step-num">04</div>
-        <div class="step-icon">🎁</div>
-        <h3>התלמיד/העובד ממיר לפרסים</h3>
-        <p>נקודות = פרסים אמיתיים. קופונים, גיפט-קארד, יום חופש ועוד.</p>
-      </div>
-      <div class="how-step">
-        <div class="step-num">⚙️</div>
-        <div class="step-icon">🚀</div>
-        <h3>זהו! מוכנים לגלגל</h3>
-        <p>מדידת ביצועים, אישור נוכחות, תגמול על עמידה במטלות, ומעקב שוטף אחר הכיתה או הצוות - הכל במקום אחד, בזמן אמת, בשליטתם המלאה של המנהל או המורה.</p>
+      <div class="tl-step rv">
+        <div class="tl-dot">4</div>
+        <h3>ממירים לפרסים</h3>
+        <p>הנקודות הופכות לגיפט-קארד, קופונים ופרסים אמיתיים. המוטיבציה עושה את השאר.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- WHO FOR -->
-<section id="who" style="background:var(--surface)">
-  <div class="section-inner">
-    <div class="section-label">למי זה מתאים</div>
-    <h2 class="section-title">כולם מרוויחים</h2>
-    <div class="who-grid">
-      <div class="who-card" style="border-color:rgba(6,214,160,0.3)">
-        <div class="who-emoji">📈</div>
-        <h3>עסקים ומוסדות שרוצים להגדיל נוכחות</h3>
-        <ul>
-          <li>מצמצמים היעדרויות ואיחורים בפועל</li>
-          <li>מתגמלים עובדים על הגעה ועמידה ביעדים</li>
-          <li>הטלת משימות ומעקב אחר השלמתן</li>
-          <li>שיפור מדיד תוך שבועות ספורים</li>
-          <li>מעקב בזמן אמת אחר כל סניף או צוות</li>
-        </ul>
-      </div>
-      <div class="who-card">
-        <div class="who-emoji">🎒</div>
-        <h3>תלמידים – כיתה ד' עד י"ב</h3>
-        <ul>
-          <li>צוברים נקודות בכל שיעור</li>
-          <li>רואים ליגת כיתה בזמן אמת</li>
-          <li>ממירים לפרסים אמיתיים</li>
-          <li>בונוס על רצף נוכחות</li>
-        </ul>
-      </div>
-      <div class="who-card" style="border-color:rgba(46,111,255,0.3)">
-        <div class="who-emoji">👩‍🏫</div>
-        <h3>מורים</h3>
-        <ul>
-          <li>אישור נקודות ב-30 שניות</li>
-          <li>כלי משמעת חדש ויעיל</li>
-          <li>בונוס לבולטים בשיעור</li>
-          <li>הערות לכל תלמיד</li>
-        </ul>
-      </div>
-      <div class="who-card">
-        <div class="who-emoji">🏫</div>
-        <h3>בתי ספר ומנהלים</h3>
-        <ul>
-          <li>דוח נוכחות בזמן אמת</li>
-          <li>ניתוח לפי כיתה ומקצוע</li>
-          <li>התראה אוטומטית להורים, מנהלים ומורים</li>
-          <li>שיפור מדיד בנוכחות</li>
-        </ul>
-      </div>
-      <div class="who-card">
-        <div class="who-emoji">🏢</div>
-        <h3>עסקים</h3>
-        <ul>
-          <li>שיפור נוכחות עובדים</li>
-          <li>מדידת נוכחות בזמן אמת</li>
-          <li>תגמול העובדים בפרסים אמיתיים</li>
-        </ul>
-      </div>
-      <div class="who-card">
-        <div class="who-emoji">📊</div>
-        <h3>מנהל</h3>
-        <ul>
-          <li>מעקב אחר נוכחות בזמן אמת</li>
-          <li>מעקב אחר ביצועי העובד</li>
-          <li>מעקב אחר עמידה במטלות</li>
-          <li>מתן בונוסים אישיים על מצוינות</li>
-          <li>אישור בקשות ומענה מהיר לעובד</li>
-          <li>שקיפות מלאה לעובד על ההתקדמות שלו</li>
-        </ul>
+<!-- DASHBOARD PREVIEW -->
+<section>
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label">מבט מבפנים</div>
+      <h2 class="sec-title">שליטה מלאה במסך אחד</h2>
+      <p class="sec-sub">דוח הנוכחות של המנהל: מי בסיכון, מי מצטיין, ומה קורה עכשיו - בלי אקסלים ובלי ניחושים.</p>
+    </div>
+    <div class="preview-frame rv">
+      <div class="preview">
+        <div class="dash-top">
+          <div class="dash-title">דוח נוכחות · כל הצוותים</div>
+          <div class="dash-dots"><i></i><i></i><i></i></div>
+        </div>
+        <div class="pv-grid">
+          <div class="dash-card">
+            <h4>נוכחות לפי עובד/תלמיד</h4>
+            <table class="pv-table">
+              <thead><tr><th>שם</th><th>צוות/כיתה</th><th>נוכחות</th><th>סטטוס</th></tr></thead>
+              <tbody>
+                <tr><td>נועה לוי</td><td>יא'2</td><td>96%</td><td><span class="pv-badge ok">מצטיינת</span></td></tr>
+                <tr><td>דניאל כהן</td><td>משמרת בוקר</td><td>88%</td><td><span class="pv-badge ok">תקין</span></td></tr>
+                <tr><td>עומר אזולאי</td><td>יא'2</td><td>67%</td><td><span class="pv-badge warn">מגמת ירידה</span></td></tr>
+                <tr><td>שירה מור</td><td>סניף מרכז</td><td>54%</td><td><span class="pv-badge risk">בסיכון</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="dash-card">
+            <h4>התראות אחרונות</h4>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">⚠️</div>
+              <div><b>שירה מור ירדה מתחת ל-70%</b><p>נשלחה התראת וואטסאפ למנהל הסניף</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">📉</div>
+              <div><b>זוהתה מגמת ירידה - עומר</b><p>ירידה של 22 נק' אחוז ב-14 יום</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">🏆</div>
+              <div><b>נועה השלימה רצף חודשי</b><p>מומלץ בונוס מצוינות אישי</p></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- REWARDS -->
-<section id="rewards">
-  <div class="section-inner">
-    <div class="section-label">קטלוג פרסים</div>
-    <h2 class="section-title">בשביל מה שווה לצבור נקודות</h2>
-    <p class="section-sub">כמה דוגמאות לפרסים שאפשר לממש עם הנקודות</p>
-    <div class="who-grid">
-      <div class="who-card">
-        <h3>קפה בקפיטריה</h3>
+<!-- BENEFITS -->
+<section style="padding-top:20px">
+  <div class="inner">
+    <div class="rv" style="text-align:center">
+      <div class="sec-label">התוצאות</div>
+      <h2 class="sec-title">מספרים שמדברים בעד עצמם</h2>
+    </div>
+    <div class="bene-grid">
+      <div class="bene rv"><div class="bene-num">16%+</div><p>שיפור ממוצע בנוכחות תוך 30 יום מההטמעה</p></div>
+      <div class="bene rv"><div class="bene-num">30 שנ'</div><p>זה כל הזמן שלוקח למורה או למנהל לאשר נוכחות לצוות שלם</p></div>
+      <div class="bene rv"><div class="bene-num">0₪</div><p>עלות לעובדים ולתלמידים - המנוי הוא על הארגון בלבד</p></div>
+      <div class="bene rv"><div class="bene-num">24/7</div><p>נתונים ודוחות זמינים בזמן אמת, מכל מכשיר ובכל שעה</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi">
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label">לקוחות מספרים</div>
+      <h2 class="sec-title">מה אומרים מנהלים שכבר עובדים איתנו</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card rv">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"הנוכחות בסניף שלי עלתה מ-78% ל-94% תוך חודש. העובדים פשוט רוצים להיות כאן."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#2E6FFF,#7C4DFF)">מ</div>
+          <div><div class="a-name">מרים לוי</div><div class="a-role">מנהלת פיצריה, תל אביב</div></div>
+        </div>
       </div>
-      <div class="who-card">
-        <h3>סרט חינם</h3>
+      <div class="testi-card rv">
+        <div class="stars">★★★★★</div>
+        <p class="quote">"סוף סוף יש לי כלי שמדבר לתלמידים בשפה שלהם. הם מתחרים על נקודות כמו במשחק."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#0BB07B,#0CB)">ד</div>
+          <div><div class="a-name">דוד כהן</div><div class="a-role">מנהל בית ספר, חיפה</div></div>
+        </div>
       </div>
-      <div class="who-card">
-        <h3>כרטיס לספארי</h3>
-      </div>
-      <div class="who-card">
-        <h3>פיצה מתנה</h3>
-      </div>
-      <div class="who-card">
-        <h3>יום חופש מאושר</h3>
-      </div>
-      <div class="who-card">
-        <h3>קופון yes</h3>
-      </div>
-      <div class="who-card">
-        <h3>גיפט קארד</h3>
-      </div>
-      <div class="who-card">
-        <h3>קופונים לחנויות ורשתות אופנה מוכרות</h3>
-      </div>
-      <div class="who-card">
-        <h3>מוצרי חשמל ומשחקי גיימינג</h3>
+      <div class="testi-card rv">
+        <div class="stars">★★★★☆</div>
+        <p class="quote">"הייתי ספקן, אבל אחרי שבועיים ראיתי את השינוי. הילדים באים בזמן ומשתתפים."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#F5A623,#FF8A3D)">י</div>
+          <div><div class="a-name">יוסי אברהם</div><div class="a-role">מורה לחינוך גופני, ירושלים</div></div>
+        </div>
       </div>
     </div>
-    <p class="section-sub" style="margin:24px auto 0;text-align:center;max-width:600px">ואלפי הטבות נוספות שמתעדכנות באופן שוטף - כל בית ספר או עסק יכול גם להוסיף פרסים משלו.</p>
   </div>
 </section>
 
 <!-- PRICING -->
 <section id="pricing">
-  <div class="section-inner">
-    <div class="section-label">מחירים</div>
-    <h2 class="section-title">פשוט ושקוף</h2>
-    <p class="section-sub">המחיר לעסק/בית ספר בחודש. ללא עלות לתלמידים/עובדים.</p>
-    <div class="pricing-grid">
-      <div class="price-card">
-        <div class="price-name">ניסיון</div>
-        <div class="price-amount">חינם</div>
-        <div class="price-period">15 ימי ניסיון, ללא כרטיס אשראי</div>
-        <div class="price-desc">לבית ספר ועסקים שרוצים להכיר את המערכת</div>
-        <div style="font-size:0.78rem;color:var(--accent2);margin:-8px 0 14px">* גרסת דמו - לא ניתן לממש פרסים בפועל</div>
-        <ul class="price-features">
-          <li>כיתה אחת</li>
-          <li>עד 30 תלמידים</li>
+  <div class="inner">
+    <div class="rv" style="text-align:center">
+      <div class="sec-label">מחירים</div>
+      <h2 class="sec-title">תוכנית לכל שלב</h2>
+      <p class="sec-sub" style="margin:0 auto">המחיר לעסק/בית ספר בחודש. ללא עלות לתלמידים/עובדים.</p>
+    </div>
+    <div class="price-grid">
+      <div class="plan rv">
+        <div class="plan-name">Starter · ניסיון</div>
+        <div class="plan-price">חינם</div>
+        <div class="plan-desc">15 ימי ניסיון, ללא כרטיס אשראי - לבתי ספר ועסקים שרוצים להכיר את המערכת.</div>
+        <div class="plan-note">* גרסת דמו - לא ניתן לממש פרסים בפועל</div>
+        <ul>
+          <li>כיתה/צוות אחד</li>
+          <li>עד 30 תלמידים/עובדים</li>
           <li>2 פונקציות פעילות</li>
           <li class="no">התראות להורים, מנהלים ומורים</li>
           <li class="no">דוחות נוכחות ופעילות</li>
         </ul>
-        <a href="login.html" class="btn btn-primary" style="width:100%;text-align:center">התחל חינם</a>
+        <a href="login.html" class="btn btn-ghost">התחל חינם</a>
       </div>
-      <div class="price-card popular">
-        <div class="popular-badge">הכי פופולרי</div>
-        <div class="price-name">מנוי</div>
-        <div class="price-amount">₪299</div>
-        <div class="price-period">לחודש, לבית ספר/לעסק</div>
-        <div class="price-desc">לבתי ספר יסודיים, על יסודיים ולעסקים קטנים-בינוניים</div>
-        <ul class="price-features">
-          <li>עד 2 כיתות</li>
-          <li>עד 60 תלמידים</li>
-          <li class="no">שליטה מלאה במערכת</li>
+      <div class="plan popular rv">
+        <div class="pop-badge">הכי פופולרי</div>
+        <div class="plan-name">Business · מנוי</div>
+        <div class="plan-price">₪299 <small>/ לחודש</small></div>
+        <div class="plan-desc">לבתי ספר יסודיים, על יסודיים ולעסקים קטנים-בינוניים.</div>
+        <ul>
+          <li>עד 2 כיתות/צוותים</li>
+          <li>עד 60 תלמידים/עובדים</li>
           <li>חנות פרסים מלאה</li>
           <li>שליטה מלאה על מדדים ואישורים</li>
           <li>התראות SMS/וואטסאפ להורים, מנהלים ומורים</li>
           <li>קוד הצטרפות ייעודי לבית הספר/לעסק</li>
+          <li class="no">שליטה מלאה במערכת</li>
           <li class="no">כרטיס היסטוריה אישי לכל תלמיד</li>
         </ul>
-        <button onclick="openQuickSignup('basic')" class="btn btn-primary" style="width:100%;text-align:center;border:none;cursor:pointer;font-family:inherit;font-size:inherit">הצטרפות למנוי ←</button>
+        <button onclick="openQuickSignup('basic')" class="btn btn-primary">הצטרפות למנוי ←</button>
       </div>
-      <div class="price-card">
-        <div class="price-name">מנוי מורחב</div>
-        <div class="price-amount">₪699</div>
-        <div class="price-period">לחודש, לבית ספר/לעסק</div>
-        <div class="price-desc">לבתי ספר גדולים וארגונים שרוצים ניהול ואנליטיקה מתקדמים</div>
-        <ul class="price-features">
-          <li>עד 5 כיתות</li>
+      <div class="plan rv">
+        <div class="plan-name">Enterprise · מנוי מורחב</div>
+        <div class="plan-price">₪699 <small>/ לחודש</small></div>
+        <div class="plan-desc">לבתי ספר גדולים וארגונים שרוצים ניהול ואנליטיקה מתקדמים.</div>
+        <ul>
+          <li>עד 5 כיתות/צוותים</li>
           <li>שליטה מלאה במערכת</li>
           <li>כל התכונות של תוכנית מנוי (כולל התראות SMS/וואטסאפ)</li>
           <li>דוח נוכחות מתקדם עם זיהוי "תלמידים/עובדים בסיכון" ומגמות ירידה</li>
@@ -580,197 +850,169 @@ footer{
           <li>דוח פעילות מורים/מנהלי צוות</li>
           <li>תקציב נקודות חודשי לכיתה עם בקרה אוטומטית</li>
           <li>בונוסים אישיים שהמורה או המנהל יכולים לתת בכל רגע</li>
-          <li>הטלת משימות ומטלות לתלמידים/עובדים על ידי המורה או המנהל</li>
+          <li>הטלת משימות ומטלות על ידי המורה או המנהל</li>
           <li>מנהל לקוח ייעודי</li>
         </ul>
-        <a href="mailto:nikud@outlook.co.il" class="btn btn-outline" style="width:100%;text-align:center">דבר איתנו</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section style="background:var(--surface)">
-  <div class="section-inner">
-    <div class="section-label">מה אומרים</div>
-    <h2 class="section-title">מבתי הספר שלנו</h2>
-    <div class="test-grid">
-      <div class="test-card">
-        <div class="test-stars">★★★★★</div>
-        <div class="test-quote">"הנוכחות בסניף שלי עלתה מ-78% ל-94% תוך חודש. העובדים פשוט רוצים להיות כאן."</div>
-        <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#2E6FFF,#7C4DFF)">מ</div>
-          <div><div class="test-name">מרים לוי</div><div class="test-role">מנהלת פיצריה, תל אביב</div></div>
-        </div>
-      </div>
-      <div class="test-card">
-        <div class="test-stars">★★★★★</div>
-        <div class="test-quote">"סוף סוף יש לי כלי שמדבר לתלמידים בשפה שלהם. הם מתחרים על נקודות כמו במשחק."</div>
-        <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#06D6A0,#0CB)">ד</div>
-          <div><div class="test-name">דוד כהן</div><div class="test-role">מנהל בית ספר, חיפה</div></div>
-        </div>
-      </div>
-      <div class="test-card">
-        <div class="test-stars">★★★★☆</div>
-        <div class="test-quote">"הייתי ספקן, אבל אחרי שבועיים ראיתי את השינוי. הילדים באים בזמן ומשתתפים."</div>
-        <div class="test-author">
-          <div class="test-avatar" style="background:linear-gradient(135deg,#FFC93D,#FF8A3D)">י</div>
-          <div><div class="test-name">יוסי אברהם</div><div class="test-role">מורה לחינוך גופני, ירושלים</div></div>
-        </div>
+        <a href="mailto:nikud@outlook.co.il" class="btn btn-ghost">דבר איתנו</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FAQ -->
-<section id="faq">
-  <div class="section-inner" style="text-align:center">
-    <div class="section-label">שאלות נפוצות</div>
-    <h2 class="section-title">יש לך שאלה?</h2>
+<section id="faq" style="padding-top:30px">
+  <div class="inner">
+    <div class="rv" style="text-align:center">
+      <div class="sec-label">שאלות נפוצות</div>
+      <h2 class="sec-title">יש לך שאלה?</h2>
+    </div>
     <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">האם תלמיד יכול לזייף נוכחות?</button>
-        <div class="faq-a">לא. הנקודות מחולקות רק אחרי שהמורה מאשרת ידנית בסוף כל שיעור. אין צ'ק-אין עצמאי לתלמיד – המורה היא הסמכות הבלעדית.</div>
+      <div class="faq-item rv">
+        <button class="faq-q" onclick="toggleFaq(this)">האם תלמיד או עובד יכול לזייף נוכחות?</button>
+        <div class="faq-a"><div class="faq-a-inner">לא. הנקודות מחולקות רק אחרי שהמורה או המנהל מאשרים ידנית בסוף כל שיעור או משמרת. אין צ'ק-אין עצמאי שמזכה בנקודות - הגורם המאשר הוא הסמכות הבלעדית.</div></div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">כמה זמן לוקח למורה לאשר?</button>
-        <div class="faq-a">למורה (או למנהל, בעסקים) יש עד 8 שעות מרגע פתיחת השיעור/המשמרת לאשר את הנוכחות. זה נותן מספיק גמישות ליום עבודה עמוס, בלי להשאיר שיעורים ישנים "תקועים" כפעילים אצל התלמידים.</div>
+      <div class="faq-item rv">
+        <button class="faq-q" onclick="toggleFaq(this)">כמה זמן לוקח לאשר נוכחות?</button>
+        <div class="faq-a"><div class="faq-a-inner">למורה (או למנהל, בעסקים) יש עד 8 שעות מרגע פתיחת השיעור/המשמרת לאשר את הנוכחות. זה נותן גמישות ליום עמוס, בלי להשאיר שיעורים ישנים "תקועים" כפעילים.</div></div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">מה הפרסים שתלמיד יכול לקבל?</button>
-        <div class="faq-a">קופונים לסטימצקי, גיפט-קארד לSteam, קפה ב-Aroma, פיצה, יום חופש מאושר ועוד. אנחנו מוסיפים שותפים כל הזמן. בית הספר יכול גם להוסיף פרסים משלו.</div>
+      <div class="faq-item rv">
+        <button class="faq-q" onclick="toggleFaq(this)">אילו פרסים אפשר לממש?</button>
+        <div class="faq-a"><div class="faq-a-inner">גיפט-קארד, קופונים לרשתות אופנה, מוצרי חשמל ומשחקי גיימינג, קפה, פיצה, יום חופש מאושר ועוד אלפי הטבות שמתעדכנות. כל ארגון יכול גם להוסיף פרסים משלו.</div></div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">האם יש עלות לתלמידים?</button>
-        <div class="faq-a">לא. המערכת חינמית לחלוטין לתלמידים. העלות היא על בית הספר בלבד.</div>
+      <div class="faq-item rv">
+        <button class="faq-q" onclick="toggleFaq(this)">האם יש עלות לתלמידים או לעובדים?</button>
+        <div class="faq-a"><div class="faq-a-inner">לא. המערכת חינמית לחלוטין לתלמידים ולעובדים. העלות היא על בית הספר או העסק בלבד.</div></div>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">איך מתחברים לדומיין שלנו?</button>
-        <div class="faq-a">אחרי ההרשמה אנחנו שולחים הוראות פשוטות לחיבור הדומיין. לרוב לוקח פחות מ-10 דקות. אפשר גם להשתמש בכתובת שלנו.</div>
+      <div class="faq-item rv">
+        <button class="faq-q" onclick="toggleFaq(this)">איך מבטלים או משדרגים מנוי?</button>
+        <div class="faq-a"><div class="faq-a-inner">המנוי מתחדש חודשית וניתן לביטול בכל עת. שדרוג בין תוכניות נכנס לתוקף מיידית - פשוט פונים אלינו בוואטסאפ או במייל.</div></div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section style="padding:40px 20px 80px">
-  <div class="cta-section">
-    <h2>מוכן להתחיל?</h2>
-    <p>פיילוט חינמי ל-15 יום. ללא כרטיס אשראי. ביטול בכל עת.</p>
+<section style="padding-top:20px">
+  <div class="cta-box rv">
+    <h2>מוכנים להניע את הצוות שלכם?</h2>
+    <p>פיילוט חינמי ל-15 יום · ללא כרטיס אשראי · ביטול בכל עת</p>
     <div class="cta-btns">
-      <a href="login.html" class="btn btn-primary">הרשמת בית ספר חינם ←</a>
-      <a href="https://wa.me/972543771767" target="_blank" class="btn btn-outline">💬 דברו איתנו בוואטסאפ</a>
-      <a href="mailto:nikud@outlook.co.il" class="btn btn-outline">דבר איתנו</a>
+      <a href="login.html" class="btn btn-white">התחל עכשיו ←</a>
+      <a href="https://wa.me/972543771767" target="_blank" class="btn btn-glass">💬 דברו איתנו בוואטסאפ</a>
     </div>
   </div>
 </section>
 
-<div class="live-toast" id="liveToast">
-  <div class="live-toast-icon" id="liveToastIcon">🎉</div>
-  <div>
-    <div class="live-toast-text" id="liveToastText"></div>
-    <div class="live-toast-time" id="liveToastTime"></div>
-  </div>
-</div>
-
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">ניקוד<span>★</span></div>
-  <div class="footer-links">
-    <a href="#how">איך זה עובד</a>
-    <a href="#pricing">מחירים</a>
-    <a href="privacy.html">פרטיות</a>
-    <a href="terms.html">תנאי שימוש</a>
-    <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
-    <a href="mailto:nikud@outlook.co.il">צור קשר</a>
-  </div>
-  <div class="footer-copy">
-    משרד: אופקים, הרצל 50 &nbsp;|&nbsp; טלפון משרד: 08-9999633 &nbsp;|&nbsp; פקס: 077-5642256 &nbsp;|&nbsp; וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: nikud@outlook.co.il
-    <br>© 2025 ניקוד★ | כל הזכויות שמורות
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="logo" style="font-size:1.35rem">ניקוד<span>★</span></div>
+        <p>מערכת תגמול חכמה לניהול נוכחות, ביצועים ומוטיבציה - לעסקים, בתי ספר וארגונים.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>מוצר</h4>
+          <a href="#features">יכולות</a>
+          <a href="#how">איך זה עובד</a>
+          <a href="#pricing">מחירים</a>
+          <a href="#faq">שאלות נפוצות</a>
+        </div>
+        <div class="foot-col">
+          <h4>משפטי</h4>
+          <a href="privacy.html">מדיניות פרטיות</a>
+          <a href="terms.html">תנאי שימוש</a>
+        </div>
+        <div class="foot-col">
+          <h4>יצירת קשר</h4>
+          <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
+          <a href="mailto:nikud@outlook.co.il">nikud@outlook.co.il</a>
+          <a href="tel:089999633">08-9999633</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-copy">
+      משרד: אופקים, הרצל 50 &nbsp;|&nbsp; טלפון משרד: 08-9999633 &nbsp;|&nbsp; פקס: 077-5642256 &nbsp;|&nbsp; וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: nikud@outlook.co.il
+      <br>© 2026 ניקוד★ | כל הזכויות שמורות
+    </div>
   </div>
 </footer>
 
+<!-- QUICK SIGNUP MODAL -->
+<div id="qsModal" class="qs-overlay">
+  <div class="qs-box">
+    <h3>הרשמה מהירה + תשלום</h3>
+    <p>כמה פרטים ומעבירים אותך ישר לדף התשלום המאובטח</p>
+    <div id="qsError" class="qs-err"></div>
+    <form onsubmit="submitQuickSignup(event)">
+      <input type="hidden" id="qsPlan">
+      <input id="qsSchoolName" placeholder="שם בית הספר/העסק" required>
+      <input id="qsName" placeholder="שם מלא" required>
+      <input id="qsEmail" type="email" placeholder="אימייל" required>
+      <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required>
+      <button type="submit" id="qsSubmitBtn" class="qs-submit">המשך לתשלום ←</button>
+      <div class="qs-cancel" onclick="closeQuickSignup()">ביטול</div>
+    </form>
+  </div>
+</div>
+
 <script>
+/* ---------- Menu ---------- */
 function toggleMenu() {
   document.getElementById('mobileMenu').classList.toggle('open')
 }
-function toggleFaq(btn) {
-  const ans = btn.nextElementSibling
-  const isOpen = ans.classList.contains('open')
-  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'))
-  document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'))
-  if (!isOpen) { ans.classList.add('open'); btn.classList.add('open') }
-}
-// Close mobile menu on outside click
 document.addEventListener('click', e => {
   if (!e.target.closest('nav') && !e.target.closest('#mobileMenu')) {
     document.getElementById('mobileMenu').classList.remove('open')
   }
 })
 
-// LIVE ACTIVITY TOAST - social proof notifications
-const liveEvents = [
-  { icon: '⭐', text: '<b>נועה</b> קיבלה 25 נקודות על נוכחות ובונוס' },
-  { icon: '🎁', text: '<b>יעל</b> מימשה קופון הנחה' },
-  { icon: '☕', text: '<b>איתי</b> מימש קפה בקפיטריה' },
-  { icon: '📚', text: '<b>דניאל</b> קיבל 20 נקודות נוכחות' },
-  { icon: '🎬', text: '<b>שירה</b> מימשה סרט חינם' },
-  { icon: '🔥', text: '<b>עומר</b> קיבל בונוס רצף 5 ימים' },
-  { icon: '🏢', text: '<b>עובד ממשמרת בוקר</b> קיבל 15 נקודות' },
-  { icon: '🍕', text: '<b>מאיה</b> מימשה פיצה מתנה' },
-  { icon: '✅', text: '<b>אבי</b> הגיע לשיעור' },
-  { icon: '📍', text: '<b>שירן</b> סימנה צ\'ק-אין לשיעור' },
-  { icon: '👍', text: '<b>אלכס</b> אישר נוכחות' },
-]
-const liveTimes = ['לפני רגע', 'לפני 2 דקות', 'לפני 4 דקות', 'לפני 6 דקות']
-
-let liveIndex = 0
-function showLiveToast() {
-  const toast = document.getElementById('liveToast')
-  const ev = liveEvents[liveIndex % liveEvents.length]
-  document.getElementById('liveToastIcon').textContent = ev.icon
-  document.getElementById('liveToastText').innerHTML = ev.text
-  document.getElementById('liveToastTime').textContent = liveTimes[Math.floor(Math.random() * liveTimes.length)]
-  toast.classList.add('show')
-  liveIndex++
-  setTimeout(() => toast.classList.remove('show'), 4500)
+/* ---------- FAQ accordion ---------- */
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item')
+  const ans = item.querySelector('.faq-a')
+  const wasOpen = item.classList.contains('open')
+  document.querySelectorAll('.faq-item').forEach(i => {
+    i.classList.remove('open')
+    i.querySelector('.faq-a').style.maxHeight = null
+  })
+  if (!wasOpen) {
+    item.classList.add('open')
+    ans.style.maxHeight = ans.scrollHeight + 'px'
+  }
 }
 
-setTimeout(() => {
-  showLiveToast()
-  setInterval(showLiveToast, 10000)
-}, 3000)
-</script>
-<script src="accessibility-widget.js"></script>
+/* ---------- Scroll reveal ---------- */
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) { en.target.classList.add('in'); revealObs.unobserve(en.target) }
+  })
+}, { threshold: 0.12 })
+document.querySelectorAll('.rv').forEach(el => revealObs.observe(el))
 
-<!-- Quick signup + payment modal -->
-<div id="qsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#12082e;border:1px solid rgba(255,255,255,0.16);border-radius:20px;padding:32px;width:100%;max-width:420px;color:#F3EFFF;font-family:'Heebo',sans-serif">
-    <h3 style="margin-bottom:6px;font-size:1.2rem;font-weight:800">הרשמה מהירה + תשלום</h3>
-    <p style="color:#C8BEEA;font-size:0.85rem;margin-bottom:20px">כמה פרטים ומעבירים אותך ישר לדף התשלום המאובטח</p>
-    <div id="qsError" style="display:none;background:rgba(255,138,61,0.12);border:1px solid rgba(255,138,61,0.35);color:#FF8A3D;padding:10px 14px;border-radius:10px;font-size:0.85rem;margin-bottom:14px"></div>
-    <form onsubmit="submitQuickSignup(event)">
-      <input type="hidden" id="qsPlan">
-      <div style="margin-bottom:12px">
-        <input id="qsSchoolName" placeholder="שם בית הספר/העסק" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
-      </div>
-      <div style="margin-bottom:12px">
-        <input id="qsName" placeholder="שם מלא" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
-      </div>
-      <div style="margin-bottom:12px">
-        <input id="qsEmail" type="email" placeholder="אימייל" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
-      </div>
-      <div style="margin-bottom:12px">
-        <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.04);color:#fff;font-family:inherit">
-      </div>
-      <button type="submit" id="qsSubmitBtn" style="width:100%;padding:14px;background:#2E6FFF;border:none;border-radius:12px;color:#fff;font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit">המשך לתשלום ←</button>
-      <div onclick="closeQuickSignup()" style="text-align:center;margin-top:14px;color:#C8BEEA;font-size:0.82rem;cursor:pointer">ביטול</div>
-    </form>
-  </div>
-</div>
+/* ---------- KPI counters ---------- */
+function animateCount(el) {
+  const target = parseInt(el.dataset.count, 10)
+  const suffix = el.dataset.suffix || ''
+  const dur = 1400
+  const t0 = performance.now()
+  function tick(t) {
+    const p = Math.min((t - t0) / dur, 1)
+    const eased = 1 - Math.pow(1 - p, 3)
+    el.textContent = Math.round(target * eased).toLocaleString('he-IL') + suffix
+    if (p < 1) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+}
+const kpiObs = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) { animateCount(en.target); kpiObs.unobserve(en.target) }
+  })
+}, { threshold: 0.4 })
+document.querySelectorAll('[data-count]').forEach(el => kpiObs.observe(el))
 
-<script>
+/* ---------- Quick signup + payment ---------- */
 const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const QS_SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 const qsClient = window.supabase.createClient(QS_SUPABASE_URL, QS_SUPABASE_KEY)
@@ -801,7 +1043,6 @@ async function submitQuickSignup(e) {
     let userId = null
     const { data: authData, error: authErr } = await qsClient.auth.signUp({ email, password })
     if (authErr) {
-      // אם המשתמש כבר קיים (למשל ניסיון חוזר אחרי תקלה) - מנסים להתחבר במקום
       if ((authErr.message || '').toLowerCase().includes('already')) {
         const { data: signInData, error: signInErr } = await qsClient.auth.signInWithPassword({ email, password })
         if (signInErr) throw new Error('האימייל כבר רשום - נסה סיסמה נכונה או כתובת אחרת')
@@ -813,7 +1054,7 @@ async function submitQuickSignup(e) {
       userId = authData.user.id
     }
 
-    // שלב 2: בודקים אם למשתמש כבר יש פרופיל ובית ספר (ניסיון חוזר) - אם כן מדלגים ישר לתשלום
+    // שלב 2: אם כבר יש פרופיל ובית ספר (ניסיון חוזר) - מדלגים ישר לתשלום
     const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
     let schoolId = existingProfile ? existingProfile.school_id : null
 
@@ -840,5 +1081,6 @@ async function submitQuickSignup(e) {
   }
 }
 </script>
+<script src="accessibility-widget.js"></script>
 </body>
 </html>
