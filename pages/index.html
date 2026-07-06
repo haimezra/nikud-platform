@@ -1183,11 +1183,11 @@ function showToast() {
   setTimeout(() => {
     el.classList.remove('show')
     setTimeout(() => el.remove(), 600)
-  }, 5000)
+  }, 3800)
   toastIdx = (toastIdx + 1) % TOASTS.length
 }
 setTimeout(showToast, 2500)
-setInterval(showToast, 7000)
+setInterval(showToast, 5000)
 
 /* ---------- Quick signup + payment ---------- */
 const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
