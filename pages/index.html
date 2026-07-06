@@ -922,7 +922,7 @@ img.team-photo{display:block;padding:0}
           <li class="no">התראות להורים, מנהלים ומורים</li>
           <li class="no">דוחות נוכחות ופעילות</li>
         </ul>
-        <a href="login.html?register=1&role=principal" class="btn btn-ghost">התחל חינם</a>
+        <button onclick="openFreeSignup()" class="btn btn-ghost">התחל חינם</button>
       </div>
       <div class="plan popular rv">
         <div class="pop-badge">הכי פופולרי</div>
@@ -1203,6 +1203,20 @@ const qsClient = window.supabase.createClient(QS_SUPABASE_URL, QS_SUPABASE_KEY)
 
 function openQuickSignup(plan) {
   document.getElementById('qsPlan').value = plan
+  const h = document.querySelector('#qsModal h3')
+  const p = document.querySelector('#qsModal .qs-box>p, #qsModal p')
+  if (h) h.textContent = 'הרשמה מהירה + תשלום'
+  if (p) p.textContent = 'כמה פרטים ומעבירים אותך ישר לדף התשלום המאובטח'
+  document.getElementById('qsSubmitBtn').textContent = 'המשך לתשלום ←'
+  document.getElementById('qsModal').style.display = 'flex'
+}
+function openFreeSignup() {
+  document.getElementById('qsPlan').value = 'free'
+  const h = document.querySelector('#qsModal h3')
+  const p = document.querySelector('#qsModal .qs-box>p, #qsModal p')
+  if (h) h.textContent = 'הרשמה לניסיון חינם'
+  if (p) p.textContent = '15 ימי ניסיון, ללא כרטיס אשראי. מלאו פרטים והחשבון מוכן.'
+  document.getElementById('qsSubmitBtn').textContent = 'צור חשבון ניסיון ←'
   document.getElementById('qsModal').style.display = 'flex'
 }
 function closeQuickSignup() {
@@ -1212,6 +1226,7 @@ function closeQuickSignup() {
 async function submitQuickSignup(e) {
   e.preventDefault()
   const plan = document.getElementById('qsPlan').value
+  const isFree = plan === 'free'
   const schoolName = document.getElementById('qsSchoolName').value
   const name = document.getElementById('qsName').value
   const email = document.getElementById('qsEmail').value
@@ -1238,7 +1253,7 @@ async function submitQuickSignup(e) {
       userId = authData.user.id
     }
 
-    // שלב 2: אם כבר יש פרופיל ובית ספר (ניסיון חוזר) - מדלגים ישר לתשלום
+    // שלב 2: אם כבר יש פרופיל ובית ספר (ניסיון חוזר)
     const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
     let schoolId = existingProfile ? existingProfile.school_id : null
 
@@ -1255,13 +1270,18 @@ async function submitQuickSignup(e) {
       if (profileErr) throw profileErr
     }
 
+    // מסלול חינם: נרשם כ-trial ועובר ישר לדשבורד. מסלול תשלום: עובר ל-Hyp.
+    if (isFree) {
+      window.location.href = 'principal.html'
+      return
+    }
     const params = new URLSearchParams({ mode: 'start', school_id: schoolId, plan, email, name })
     window.location.href = `https://iyibnkdstmijttvprpxk.supabase.co/functions/v1/hyp-payment?${params.toString()}`
   } catch (err) {
     errBox.textContent = err.message || 'משהו השתבש, נסה שוב'
     errBox.style.display = 'block'
     btn.disabled = false
-    btn.textContent = 'המשך לתשלום ←'
+    btn.textContent = isFree ? 'צור חשבון ניסיון ←' : 'המשך לתשלום ←'
   }
 }
 </script>
