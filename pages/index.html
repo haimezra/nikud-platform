@@ -540,6 +540,44 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .hero-btns .btn{width:100%}
   .trusted-row{gap:26px}
 }
+/* ============ TEAM ============ */
+.team{padding:40px 20px 20px}
+.team-inner{max-width:1160px;margin:0 auto}
+.team-head{text-align:center;margin-bottom:44px}
+.team-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;max-width:1160px;margin:0 auto;
+}
+.team-grid .team-card{flex-direction:column;text-align:center;gap:16px}
+.team-card{
+  display:flex;align-items:center;gap:20px;text-align:right;
+  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid var(--glass-border);border-radius:var(--r-lg);
+  box-shadow:var(--sh-2),var(--hl);padding:24px 26px;
+  transition:transform 0.3s var(--ease),box-shadow 0.3s;
+}
+.team-card:hover{transform:translateY(-4px);box-shadow:var(--sh-3),var(--hl)}
+.team-photo{
+  width:88px;height:88px;border-radius:50%;flex-shrink:0;
+  object-fit:cover;background:linear-gradient(135deg,var(--brand),var(--violet));
+  box-shadow:var(--sh-brand);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Rubik',sans-serif;font-size:1.9rem;font-weight:800;color:#fff;
+  border:3px solid rgba(255,255,255,0.9);
+}
+.team-photo.gold{background:linear-gradient(135deg,var(--gold),var(--gold-soft));box-shadow:0 12px 30px rgba(231,169,58,0.35)}
+.team-photo.violet{background:linear-gradient(135deg,var(--violet),var(--brand));box-shadow:0 12px 30px rgba(108,67,240,0.32)}
+img.team-photo{display:block;padding:0}
+.team-name{font-family:'Rubik',sans-serif;font-size:1.28rem;font-weight:700;letter-spacing:-0.4px}
+.team-role{
+  display:inline-flex;align-items:center;gap:6px;margin-top:7px;
+  font-size:0.85rem;font-weight:600;color:var(--brand);
+  background:rgba(46,91,255,0.09);padding:5px 13px;border-radius:var(--pill);
+}
+.team-role.gold{color:var(--gold);background:rgba(231,169,58,0.12)}
+.team-role.violet{color:var(--violet);background:rgba(108,67,240,0.10)}
+.team-desc{font-size:0.9rem;color:var(--ink-2);line-height:1.6;margin-top:11px}
+@media(max-width:900px){.team-grid{grid-template-columns:1fr;max-width:520px}}
 </style>
 </head>
 <body>
@@ -933,6 +971,49 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
     <div class="cta-btns">
       <a href="login.html" class="btn btn-white">התחל עכשיו ←</a>
       <a href="https://wa.me/972543771767" target="_blank" class="btn btn-glass">💬 דברו איתנו בוואטסאפ</a>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section team">
+  <div class="team-inner">
+    <div class="team-head">
+      <div class="sec-label">הצוות שלנו</div>
+      <h2 class="sec-title">האנשים שמאחורי ניקוד★</h2>
+    </div>
+    <div class="team-grid">
+
+      <!-- כרטיס 1 - בעל השליטה -->
+      <div class="team-card rv">
+        <img src="hai.jpg" class="team-photo" alt="חי עזרא">
+        <div>
+          <div class="team-name">חי עזרא</div>
+          <span class="team-role">מייסד ומנכ"ל · מנהל לקוחות</span>
+          <p class="team-desc">אחראי על החזון, הפיתוח העסקי וקשרי הלקוחות. הבית של כל ארגון שמצטרף.</p>
+        </div>
+      </div>
+
+      <!-- כרטיס 2 - השותפה -->
+      <div class="team-card rv">
+        <img src="shani.jpg" class="team-photo gold" alt="שני אברהם">
+        <div>
+          <div class="team-name">שני אברהם</div>
+          <span class="team-role gold">שותפה · מנהלת SaaS</span>
+          <p class="team-desc">מנהלת את הפלטפורמה, חוויית המשתמש והתפעול היומיומי כדי שהכול יעבוד חלק.</p>
+        </div>
+      </div>
+
+      <!-- כרטיס 3 - שותף -->
+      <div class="team-card rv">
+        <img src="nisani.jpg" class="team-photo violet" alt="ניסני פלד">
+        <div>
+          <div class="team-name">ניסני פלד</div>
+          <span class="team-role violet">שותף · מנהל מוצר וטכנולוגיה</span>
+          <p class="team-desc">אחראי על הפיתוח, מנוע הנקודות והאבטחה. דואג שהמערכת תהיה מהירה, יציבה ומאובטחת.</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
