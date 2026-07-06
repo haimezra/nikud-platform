@@ -1170,8 +1170,11 @@ const TOASTS = [
 ]
 let toastIdx = 0
 function showToast() {
-  const t = TOASTS[toastIdx]
   const stack = document.getElementById('toastStack')
+  if (!stack) return
+  // הגנה: אם כבר יש התראה על המסך, לא מציגים עוד אחת
+  if (stack.querySelector('.toast')) return
+  const t = TOASTS[toastIdx]
   const el = document.createElement('div')
   el.className = 'toast'
   el.innerHTML =
@@ -1183,11 +1186,15 @@ function showToast() {
   setTimeout(() => {
     el.classList.remove('show')
     setTimeout(() => el.remove(), 600)
-  }, 3800)
+  }, 5000)
   toastIdx = (toastIdx + 1) % TOASTS.length
 }
-setTimeout(showToast, 2500)
-setInterval(showToast, 5000)
+// הגנה מפני הרצה כפולה של הסקריפט (מונע כפילויות)
+if (!window.__nikudToastStarted) {
+  window.__nikudToastStarted = true
+  setTimeout(showToast, 2500)
+  setInterval(showToast, 8000)
+}
 
 /* ---------- Quick signup + payment ---------- */
 const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
