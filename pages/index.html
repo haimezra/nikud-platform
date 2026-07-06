@@ -133,11 +133,11 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 }
 .eyebrow{
   display:inline-flex;align-items:center;gap:9px;
-  padding:7px 16px 7px 14px;border-radius:var(--pill);
+  padding:9px;border-radius:var(--pill);
   background:var(--glass);border:1px solid var(--line);box-shadow:var(--sh-1),var(--hl);
   font-size:0.82rem;font-weight:600;color:var(--ink-2);margin-bottom:28px;
 }
-.eyebrow .dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(10,164,120,0.15);animation:pulse 2.2s infinite}
+.eyebrow .dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(10,164,120,0.15);animation:pulse 0.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .hero h1{
   font-size:clamp(2.5rem,5.1vw,4rem);font-weight:800;
@@ -578,6 +578,35 @@ img.team-photo{display:block;padding:0}
 .team-role.violet{color:var(--violet);background:rgba(108,67,240,0.10)}
 .team-desc{font-size:0.9rem;color:var(--ink-2);line-height:1.6;margin-top:11px}
 @media(max-width:900px){.team-grid{grid-template-columns:1fr;max-width:520px}}
+/* ============ LIVE TOASTS ============ */
+.toast-stack{
+  position:fixed;top:50%;left:22px;z-index:400;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:10px;pointer-events:none;
+}
+.toast{
+  display:flex;align-items:center;gap:12px;
+  min-width:260px;max-width:340px;
+  background:rgba(255,255,255,0.22);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+  border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  box-shadow:var(--sh-3),var(--hl);padding:13px 16px;
+  transform:translateX(-120%);opacity:0;
+  transition:transform 0.55s var(--ease),opacity 0.45s var(--ease);
+}
+.toast.show{transform:translateX(0);opacity:1}
+.toast-ic{
+  width:38px;height:38px;flex-shrink:0;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  background:var(--glass-2);border:1px solid var(--line-2);box-shadow:var(--hl);
+}
+.toast-txt{font-size:0.82rem;font-weight:500;flex:1;color:var(--ink-2);line-height:1.4}
+.toast-txt b{color:var(--ink);font-weight:700}
+.toast-pts{font-family:'Rubik',sans-serif;font-size:0.9rem;font-weight:800;color:var(--green)}
+.toast-pts.neg{color:var(--ink-3)}
+@media(max-width:560px){
+  .toast-stack{right:12px;left:12px;top:auto;bottom:12px;transform:none}
+  .toast{min-width:0;max-width:none;width:100%}
+}
 </style>
 </head>
 <body>
@@ -612,12 +641,12 @@ img.team-photo{display:block;padding:0}
 <section class="hero">
   <div class="hero-grid">
     <div class="hero-copy">
-      <div class="eyebrow"><span class="dot"></span> מערכת SaaS ניהול ביצועים</div>
+      <div class="eyebrow"><span class="dot"></span></div>
       <h1>הופכים נוכחות וביצועים ל<em>ניהול מבוסס נתונים</em></h1>
       <p class="hero-sub">ניקוד★ מחברת בין נוכחות, משימות וביצועים לבין תגמול אמיתי. עובדים ותלמידים צוברים נקודות על הגעה ועמידה ביעדים, וממירים אותן לפרסים. המנהלים מקבלים שליטה ונתונים בזמן אמת.</p>
       <div class="hero-btns">
         <a href="login.html" class="btn btn-primary">התחל עכשיו ←</a>
-        <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%95%D7%A2%20%D7%94%D7%93%D7%92%D7%9E%D7%94" target="_blank" class="btn btn-ghost">קבע הדגמה</a>
+        <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A7%D7%91%D7%95%D7%A2%20%D7%A4%D7%92%D7%99%D7%A9%D7%94" target="_blank" class="btn btn-ghost">קבע פגישה</a>
       </div>
       <div class="hero-trust">
         <span><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg> ללא כרטיס אשראי</span>
@@ -940,8 +969,8 @@ img.team-photo{display:block;padding:0}
     </div>
     <div class="faq-list">
       <div class="faq-item rv">
-        <button class="faq-q" onclick="toggleFaq(this)">האם תלמיד או עובד יכול לזייף נוכחות?</button>
-        <div class="faq-a"><div class="faq-a-inner">לא. הנקודות מחולקות רק אחרי שהמורה או המנהל מאשרים ידנית בסוף כל שיעור או משמרת. אין צ'ק-אין עצמאי שמזכה בנקודות, הגורם המאשר הוא הסמכות הבלעדית.</div></div>
+        <button class="faq-q" onclick="toggleFaq(this)">האם תלמיד או עובד יכול לזייף נוכחות ונקודות?</button>
+        <div class="faq-a"><div class="faq-a-inner">לא. גם הנוכחות וגם הנקודות מחולקות אך ורק אחרי שהמורה או המנהל מאשרים ידנית בסוף כל שיעור או משמרת. אין צ'ק-אין עצמאי שמזכה בנקודות, ולתלמיד או לעובד אין שום דרך להוסיף, לשנות או לזייף נקודות בעצמו, הגורם המאשר הוא הסמכות הבלעדית שקובעת מי מקבל ניקוד וכמה.</div></div>
       </div>
       <div class="faq-item rv">
         <button class="faq-q" onclick="toggleFaq(this)">כמה זמן לוקח לאשר נוכחות?</button>
@@ -1072,6 +1101,9 @@ img.team-photo{display:block;padding:0}
   </div>
 </div>
 
+<!-- LIVE TOAST NOTIFICATIONS -->
+<div class="toast-stack" id="toastStack"></div>
+
 <script>
 /* ---------- Menu ---------- */
 function toggleMenu() {
@@ -1126,6 +1158,33 @@ const kpiObs = new IntersectionObserver(entries => {
   })
 }, { threshold: 0.4 })
 document.querySelectorAll('[data-count]').forEach(el => kpiObs.observe(el))
+
+/* ---------- Live toasts ---------- */
+const TOASTS = [
+  { ic:'📍', html:'<b>דניאל</b> סימן צ\'ק-אין למשמרת בוקר', pts:'+3', neg:false },
+  { ic:'🎁', html:'<b>מאיה</b> מימשה גיפט-קארד', pts:'-120', neg:true },
+  { ic:'⭐', html:'<b>עומר</b> קיבל בונוס מצוינות מהמנהל', pts:'+5', neg:false },
+]
+let toastIdx = 0
+function showToast() {
+  const t = TOASTS[toastIdx]
+  const stack = document.getElementById('toastStack')
+  const el = document.createElement('div')
+  el.className = 'toast'
+  el.innerHTML =
+    '<div class="toast-ic">' + t.ic + '</div>' +
+    '<div class="toast-txt">' + t.html + '</div>' +
+    '<div class="toast-pts' + (t.neg ? ' neg' : '') + '">' + t.pts + '</div>'
+  stack.appendChild(el)
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
+  setTimeout(() => {
+    el.classList.remove('show')
+    setTimeout(() => el.remove(), 600)
+  }, 5000)
+  toastIdx = (toastIdx + 1) % TOASTS.length
+}
+setTimeout(showToast, 2500)
+setInterval(showToast, 7000)
 
 /* ---------- Quick signup + payment ---------- */
 const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
