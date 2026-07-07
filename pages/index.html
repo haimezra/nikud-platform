@@ -540,44 +540,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .hero-btns .btn{width:100%}
   .trusted-row{gap:26px}
 }
-/* ============ TEAM ============ */
-.team{padding:40px 20px 20px}
-.team-inner{max-width:1160px;margin:0 auto}
-.team-head{text-align:center;margin-bottom:44px}
-.team-grid{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:22px;max-width:1160px;margin:0 auto;
-}
-.team-grid .team-card{flex-direction:column;text-align:center;gap:16px}
-.team-card{
-  display:flex;align-items:center;gap:20px;text-align:right;
-  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
-  border:1px solid var(--glass-border);border-radius:var(--r-lg);
-  box-shadow:var(--sh-2),var(--hl);padding:24px 26px;
-  transition:transform 0.3s var(--ease),box-shadow 0.3s;
-}
-.team-card:hover{transform:translateY(-4px);box-shadow:var(--sh-3),var(--hl)}
-.team-photo{
-  width:88px;height:88px;border-radius:50%;flex-shrink:0;
-  object-fit:cover;background:linear-gradient(135deg,var(--brand),var(--violet));
-  box-shadow:var(--sh-brand);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Rubik',sans-serif;font-size:1.9rem;font-weight:800;color:#fff;
-  border:3px solid rgba(255,255,255,0.9);
-}
-.team-photo.gold{background:linear-gradient(135deg,var(--gold),var(--gold-soft));box-shadow:0 12px 30px rgba(231,169,58,0.35)}
-.team-photo.violet{background:linear-gradient(135deg,var(--violet),var(--brand));box-shadow:0 12px 30px rgba(108,67,240,0.32)}
-img.team-photo{display:block;padding:0}
-.team-name{font-family:'Rubik',sans-serif;font-size:1.28rem;font-weight:700;letter-spacing:-0.4px}
-.team-role{
-  display:inline-flex;align-items:center;gap:6px;margin-top:7px;
-  font-size:0.85rem;font-weight:600;color:var(--brand);
-  background:rgba(46,91,255,0.09);padding:5px 13px;border-radius:var(--pill);
-}
-.team-role.gold{color:var(--gold);background:rgba(231,169,58,0.12)}
-.team-role.violet{color:var(--violet);background:rgba(108,67,240,0.10)}
-.team-desc{font-size:0.9rem;color:var(--ink-2);line-height:1.6;margin-top:11px}
-@media(max-width:900px){.team-grid{grid-template-columns:1fr;max-width:520px}}
 /* ============ LIVE TOASTS ============ */
 .toast-stack{
   position:fixed;top:50%;left:22px;z-index:400;
@@ -1007,45 +969,118 @@ img.team-photo{display:block;padding:0}
   </div>
 </section>
 
-<!-- TEAM -->
-<section class="section team">
-  <div class="team-inner">
-    <div class="team-head">
-      <div class="sec-label">הצוות שלנו</div>
-      <h2 class="sec-title">האנשים שמאחורי ניקוד★</h2>
+<!-- PRINCIPAL DASHBOARD DEMO -->
+<section class="section">
+  <div class="inner">
+    <div class="rv center">
+      <div class="sec-label">הצצה למערכת</div>
+      <h2 class="sec-title">כך נראה הדשבורד של המנהל</h2>
+      <p class="sec-sub">מבט אמיתי על מסך העבודה היומי: אישורי נוכחות ממתינים, תקציב הנקודות, בקשות מימוש ופעולות אחרונות, הכול במקום אחד.</p>
     </div>
-    <div class="team-grid">
-
-      <!-- כרטיס 1 - בעל השליטה -->
-      <div class="team-card rv">
-        <img src="hai.jpg" class="team-photo" alt="hay ezra">
-        <div>
-          <div class="team-name">hay</div>
-          <span class="team-role">מנהל אונבורדינג והדגמות מוצר</span>
-          <p class="team-desc">מלווה כל ארגון חדש מהרגע הראשון, הדגמה, הדרכה והטמעה חלקה של המערכת.</p>
+    <div class="preview-frame rv">
+      <div class="preview">
+        <div class="console-top">
+          <div class="console-title">דשבורד המנהל <span class="tag">בית ספר הדרים · היום</span></div>
+          <div class="dots"><i></i><i></i><i></i></div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-num c-blue" data-count="3">0</div><div class="kpi-lbl">אישורי נוכחות ממתינים</div><div class="kpi-delta">נותרו 6:40 שעות לאישור</div></div>
+          <div class="kpi"><div class="kpi-num c-green" data-count="1180">0</div><div class="kpi-lbl">נקודות שנותרו בתקציב החודשי</div><div class="kpi-delta">▲ נוצלו 64% מהתקציב</div></div>
+          <div class="kpi"><div class="kpi-num c-gold" data-count="4">0</div><div class="kpi-lbl">בקשות מימוש פרסים</div><div class="kpi-delta">2 חדשות היום</div></div>
+        </div>
+        <div class="pv-grid">
+          <div class="mini">
+            <h4>שיעורים ומשמרות, ממתינים לאישור</h4>
+            <table class="pv-table">
+              <thead><tr><th>שיעור/משמרת</th><th>שעה</th><th>צ'ק-אין</th><th>סטטוס</th></tr></thead>
+              <tbody>
+                <tr><td>מתמטיקה יא'2</td><td>08:15</td><td>27/29</td><td><span class="pv-badge warn">ממתין לאישור</span></td></tr>
+                <tr><td>משמרת בוקר, סניף מרכז</td><td>09:00</td><td>11/12</td><td><span class="pv-badge warn">ממתין לאישור</span></td></tr>
+                <tr><td>אנגלית יא'2</td><td>10:10</td><td>28/29</td><td><span class="pv-badge warn">ממתין לאישור</span></td></tr>
+                <tr><td>חינוך גופני יא'1</td><td>07:30</td><td>25/26</td><td><span class="pv-badge ok">אושר · +3 לכל נוכח</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mini">
+            <h4>בקשות מימוש להיום</h4>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">🎁</div>
+              <div><b>מאיה רוזן · גיפט-קארד 50₪</b><p>120 נקודות · ממתין לאישור המנהל</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">☕</div>
+              <div><b>דניאל כהן · שובר קפה ומאפה</b><p>45 נקודות · ממתין לאישור המנהל</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">🏖️</div>
+              <div><b>נועה לוי · יום חופש מאושר</b><p>300 נקודות · אושר ונשלח וואטסאפ</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="feed">
+          <div class="feed-row"><div class="feed-ic">✅</div><div class="feed-txt">המנהל אישר נוכחות לשיעור <b>חינוך גופני יא'1</b>, 25 תלמידים זוכו</div><div class="feed-pts">+75</div></div>
+          <div class="feed-row"><div class="feed-ic">⭐</div><div class="feed-txt">המנהל העניק בונוס מצוינות ל<b>עומר אזולאי</b> על עזרה לחבר</div><div class="feed-pts">+5</div></div>
+          <div class="feed-row"><div class="feed-ic">📋</div><div class="feed-txt">הוטלה משימה חדשה לכיתה <b>יא'2</b>: הגשת עבודה עד יום חמישי</div><div class="feed-pts">+10</div></div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
 
-      <!-- כרטיס 2 - השותפה -->
-      <div class="team-card rv">
-        <img src="shani.jpg" class="team-photo gold" alt="shani yosef">
-        <div>
-          <div class="team-name">shani</div>
-          <span class="team-role gold">שותפה · מנהלת SaaS</span>
-          <p class="team-desc">מנהלת את הפלטפורמה, חוויית המשתמש והתפעול היומיומי כדי שהכול יעבוד חלק.</p>
+<!-- STUDENT DASHBOARD DEMO -->
+<section class="section band-soft">
+  <div class="inner">
+    <div class="rv center">
+      <div class="sec-label">הצצה למערכת</div>
+      <h2 class="sec-title">וכך זה נראה אצל התלמיד או העובד</h2>
+      <p class="sec-sub">ארנק נקודות אישי, המשימות הפתוחות, חנות הפרסים וההיסטוריה, הכול שקוף, פשוט וממכר בדיוק במידה הנכונה.</p>
+    </div>
+    <div class="preview-frame rv">
+      <div class="preview">
+        <div class="console-top">
+          <div class="console-title">הארנק שלי <span class="tag">נועה לוי · יא'2</span></div>
+          <div class="dots"><i></i><i></i><i></i></div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-num c-gold" data-count="285">0</div><div class="kpi-lbl">נקודות בארנק</div><div class="kpi-delta">▲ 38 השבוע</div></div>
+          <div class="kpi"><div class="kpi-num c-green" data-count="12">0</div><div class="kpi-lbl">ימי רצף נוכחות</div><div class="kpi-delta">עוד 3 ימים לבונוס רצף</div></div>
+          <div class="kpi"><div class="kpi-num c-blue" data-count="96" data-suffix="%">0%</div><div class="kpi-lbl">נוכחות החודש</div><div class="kpi-delta">▲ מקום 2 בכיתה</div></div>
+        </div>
+        <div class="pv-grid">
+          <div class="mini">
+            <h4>המשימות שלי</h4>
+            <table class="pv-table">
+              <thead><tr><th>משימה</th><th>עד מתי</th><th>נקודות</th><th>סטטוס</th></tr></thead>
+              <tbody>
+                <tr><td>הגשת עבודה באנגלית</td><td>יום חמישי</td><td>+10</td><td><span class="pv-badge warn">בתהליך</span></td></tr>
+                <tr><td>צ'ק-אין לשיעור מתמטיקה</td><td>היום 08:15</td><td>+3</td><td><span class="pv-badge ok">אושר</span></td></tr>
+                <tr><td>עזרה בארגון הטקס</td><td>יום ראשון</td><td>+8</td><td><span class="pv-badge warn">ממתין להתחלה</span></td></tr>
+                <tr><td>סיכום שיעור היסטוריה</td><td>הוגש אתמול</td><td>+5</td><td><span class="pv-badge ok">הושלם · זוכה</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mini">
+            <h4>חנות הפרסים · מה אפשר לממש</h4>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">☕</div>
+              <div><b>שובר קפה ומאפה · 45 נקודות</b><p>ניתן למימוש עכשיו, באישור המנהל</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">🎁</div>
+              <div><b>גיפט-קארד 50₪ · 120 נקודות</b><p>ניתן למימוש עכשיו, באישור המנהל</p></div>
+            </div>
+            <div class="pv-notify">
+              <div class="pv-notify-ic">🏖️</div>
+              <div><b>יום חופש מאושר · 300 נקודות</b><p>חסרות עוד 15 נקודות בלבד</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="feed">
+          <div class="feed-row"><div class="feed-ic">📍</div><div class="feed-txt">הצ'ק-אין לשיעור <b>מתמטיקה</b> אושר על ידי המורה</div><div class="feed-pts">+3</div></div>
+          <div class="feed-row"><div class="feed-ic">⭐</div><div class="feed-txt">קיבלת <b>בונוס מצוינות</b> על השתתפות פעילה בשיעור</div><div class="feed-pts">+5</div></div>
+          <div class="feed-row"><div class="feed-ic">🎁</div><div class="feed-txt">מימשת <b>שובר קפה ומאפה</b>, אושר ונשלח אליך</div><div class="feed-pts neg">-45</div></div>
         </div>
       </div>
-
-      <!-- כרטיס 3 - שותף -->
-      <div class="team-card rv">
-        <img src="nisani.jpg" class="team-photo violet" alt="nisani peled">
-        <div>
-          <div class="team-name">nisani</div>
-          <span class="team-role violet">שותף · מנהל מוצר וטכנולוגיה</span>
-          <p class="team-desc">אחראי על הפיתוח, מנוע הנקודות והאבטחה. דואג שהמערכת תהיה מהירה, יציבה ומאובטחת.</p>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
