@@ -133,7 +133,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
       </div>
       <div class="lesson-stats">
         <div class="l-stat"><div class="l-stat-num" style="color:var(--green)" id="statApproved">0</div><div class="l-stat-lbl">אושרו</div></div>
-        <div class="l-stat"><div class="l-stat-num" style="color:var(--gold)" id="statBonus">0</div><div class="l-stat-lbl">בונוס</div></div>
         <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
         <div class="l-stat"><div class="l-stat-num" style="color:var(--muted)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
       </div>
@@ -512,14 +511,11 @@ function renderList() {
       <div class="stu-info">
         <div class="stu-name">${s.name} ${checkinBadge}</div>
         <div class="stu-personal-bonus">
-          <button class="pb-btn" ${(currentSchoolPlan !== 'premium' || (personalBonusUsed[s.id]||0) + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP || totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) ? 'disabled' : ''} onclick="givePersonalBonus('${s.id}', '${s.name.replace(/'/g,"")}')">${currentSchoolPlan !== 'premium' ? '🔒' : '🎁'} בונוס אישי +${PERSONAL_BONUS_POINTS}</button>
-          <span class="pb-count">${personalBonusUsed[s.id]||0}/${PERSONAL_BONUS_MONTHLY_CAP} בונוס אישי</span>
           ${capLabel}
         </div>
       </div>
       <div class="stu-actions">
         <button class="act-btn btn-approve ${st==='approved'?'selected':''}" ${approveDisabled ? 'disabled' : ''} onclick="setState('${s.id}','approved')">✅</button>
-        <button class="act-btn btn-bonus ${st==='bonus'?'selected':''}" ${bonusDisabled ? 'disabled' : ''} onclick="setState('${s.id}','bonus')">⭐</button>
         <button class="act-btn btn-reject ${st==='rejected'?'selected':''}" onclick="setState('${s.id}','rejected')">❌</button>
       </div>
     </div>`
@@ -554,7 +550,6 @@ function updateSummary() {
   const pts = pointsToAward()
 
   document.getElementById('statApproved').textContent = approved
-  document.getElementById('statBonus').textContent = bonus
   document.getElementById('statRejected').textContent = rejected
   document.getElementById('statPending').textContent = pending
   document.getElementById('sumApproved').textContent = approved + bonus
