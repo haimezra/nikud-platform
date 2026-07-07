@@ -4,98 +4,151 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>מסך מורה – ניקוד★</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#0B0620;--surface:rgba(255,255,255,0.04);--card:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.14);
-  --accent:#3DE0FF;--gold:#FFC93D;--green:#06D6A0;--red:#FF3DBB;
-  --text:#F3EFFF;--muted:#C8BEEA;--r:16px;
+  --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
+  --brand:#2E5BFF;--brand-2:#1636BE;--violet:#6C43F0;--gold:#E7A93A;--gold-soft:#F5C869;
+  --green:#0AA478;--red:#E25555;
+  --line:rgba(8,14,40,0.08);--line-2:rgba(8,14,40,0.05);
+  --glass:rgba(255,255,255,0.72);--glass-2:rgba(255,255,255,0.55);--glass-border:rgba(8,14,40,0.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.85);
+  --sh-1:0 1px 2px rgba(8,14,40,0.04),0 3px 10px rgba(8,14,40,0.05);
+  --sh-2:0 4px 14px rgba(8,14,40,0.06),0 18px 44px rgba(8,14,40,0.08);
+  --sh-brand:0 12px 30px rgba(46,91,255,0.30);
+  --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh;
-  background:
-    radial-gradient(ellipse 60% 45% at 10% 0%, #FF3DBB2e 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 100% 10%, #3DE0FF2e 0%, transparent 55%),
-    radial-gradient(ellipse 55% 45% at 50% 100%, #7C4DFF26 0%, transparent 55%),
-    var(--bg);
+  color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 92% -6%, rgba(46,91,255,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 42% 36% at 0% 8%, rgba(108,67,240,0.09) 0%, transparent 58%);
   background-attachment:fixed;
 }
-.setup-card,.lesson-header,.student-card{backdrop-filter:blur(8px)}
+h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 
-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid var(--border);background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
-.logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
+nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
+  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
+  position:sticky;top:16px;z-index:100;
+}
+.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--ink);letter-spacing:-0.4px}
 .logo span{color:var(--gold)}
 .nav-right{display:flex;align-items:center;gap:14px}
-.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:99px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem}
+.logout-btn{
+  background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
+  padding:8px 18px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:500;transition:all 0.2s;
+}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-.main{max-width:700px;margin:0 auto;padding:24px 20px 100px}
+.main{max-width:700px;margin:0 auto;padding:24px 20px 120px}
 
-.setup-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:20px}
-.setup-card h3{font-size:1rem;margin-bottom:14px}
+.setup-card{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--r);padding:24px;margin-bottom:20px;
+  box-shadow:var(--sh-1),var(--hl);
+}
+.setup-card h3{font-size:1rem;margin-bottom:14px;color:var(--ink)}
 .setup-row{display:flex;gap:10px;margin-bottom:10px}
-.setup-row select,.setup-row input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'Heebo',sans-serif;font-size:0.9rem}
-.start-btn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem}
+.setup-row select,.setup-row input{
+  flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.9rem;transition:border-color 0.2s;
+}
+.setup-row select:focus,.setup-row input:focus{outline:none;border-color:var(--brand)}
+.start-btn{
+  width:100%;padding:13px;border:none;border-radius:var(--r-sm);cursor:pointer;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.95rem;box-shadow:var(--sh-brand);
+}
 
-.lesson-header{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:20px}
+.lesson-header{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;
+  box-shadow:var(--sh-1),var(--hl);
+}
 .lesson-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
-.lesson-title{font-size:1.2rem;font-weight:900}
-.lesson-meta{font-size:0.82rem;color:var(--muted);margin-top:4px}
+.lesson-title{font-family:'Rubik',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.4px}
+.lesson-meta{font-size:0.82rem;color:var(--ink-3);margin-top:4px}
 .lesson-stats{display:flex;gap:18px}
 .l-stat{text-align:center}
-.l-stat-num{font-size:1.4rem;font-weight:900}
-.l-stat-lbl{font-size:0.72rem;color:var(--muted)}
+.l-stat-num{font-family:'Rubik',sans-serif;font-size:1.4rem;font-weight:800}
+.l-stat-lbl{font-size:0.72rem;color:var(--ink-3)}
 
-.budget-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
+.budget-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
 .budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.82rem}
-.budget-label{color:var(--muted)}
-.budget-value{font-weight:700}
-.budget-track{height:8px;border-radius:99px;background:var(--surface);overflow:hidden}
-.budget-fill{height:100%;background:var(--green);border-radius:99px;transition:width 0.3s}
+.budget-label{color:var(--ink-3)}
+.budget-value{font-weight:700;color:var(--ink);font-family:'Rubik',sans-serif}
+.budget-track{height:8px;border-radius:var(--pill);background:var(--line-2);overflow:hidden}
+.budget-fill{height:100%;background:var(--green);border-radius:var(--pill);transition:width 0.3s}
 .budget-fill.warn{background:var(--gold)}
 .budget-fill.over{background:var(--red)}
-.budget-note{font-size:0.74rem;color:var(--muted);margin-top:6px}
+.budget-note{font-size:0.74rem;color:var(--ink-3);margin-top:6px}
 
 .controls{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.ctrl-btn{flex:1;min-width:110px;padding:11px 14px;border:none;border-radius:12px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700}
-.ctrl-green{background:var(--green);color:#0A0E1A}
-.ctrl-red{background:rgba(255,61,187,0.15);color:var(--red);border:1px solid rgba(255,61,187,0.3)}
-.ctrl-purple{background:var(--accent);color:#fff}
+.ctrl-btn{flex:1;min-width:110px;padding:11px 14px;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;transition:transform 0.2s}
+.ctrl-btn:hover{transform:translateY(-1px)}
+.ctrl-green{background:var(--green);color:#fff}
+.ctrl-red{background:rgba(226,85,85,0.10);color:var(--red);border:1px solid rgba(226,85,85,0.28)}
+.ctrl-purple{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--sh-brand)}
 
-.student-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 16px;margin-bottom:9px;display:flex;align-items:center;gap:12px}
-.student-card.approved{border-color:rgba(6,214,160,0.5);background:rgba(6,214,160,0.04)}
-.student-card.bonus{border-color:rgba(255,201,61,0.5);background:rgba(255,201,61,0.04)}
-.student-card.rejected{border-color:rgba(255,61,187,0.4);background:rgba(255,61,187,0.04);opacity:0.7}
-.stu-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700}
-.stu-name{font-weight:700;font-size:0.9rem}
+.student-card{
+  background:var(--glass);backdrop-filter:blur(10px);
+  border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:13px 16px;margin-bottom:9px;display:flex;align-items:center;gap:12px;box-shadow:var(--hl);
+}
+.student-card.approved{border-color:rgba(10,164,120,0.4);background:rgba(10,164,120,0.05)}
+.student-card.bonus{border-color:rgba(231,169,58,0.4);background:rgba(231,169,58,0.05)}
+.student-card.rejected{border-color:rgba(226,85,85,0.35);background:rgba(226,85,85,0.05);opacity:0.75}
+.stu-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.stu-name{font-weight:700;font-size:0.9rem;color:var(--ink)}
 .stu-info{flex:1}
 .stu-actions{display:flex;gap:5px}
-.act-btn{width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;justify-content:center}
-.btn-approve{background:rgba(6,214,160,0.15);color:var(--green)}
-.btn-approve.selected{background:var(--green);color:#0A0E1A}
-.btn-bonus{background:rgba(255,201,61,0.15);color:var(--gold)}
-.btn-bonus.selected{background:var(--gold);color:#0A0E1A}
-.btn-reject{background:rgba(255,61,187,0.15);color:var(--red)}
+.act-btn{width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;justify-content:center;transition:transform 0.15s}
+.act-btn:hover{transform:translateY(-1px)}
+.btn-approve{background:rgba(10,164,120,0.12);color:var(--green)}
+.btn-approve.selected{background:var(--green);color:#fff}
+.btn-bonus{background:rgba(231,169,58,0.12);color:#9A6B10}
+.btn-bonus.selected{background:var(--gold);color:#fff}
+.btn-reject{background:rgba(226,85,85,0.12);color:var(--red)}
 .btn-reject.selected{background:var(--red);color:#fff}
 
 .stu-personal-bonus{display:flex;align-items:center;gap:6px;margin-top:4px}
-.pb-btn{padding:3px 10px;border-radius:99px;border:1px solid rgba(255,201,61,0.4);background:rgba(255,201,61,0.1);color:var(--gold);font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif}
+.pb-btn{padding:3px 10px;border-radius:var(--pill);border:1px solid rgba(231,169,58,0.35);background:rgba(231,169,58,0.08);color:#9A6B10;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif}
 .pb-btn:disabled{opacity:0.35;cursor:not-allowed}
-.pb-count{font-size:0.68rem;color:var(--muted)}
+.pb-count{font-size:0.68rem;color:var(--ink-3)}
 
-.summary-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.summary-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
+  border-top:1px solid var(--glass-border);
+  padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+}
 .sum-item{text-align:center}
-.sum-num{font-size:1.2rem;font-weight:900}
-.sum-lbl{font-size:0.7rem;color:var(--muted)}
-.submit-btn{margin-right:auto;padding:12px 24px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer}
-.submit-btn:disabled{opacity:0.4;cursor:not-allowed}
+.sum-num{font-family:'Rubik',sans-serif;font-size:1.2rem;font-weight:800}
+.sum-lbl{font-size:0.7rem;color:var(--ink-3)}
+.submit-btn{
+  margin-right:auto;padding:12px 24px;border:none;border-radius:var(--r-sm);cursor:pointer;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;box-shadow:var(--sh-brand);
+}
+.submit-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
 
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--green);color:#0A0E1A;padding:12px 22px;border-radius:99px;font-weight:700;font-size:0.88rem;z-index:300;opacity:0;transition:all 0.3s}
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);
+  background:var(--green);color:#fff;padding:12px 22px;border-radius:var(--pill);
+  font-weight:700;font-size:0.88rem;z-index:300;opacity:0;transition:all 0.3s;box-shadow:var(--sh-2);
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .hidden{display:none}
-.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+.loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
 </style>
 </head>
 <body>
@@ -103,7 +156,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 <nav>
   <div class="logo">ניקוד<span>★</span></div>
   <div class="nav-right">
-    <span id="userName" style="font-size:0.88rem;color:var(--muted)"></span>
+    <span id="userName" style="font-size:0.88rem;color:var(--ink-3)"></span>
     <button class="logout-btn" onclick="logout()">יציאה</button>
   </div>
 </nav>
@@ -112,7 +165,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 
 <div class="main hidden" id="mainContent">
 
-  <!-- Setup new lesson -->
   <div class="setup-card" id="setupCard">
     <h3>🆕 פתח שיעור חדש</h3>
     <div class="setup-row">
@@ -122,7 +174,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
     <button class="start-btn" onclick="startLesson()">▶ התחל שיעור</button>
   </div>
 
-  <!-- Active lesson -->
   <div id="activeLessonSection" class="hidden">
     <div class="lesson-header">
       <div class="lesson-top">
@@ -134,7 +185,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
       <div class="lesson-stats">
         <div class="l-stat"><div class="l-stat-num" style="color:var(--green)" id="statApproved">0</div><div class="l-stat-lbl">אושרו</div></div>
         <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
-        <div class="l-stat"><div class="l-stat-num" style="color:var(--muted)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
+        <div class="l-stat"><div class="l-stat-num" style="color:var(--ink-3)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
       </div>
 
       <div class="budget-box">
@@ -153,7 +204,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
       <button class="ctrl-btn ctrl-purple" onclick="openSubmit()">📤 שלח ואשר</button>
     </div>
     <div class="controls">
-      <button class="ctrl-btn" style="background:var(--surface);border:1px solid var(--border);color:var(--text)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
+      <button class="ctrl-btn" style="background:var(--glass-2);border:1px solid var(--line);color:var(--ink)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
     </div>
 
     <div id="studentList"></div>
@@ -162,7 +213,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 2
 
 <div class="summary-bar hidden" id="summaryBar">
   <div class="sum-item"><div class="sum-num" style="color:var(--green)" id="sumApproved">0</div><div class="sum-lbl">אושרו</div></div>
-  <div class="sum-item"><div class="sum-num" style="color:var(--accent)" id="sumPts">0</div><div class="sum-lbl">נקודות לחלק</div></div>
+  <div class="sum-item"><div class="sum-num" style="color:var(--brand)" id="sumPts">0</div><div class="sum-lbl">נקודות לחלק</div></div>
   <button class="submit-btn" onclick="openSubmit()">📤 שלח ואשר</button>
 </div>
 
@@ -274,10 +325,10 @@ function renderBudgetBar(afterThisAward = 0) {
     note.style.color = 'var(--red)'
   } else if (pctUsed >= 80) {
     note.textContent = `⚠️ מתקרבים לתקרת התקציב החודשי (${CLASS_MONTHLY_BUDGET_ILS} ₪ לכיתה)`
-    note.style.color = 'var(--gold)'
+    note.style.color = '#9A6B10'
   } else {
     note.textContent = `מתוך ${CLASS_MONTHLY_BUDGET_POINTS.toLocaleString()} נקודות (${CLASS_MONTHLY_BUDGET_ILS} ₪) לחודש`
-    note.style.color = 'var(--muted)'
+    note.style.color = 'var(--ink-3)'
   }
 }
 
@@ -357,8 +408,6 @@ async function startLesson() {
   }
 }
 
-// Looks at past lessons for the same class+subject+day-of-week, and if historical
-// attendance was chronically low, boosts the points for THIS lesson to give extra incentive.
 async function computeSurgeMultiplier(class_name, subject, studentCount) {
   currentAttendancePoints = ATTENDANCE_POINTS
   currentBonusPoints = BONUS_POINTS
@@ -377,10 +426,10 @@ async function computeSurgeMultiplier(class_name, subject, studentCount) {
     .eq('subject', subject)
     .gte('created_at', lookbackDate)
 
-  if (error || !pastLessons || pastLessons.length < 2) return  // not enough history to judge
+  if (error || !pastLessons || pastLessons.length < 2) return
 
   const matchingLessons = pastLessons.filter(l => new Date(l.created_at).getDay() === todayDow)
-  if (matchingLessons.length < 2) return  // need at least 2 past occurrences of this slot to be confident
+  if (matchingLessons.length < 2) return
 
   const lessonIds = matchingLessons.map(l => l.id)
   const { data: logs } = await supabaseClient
@@ -410,7 +459,7 @@ function renderSurgeBadge() {
   const meta = document.getElementById('lessonMeta')
   if (!meta) return
   if (isSurgeActive) {
-    meta.innerHTML = meta.textContent + ` <span style="background:rgba(255,61,187,0.18);color:var(--red);padding:2px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;margin-right:8px">🔥 ביקוש נמוך - נקודות פי ${SURGE_MULTIPLIER}</span>`
+    meta.innerHTML = meta.textContent + ` <span style="background:rgba(226,85,85,0.12);color:var(--red);padding:2px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;margin-right:8px">🔥 ביקוש נמוך - נקודות פי ${SURGE_MULTIPLIER}</span>`
   }
 }
 
@@ -419,7 +468,6 @@ async function loadPersonalBonusUsage(studentIds) {
 
   studentIds.forEach(id => studentMonthlyTotal[id] = 0)
 
-  // כל הנקודות שהתלמידים האלה קיבלו החודש, מכל סיבה - לתקרת ה-300 הכוללת
   const { data: allLogs, error: allErr } = await supabaseClient
     .from('point_logs')
     .select('student_id, points')
@@ -477,7 +525,6 @@ async function givePersonalBonus(studentId, studentName) {
       reason: 'personal_bonus'
     })
     if (error) throw error
-    // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מעדכן את זה אוטומטית
 
     personalBonusUsed[studentId] = used + PERSONAL_BONUS_POINTS
     studentMonthlyTotal[studentId] = totalUsed + PERSONAL_BONUS_POINTS
@@ -496,9 +543,9 @@ function renderList() {
     const cardClass = st === 'approved' ? 'approved' : st === 'bonus' ? 'bonus' : st === 'rejected' ? 'rejected' : ''
     const checkin = checkins[s.id]
     const checkinBadge = checkin && checkin.status === 'ממתינה'
-      ? '<span style="font-size:0.68rem;background:rgba(61,224,255,0.18);color:var(--accent);padding:2px 8px;border-radius:99px;margin-right:6px">📍 ביקש/ה צ\'ק-אין</span>'
+      ? '<span style="font-size:0.68rem;background:rgba(46,91,255,0.10);color:var(--brand);padding:2px 8px;border-radius:99px;margin-right:6px">📍 ביקש/ה צ\'ק-אין</span>'
       : checkin && checkin.status === 'אושר'
-      ? '<span style="font-size:0.68rem;background:rgba(6,214,160,0.18);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
+      ? '<span style="font-size:0.68rem;background:rgba(10,164,120,0.12);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
       : ''
     const totalUsed = studentMonthlyTotal[s.id] || 0
     const atCap = totalUsed >= STUDENT_MONTHLY_CAP
@@ -507,7 +554,7 @@ function renderList() {
     const capLabel = `<span class="pb-count" style="${atCap ? 'color:var(--red)' : ''}">${totalUsed}/${STUDENT_MONTHLY_CAP} סה"כ החודש</span>`
     return `
     <div class="student-card ${cardClass}">
-      <div class="stu-avatar" style="background:${s.avatar_color || '#3DE0FF'}">${s.name[0]}</div>
+      <div class="stu-avatar" style="background:${s.avatar_color || '#2E5BFF'}">${s.name[0]}</div>
       <div class="stu-info">
         <div class="stu-name">${s.name} ${checkinBadge}</div>
         <div class="stu-personal-bonus">
@@ -587,7 +634,6 @@ async function openSubmit() {
 
   if (approvals.length === 0) { showToast('לא אישרת אף תלמיד', true); return }
 
-  // Hard block: no single student may exceed the monthly per-student cap
   const overCapStudent = approvals.find(a => (studentMonthlyTotal[a.student_id] || 0) + a.points > STUDENT_MONTHLY_CAP)
   if (overCapStudent) {
     const s = students.find(x => x.id === overCapStudent.student_id)
@@ -597,13 +643,11 @@ async function openSubmit() {
 
   const totalPoints = approvals.reduce((sum, a) => sum + a.points, 0)
 
-  // Hard block: cannot issue more points than the class has left this month
   if (totalPoints > remainingBudget) {
     showToast(`❌ חריגה מהתקציב החודשי של הכיתה! נותרו ${Math.max(0,remainingBudget)} נקודות (₪${Math.max(0,(remainingBudget/POINTS_PER_ILS)).toFixed(0)}), וניסית לחלק ${totalPoints}.`, true)
     return
   }
 
-  // Soft warning when this award will use up most of what's left
   const afterAward = remainingBudget - totalPoints
   if (afterAward < CLASS_MONTHLY_BUDGET_POINTS * 0.2) {
     const proceed = confirm(`⚠️ לאחר החלוקה הזו יישארו לכיתה רק ${afterAward} נקודות (₪${(afterAward/POINTS_PER_ILS).toFixed(0)}) לשארית החודש. להמשיך?`)
@@ -619,9 +663,7 @@ async function openSubmit() {
     }))
     const { error: logsError } = await supabaseClient.from('point_logs').insert(logs)
     if (logsError) throw logsError
-    // הערה: לא צריך לולאת UPDATE ידנית ל-users.points - טריגר במסד הנתונים מעדכן כל תלמיד אוטומטית בעת ה-INSERT למעלה
 
-    // Update checkin rows to reflect the final decision (approved / rejected students)
     const checkinUpdates = students
       .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus' || state[s.id] === 'rejected')
       .map(s => ({
@@ -666,7 +708,7 @@ function showToast(msg, isError) {
   const t = document.getElementById('toast')
   t.textContent = msg
   t.style.background = isError ? 'var(--red)' : 'var(--green)'
-  t.style.color = isError ? '#fff' : '#0A0E1A'
+  t.style.color = '#fff'
   t.classList.add('show')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
