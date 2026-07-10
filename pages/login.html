@@ -342,7 +342,15 @@ async function handleSubmit(e) {
       if (error) throw error
 
       // Fetch user profile to determine redirect
-      const { data: profile } = await supabaseClient.from('users').select('role').eq('id', data.user.id).single()
+      const { data: profile, error: profileErr } = await supabaseClient.from('users').select('role').eq('id', data.user.id).single()
+
+      if (profileErr || !profile) {
+        showError('ההתחברות הצליחה אך לא נמצא פרופיל משתמש. פנה/י לתמיכה.')
+        btn.disabled = false
+        btn.textContent = 'כניסה'
+        return
+      }
+
       showSuccess('התחברת בהצלחה! מעביר אותך...')
       setTimeout(() => {
         if (profile.role === 'student') window.location.href = 'school-dashboard.html'
