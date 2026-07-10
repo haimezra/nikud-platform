@@ -549,6 +549,11 @@ async function rejectTask(taskId) {
   }
 }
 
+function formatTime(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+}
+
 function escapeHtml(str) {
   const div = document.createElement('div')
   div.textContent = str ?? ''
@@ -712,7 +717,6 @@ async function computeSurgeMultiplier(class_name, subject, studentCount) {
 
   if (avgRate < SURGE_LOW_THRESHOLD) {
     isSurgeActive = true
-    currentAttendancePoints = Math.round(ATTENDANCE_POINTS * SURGE_MULTIPLIER)
     currentBonusPoints = Math.round(BONUS_POINTS * SURGE_MULTIPLIER)
   }
 }
@@ -805,7 +809,9 @@ function renderList() {
     const cardClass = st === 'approved' ? 'approved' : st === 'bonus' ? 'bonus' : st === 'rejected' ? 'rejected' : ''
     const checkin = checkins[s.id]
     const checkinBadge = checkin && checkin.status === 'ממתינה'
-      ? '<span style="font-size:0.68rem;background:rgba(46,91,255,0.10);color:var(--brand);padding:2px 8px;border-radius:99px;margin-right:6px">📍 ביקש/ה צ\'ק-אין</span>'
+      ? '<span style="font-size:0.68rem;background:rgba(46,91,255,0.10);color:var(--brand);padding:2px 8px;border-radius:99px;margin-right:6px">📍 בשיעור</span>'
+      : checkin && checkin.status === 'הושלם'
+      ? '<span style="font-size:0.68rem;background:rgba(181,124,16,0.12);color:#B57C10;padding:2px 8px;border-radius:99px;margin-right:6px">🏁 סיים/ה - ' + formatTime(checkin.check_in_at) + '-' + formatTime(checkin.check_out_at) + '</span>'
       : checkin && checkin.status === 'אושר'
       ? '<span style="font-size:0.68rem;background:rgba(10,164,120,0.12);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
       : ''
