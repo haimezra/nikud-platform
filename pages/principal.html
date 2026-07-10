@@ -16,6 +16,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
@@ -180,6 +181,7 @@ tr.clickable{cursor:pointer}
   <div class="logo">ניקוד<span>★</span></div>
   <div class="topbar-right">
     <span class="school-pill">בית ספר: <strong id="schoolNameLabel">טוען...</strong></span>
+    <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
     <button class="logout-btn" onclick="handleLogout()">יציאה</button>
   </div>
 </div>
@@ -774,6 +776,64 @@ async function loadDashboard() {
 
   document.getElementById('loadingState').classList.add('hidden')
   document.getElementById('dashboardContent').classList.remove('hidden')
+}
+
+async function exportToExcel() {
+  if (!currentSchoolId) { showToast('עדיין טוען נתונים, נסה/י שוב בעוד רגע', 'error'); return }
+  showToast('מכין קובץ אקסל...', 'success')
+
+  const lessonIds = allLessons.map(l => l.id)
+  let checkinRows = []
+  if (lessonIds.length > 0) {
+    const { data: checkins, error } = await supabaseClient
+      .from('checkins')
+      .select('*')
+      .in('lesson_id', lessonIds)
+      .order('check_in_at', { ascending: false })
+    if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
+    checkinRows = checkins || []
+  }
+
+  const statusLabel = { 'ממתינה': 'בשיעור (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
+
+  const attendanceSheet = checkinRows.map(c => {
+    const student = allStudents.find(s => s.id === c.student_id)
+    const lesson = allLessons.find(l => l.id === c.lesson_id)
+    const checkInDate = c.check_in_at ? new Date(c.check_in_at) : null
+    return {
+      'שם תלמיד/ה': student ? student.name : '—',
+      'כיתה': student ? (student.class_name || '—') : '—',
+      'מקצוע/שיעור': lesson ? lesson.subject : '—',
+      'תאריך': checkInDate ? checkInDate.toLocaleDateString('he-IL') : '—',
+      'שעת כניסה (צ\'ק-אין)': checkInDate ? checkInDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
+      'שעת יציאה (צ\'ק-אאוט)': c.check_out_at ? new Date(c.check_out_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
+      'סטטוס': statusLabel[c.status] || c.status,
+      'נקודות': c.points ?? 0
+    }
+  })
+
+  const studentsSheet = allStudents.map(s => ({
+    'שם': s.name || '—',
+    'כיתה': s.class_name || '—',
+    'אימייל': s.email || '—',
+    'טלפון': s.phone || '—',
+    'נקודות': s.points ?? 0
+  }))
+
+  const teachersSheet = allTeachers.map(t => ({
+    'שם': t.name || '—',
+    'אימייל': t.email || '—'
+  }))
+
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'תלמידים')
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(teachersSheet), 'צוות הוראה')
+
+  const schoolName = document.getElementById('schoolNameLabel').textContent || 'בית-ספר'
+  const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
+  XLSX.writeFile(wb, `דוח-${schoolName}-${dateStr}.xlsx`)
+  showToast('הקובץ הורד בהצלחה ✅', 'success')
 }
 
 function showFatalError(msg) {
