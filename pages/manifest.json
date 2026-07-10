@@ -1,0 +1,33 @@
+{
+  "name": "ניקוד★ - מערכת תגמול",
+  "short_name": "ניקוד★",
+  "description": "מערכת נקודות ותגמול לבתי ספר ומקומות עבודה - נוכחות, משימות וחנות פרסים",
+  "start_url": "login.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FBFCFF",
+  "theme_color": "#2E5BFF",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

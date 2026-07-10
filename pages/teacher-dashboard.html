@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E5BFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ניקוד★">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -49,6 +57,14 @@ nav{
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
 
 .main{max-width:700px;margin:0 auto;padding:24px 20px 120px}
+
+.top-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content}
+.top-tab{
+  padding:9px 18px;border:none;background:none;color:var(--ink-3);
+  border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
+  transition:all 0.2s;
+}
+.top-tab.active{background:var(--brand);color:#fff}
 
 .setup-card{
   background:var(--glass);backdrop-filter:blur(14px);
@@ -149,6 +165,53 @@ nav{
 
 .hidden{display:none}
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
+
+.panel{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:20px;box-shadow:var(--sh-1),var(--hl);
+}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
+.panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
+.add-btn{
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;padding:9px 16px;
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
+  box-shadow:var(--sh-brand);transition:all 0.2s;
+}
+.add-btn:hover{transform:translateY(-1px)}
+table{width:100%;border-collapse:collapse}
+th{text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line-2)}
+td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+tr:last-child td{border-bottom:none}
+.points-tag{color:#9A6B10;font-weight:700}
+.empty-state{padding:40px;text-align:center;color:var(--ink-3);font-size:0.9rem}
+
+.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
+.task-status-badge.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
+.task-status-badge.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
+.task-status-badge.approved{background:rgba(10,164,120,0.12);color:var(--green)}
+.task-status-badge.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-actions{display:flex;gap:6px}
+.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700}
+.task-act-approve{background:rgba(10,164,120,0.12);color:var(--green)}
+.task-act-reject{background:rgba(226,85,85,0.12);color:var(--red)}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,14,40,0.42);backdrop-filter:blur(7px);align-items:center;justify-content:center;z-index:400;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:rgba(255,255,255,0.96);backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:28px;width:100%;max-width:400px;box-shadow:var(--sh-2),var(--hl)}
+.modal h3{font-size:1.1rem;margin-bottom:20px;color:var(--ink)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:0.82rem;color:var(--ink-3);margin-bottom:6px}
+.field input,.field select,.field textarea{
+  width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;
+}
+.field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700}
+.btn-cancel{background:var(--glass-2);color:var(--ink-3);border:1px solid var(--line)}
+.btn-confirm{background:var(--brand);color:#fff}
 </style>
 </head>
 <body>
@@ -165,49 +228,97 @@ nav{
 
 <div class="main hidden" id="mainContent">
 
-  <div class="setup-card" id="setupCard">
-    <h3>🆕 פתח שיעור חדש</h3>
-    <div class="setup-row">
-      <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)">
-      <input type="text" id="classInput" placeholder='כיתה (למשל: י"א 3)'>
-    </div>
-    <button class="start-btn" onclick="startLesson()">▶ התחל שיעור</button>
+  <div class="top-tabs">
+    <button class="top-tab active" id="lessonTabBtn" onclick="setTopTab('lesson')">🏫 ניהול שיעור</button>
+    <button class="top-tab" id="tasksTabBtn" onclick="setTopTab('tasks')">📋 משימות</button>
   </div>
 
-  <div id="activeLessonSection" class="hidden">
-    <div class="lesson-header">
-      <div class="lesson-top">
-        <div>
-          <div class="lesson-title" id="lessonTitle"></div>
-          <div class="lesson-meta" id="lessonMeta"></div>
+  <div id="lessonView">
+    <div class="setup-card" id="setupCard">
+      <h3>🆕 פתח שיעור חדש</h3>
+      <div class="setup-row">
+        <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)">
+        <input type="text" id="classInput" placeholder='כיתה (למשל: י"א 3)'>
+      </div>
+      <button class="start-btn" onclick="startLesson()">▶ התחל שיעור</button>
+    </div>
+
+    <div id="activeLessonSection" class="hidden">
+      <div class="lesson-header">
+        <div class="lesson-top">
+          <div>
+            <div class="lesson-title" id="lessonTitle"></div>
+            <div class="lesson-meta" id="lessonMeta"></div>
+          </div>
+        </div>
+        <div class="lesson-stats">
+          <div class="l-stat"><div class="l-stat-num" style="color:var(--green)" id="statApproved">0</div><div class="l-stat-lbl">אושרו</div></div>
+          <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
+          <div class="l-stat"><div class="l-stat-num" style="color:var(--ink-3)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
+        </div>
+
+        <div class="budget-box">
+          <div class="budget-top">
+            <span class="budget-label">תקציב נקודות לכיתה החודש</span>
+            <span class="budget-value" id="budgetValueText">—</span>
+          </div>
+          <div class="budget-track"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
+          <div class="budget-note" id="budgetNote"></div>
         </div>
       </div>
-      <div class="lesson-stats">
-        <div class="l-stat"><div class="l-stat-num" style="color:var(--green)" id="statApproved">0</div><div class="l-stat-lbl">אושרו</div></div>
-        <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
-        <div class="l-stat"><div class="l-stat-num" style="color:var(--ink-3)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
+
+      <div class="controls">
+        <button class="ctrl-btn ctrl-green" onclick="approveAll()">✅ אשר הכל</button>
+        <button class="ctrl-btn ctrl-red" onclick="clearAll()">🔄 אפס</button>
+        <button class="ctrl-btn ctrl-purple" onclick="openSubmit()">📤 שלח ואשר</button>
+      </div>
+      <div class="controls">
+        <button class="ctrl-btn" style="background:var(--glass-2);border:1px solid var(--line);color:var(--ink)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
       </div>
 
-      <div class="budget-box">
-        <div class="budget-top">
-          <span class="budget-label">תקציב נקודות לכיתה החודש</span>
-          <span class="budget-value" id="budgetValueText">—</span>
-        </div>
-        <div class="budget-track"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
-        <div class="budget-note" id="budgetNote"></div>
+      <div id="studentList"></div>
+    </div>
+  </div>
+
+  <div id="tasksView" class="hidden">
+    <div class="panel" id="tasksPanel">
+      <div class="panel-head">
+        <h3>משימות שיצרתי</h3>
+        <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
       </div>
+      <table>
+        <thead><tr><th>תלמיד/עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+        <tbody id="tasksBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="tasksEmpty">עדיין לא יצרת משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
     </div>
+  </div>
 
-    <div class="controls">
-      <button class="ctrl-btn ctrl-green" onclick="approveAll()">✅ אשר הכל</button>
-      <button class="ctrl-btn ctrl-red" onclick="clearAll()">🔄 אפס</button>
-      <button class="ctrl-btn ctrl-purple" onclick="openSubmit()">📤 שלח ואשר</button>
-    </div>
-    <div class="controls">
-      <button class="ctrl-btn" style="background:var(--glass-2);border:1px solid var(--line);color:var(--ink)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
-    </div>
+</div>
 
-    <div id="studentList"></div>
+<div class="modal-overlay" id="taskModalOverlay" onclick="if(event.target===this) closeTaskModal()">
+  <div class="modal">
+    <h3>משימה חדשה</h3>
+    <div class="field">
+      <label>תלמיד/עובד</label>
+      <select id="taskStudentSelect"></select>
+    </div>
+    <div class="field">
+      <label>כותרת המשימה</label>
+      <input type="text" id="taskTitleInput" placeholder="למשל: הגשת דוח שבועי">
+    </div>
+    <div class="field">
+      <label>תיאור (אופציונלי)</label>
+      <textarea id="taskDescInput" placeholder="פרטים נוספים על המשימה"></textarea>
+    </div>
+    <div class="field">
+      <label>נקודות בעת אישור</label>
+      <input type="number" id="taskPointsInput" value="3" min="1">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTaskModal()">ביטול</button>
+      <button class="btn-confirm" onclick="createTask()">שלח משימה</button>
+    </div>
   </div>
 </div>
 
@@ -263,6 +374,10 @@ let remainingBudget = CLASS_MONTHLY_BUDGET_POINTS
 let checkins = {}          // student_id -> checkin row {id, status, points}
 let checkinPollTimer = null
 
+// ---- Tasks (teacher-assigned) ----
+let schoolStudentsForTasks = []
+let myCreatedTasks = []
+
 function firstOfMonthISO() {
   const d = new Date()
   return new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
@@ -291,6 +406,153 @@ async function init() {
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('mainContent').classList.remove('hidden')
+}
+
+function setTopTab(tab) {
+  document.getElementById('lessonTabBtn').classList.toggle('active', tab === 'lesson')
+  document.getElementById('tasksTabBtn').classList.toggle('active', tab === 'tasks')
+  document.getElementById('lessonView').classList.toggle('hidden', tab !== 'lesson')
+  document.getElementById('tasksView').classList.toggle('hidden', tab !== 'tasks')
+  document.getElementById('summaryBar').classList.toggle('hidden', tab !== 'lesson' || !currentLesson)
+  if (tab === 'tasks') loadMyTasks()
+}
+
+function taskStatusLabel(status) {
+  return { pending: '⏳ ממתין לביצוע', submitted: '📩 ממתין לאישור שלך', approved: '✓ אושר', rejected: '✗ נדחה' }[status] || status
+}
+
+async function loadSchoolStudentsForTasks() {
+  const { data } = await supabaseClient
+    .from('users').select('id, name, class_name')
+    .eq('school_id', currentUser.school_id)
+    .eq('role', 'student')
+    .order('name')
+  schoolStudentsForTasks = data || []
+}
+
+async function openTaskModal() {
+  if (schoolStudentsForTasks.length === 0) await loadSchoolStudentsForTasks()
+  const select = document.getElementById('taskStudentSelect')
+  select.innerHTML = schoolStudentsForTasks.map(s => `<option value="${s.id}">${escapeHtml(s.name)}${s.class_name ? ' - ' + escapeHtml(s.class_name) : ''}</option>`).join('')
+  if (schoolStudentsForTasks.length === 0) select.innerHTML = '<option value="">אין עדיין תלמידים/עובדים רשומים בבית הספר</option>'
+  document.getElementById('taskTitleInput').value = ''
+  document.getElementById('taskDescInput').value = ''
+  document.getElementById('taskPointsInput').value = 3
+  document.getElementById('taskModalOverlay').classList.add('show')
+}
+
+function closeTaskModal() {
+  document.getElementById('taskModalOverlay').classList.remove('show')
+}
+
+async function createTask() {
+  const studentId = document.getElementById('taskStudentSelect').value
+  const title = document.getElementById('taskTitleInput').value.trim()
+  const description = document.getElementById('taskDescInput').value.trim()
+  const points = parseInt(document.getElementById('taskPointsInput').value, 10) || 3
+
+  if (!studentId) { showToast('נא לבחור תלמיד/עובד', true); return }
+  if (!title) { showToast('נא למלא כותרת למשימה', true); return }
+  if (points < 1 || points > 50) { showToast('מספר הנקודות חייב להיות בין 1 ל-50', true); return }
+
+  try {
+    const { data, error } = await supabaseClient.from('tasks').insert({
+      school_id: currentUser.school_id,
+      created_by: currentUser.id,
+      student_id: studentId,
+      title, description: description || null,
+      points, status: 'pending'
+    }).select().single()
+    if (error) throw error
+
+    myCreatedTasks.unshift(data)
+    renderMyTasks()
+    closeTaskModal()
+    showToast('המשימה נשלחה בהצלחה')
+  } catch (err) {
+    showToast(err.message || 'שגיאה ביצירת המשימה', true)
+  }
+}
+
+async function loadMyTasks() {
+  const { data, error } = await supabaseClient
+    .from('tasks')
+    .select('*')
+    .eq('created_by', currentUser.id)
+    .order('created_at', { ascending: false })
+  if (error) { console.error(error); myCreatedTasks = []; return }
+  myCreatedTasks = data || []
+  if (schoolStudentsForTasks.length === 0) await loadSchoolStudentsForTasks()
+  renderMyTasks()
+}
+
+function renderMyTasks() {
+  document.getElementById('tasksEmpty').classList.toggle('hidden', myCreatedTasks.length > 0)
+  document.getElementById('tasksBody').innerHTML = myCreatedTasks.map(t => {
+    const student = schoolStudentsForTasks.find(s => s.id === t.student_id)
+    const actions = t.status === 'submitted'
+      ? `<div class="task-actions">
+           <button class="task-act-btn task-act-approve" onclick="approveTask('${t.id}')">✅ אשר</button>
+           <button class="task-act-btn task-act-reject" onclick="rejectTask('${t.id}')">✗ דחה</button>
+         </div>`
+      : t.status === 'pending'
+      ? `<span style="color:var(--ink-3);font-size:0.78rem">ממתין לביצוע</span>`
+      : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
+    return `<tr>
+      <td>${escapeHtml(student ? student.name : '—')}</td>
+      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.76rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
+      <td class="points-tag">${t.points}</td>
+      <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
+      <td>${actions}</td>
+    </tr>`
+  }).join('')
+}
+
+async function approveTask(taskId) {
+  const task = myCreatedTasks.find(t => t.id === taskId)
+  if (!task) return
+  if (!confirm(`לאשר את המשימה "${task.title}" ולהעניק ${task.points} נקודות?`)) return
+
+  try {
+    // A database trigger automatically awards the points (inserts into point_logs
+    // and updates the student's balance) the moment status moves to 'approved'.
+    // Don't award points here too, or the student would be credited twice.
+    const { error: taskErr } = await supabaseClient.from('tasks')
+      .update({ status: 'approved' })
+      .eq('id', taskId)
+    if (taskErr) throw taskErr
+
+    task.status = 'approved'
+    renderMyTasks()
+    showToast(`✅ אושר! ${task.points} נקודות הועברו`)
+  } catch (err) {
+    showToast(err.message || 'שגיאה באישור המשימה', true)
+  }
+}
+
+async function rejectTask(taskId) {
+  const task = myCreatedTasks.find(t => t.id === taskId)
+  if (!task) return
+  if (!confirm(`לדחות את המשימה "${task.title}"?`)) return
+
+  try {
+    const { error } = await supabaseClient.from('tasks')
+      .update({ status: 'rejected' })
+      .eq('id', taskId)
+    if (error) throw error
+
+    task.status = 'rejected'
+    renderMyTasks()
+    showToast('המשימה נדחתה')
+  } catch (err) {
+    showToast(err.message || 'שגיאה בדחיית המשימה', true)
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
 }
 
 async function getClassBudgetRemaining(class_name) {
@@ -715,6 +977,12 @@ function showToast(msg, isError) {
 }
 
 init()
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+  })
+}
 </script>
 </body>
 </html>

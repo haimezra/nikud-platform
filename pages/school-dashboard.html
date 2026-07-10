@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E5BFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ניקוד★">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -141,6 +149,24 @@ nav{
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3);font-size:0.95rem}
 
+.task-item{
+  display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-2);
+}
+.task-item:last-child{border-bottom:none}
+.task-icon{font-size:1.3rem}
+.task-body{flex:1}
+.task-title{font-weight:700;font-size:0.9rem;color:var(--ink)}
+.task-desc{font-size:0.78rem;color:var(--ink-3);margin-top:2px}
+.task-status-tag{font-size:0.74rem;font-weight:700;padding:3px 10px;border-radius:var(--pill);white-space:nowrap}
+.task-status-tag.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
+.task-status-tag.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
+.task-status-tag.approved{background:rgba(10,164,120,0.12);color:var(--green)}
+.task-status-tag.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-done-btn{
+  background:var(--brand);color:#fff;border:none;padding:7px 14px;border-radius:var(--r-sm);
+  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;white-space:nowrap;
+}
+
 @media(max-width:700px){
   .dashboard{padding:18px 4px 40px}
   .grid-2{grid-template-columns:1fr}
@@ -188,6 +214,11 @@ nav{
     </div>
 
     <div class="card hidden" id="checkinCard" style="margin-bottom:16px"></div>
+
+    <div class="card hidden" id="tasksCard" style="margin-bottom:16px">
+      <h3>📋 המשימות שלי</h3>
+      <div id="tasksList"></div>
+    </div>
 
     <div class="card" id="attendanceCard" style="margin-bottom:16px">
       <h3>📈 אחוז נוכחות</h3>
@@ -244,6 +275,7 @@ let activeLesson = null
 let myCheckin = null
 let checkinPollTimer = null
 let isDemoAccount = false
+let myTasks = []
 
 async function init() {
   try {
@@ -285,11 +317,91 @@ async function init() {
   await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
   await loadAttendanceStats(profile.id, profile.school_id, profile.class_name)
   await loadStore()
+  await loadTasks()
   await refreshActiveLessonAndCheckin()
-  checkinPollTimer = setInterval(refreshActiveLessonAndCheckin, 6000)
+  checkinPollTimer = setInterval(refreshActiveLessonAndCheckinAndTasks, 6000)
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'block'
+}
+
+async function refreshActiveLessonAndCheckinAndTasks() {
+  await refreshActiveLessonAndCheckin()
+  await loadTasks()
+}
+
+async function loadTasks() {
+  const { data, error } = await supabaseClient
+    .from('tasks')
+    .select('*')
+    .eq('student_id', currentUser.id)
+    .order('created_at', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  const previousApprovedIds = new Set(myTasks.filter(t => t.status === 'approved').map(t => t.id))
+  myTasks = data || []
+
+  // Detect newly-approved tasks since last refresh to refresh points + celebrate
+  const newlyApproved = myTasks.filter(t => t.status === 'approved' && !previousApprovedIds.has(t.id))
+  if (newlyApproved.length > 0) {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    await loadActivity(currentUser.id)
+    showToast(`🎉 המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
+  }
+
+  renderTasks()
+}
+
+function taskStatusLabel(status) {
+  return { pending: 'לביצוע', submitted: 'ממתין לאישור', approved: 'אושר', rejected: 'לא אושר' }[status] || status
+}
+
+function renderTasks() {
+  const card = document.getElementById('tasksCard')
+  if (myTasks.length === 0) { card.classList.add('hidden'); return }
+  card.classList.remove('hidden')
+
+  document.getElementById('tasksList').innerHTML = myTasks.map(t => {
+    const icon = t.status === 'approved' ? '✅' : t.status === 'rejected' ? '✗' : t.status === 'submitted' ? '📩' : '📋'
+    const action = t.status === 'pending'
+      ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">סמן כבוצע</button>`
+      : `<span class="task-status-tag ${t.status}">${taskStatusLabel(t.status)}${t.status === 'approved' ? ' +' + t.points : ''}</span>`
+    return `<div class="task-item">
+      <div class="task-icon">${icon}</div>
+      <div class="task-body">
+        <div class="task-title">${escapeHtml(t.title)}</div>
+        ${t.description ? `<div class="task-desc">${escapeHtml(t.description)}</div>` : ''}
+      </div>
+      ${action}
+    </div>`
+  }).join('')
+}
+
+async function markTaskDone(taskId) {
+  try {
+    const { error } = await supabaseClient
+      .from('tasks')
+      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
+      .eq('id', taskId)
+    if (error) throw error
+
+    const task = myTasks.find(t => t.id === taskId)
+    if (task) task.status = 'submitted'
+    renderTasks()
+    showToast('סומן כבוצע! ממתין לאישור המנהל/ת ✅')
+  } catch (err) {
+    showToast('שגיאה בסימון המשימה', true)
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
 }
 
 async function refreshActiveLessonAndCheckin() {
@@ -402,7 +514,7 @@ async function loadActivity(studentId) {
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
       <div>${icons[log.reason] || '📌'}</div>
-      <div>${log.lessons?.subject || 'פעילות'}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'פעילות')}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
       <div class="activity-pts">+${log.points}</div>
     </div>
   `).join('')
@@ -518,6 +630,12 @@ function showToast(msg, isError) {
 }
 
 init()
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+  })
+}
 </script>
 </body>
 </html>

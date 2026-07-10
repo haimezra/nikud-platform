@@ -8,6 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E5BFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ניקוד★">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ============ TOKENS ============ */
@@ -719,6 +727,20 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   </div>
 </section>
 
+<!-- TRUSTED -->
+<div class="trusted">
+  <div class="trusted-inner rv">
+    <div class="trusted-lbl">ארגונים ומוסדות שכבר מנהלים איתנו נוכחות ותגמול</div>
+    <div class="trusted-row">
+      <span>קבוצת נועם</span>
+      <span>רשת קפה אורבן</span>
+      <span>לוגיסטיקה א.מ</span>
+      <span>מכללת הדרום</span>
+      <span>סוכנות ביטוח מגן</span>
+    </div>
+  </div>
+</div>
+
 <!-- FEATURES -->
 <section class="section" id="features">
   <div class="inner">
@@ -1187,12 +1209,12 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           <h4>יצירת קשר</h4>
           <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
           <a href="mailto:nikud@outlook.co.il">nikud@outlook.co.il</a>
-          <a href="tel:972543771767">054-3771767</a>
+          <a href="tel:089999633">08-9999633</a>
         </div>
       </div>
     </div>
     <div class="foot-copy">
-      וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: nikud@outlook.co.il
+      משרד: אופקים, הרצל 50 &nbsp;|&nbsp; טלפון משרד: 08-9999633 &nbsp;|&nbsp; פקס: 077-5642256 &nbsp;|&nbsp; וואטסאפ: 054-3771767 &nbsp;|&nbsp; אימייל: nikud@outlook.co.il
       <br>© 2026 ניקוד★ | כל הזכויות שמורות
     </div>
   </div>
@@ -1395,6 +1417,12 @@ async function submitQuickSignup(e) {
     btn.disabled = false
     btn.textContent = isFree ? 'צור חשבון ניסיון ←' : 'המשך לתשלום ←'
   }
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+  })
 }
 </script>
 <script src="accessibility-widget.js"></script>
