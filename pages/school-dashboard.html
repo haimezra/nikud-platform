@@ -438,7 +438,7 @@ async function refreshActiveLessonAndCheckin() {
   card.classList.remove('hidden')
   renderCheckinCard()
 
-  if (myCheckin && myCheckin.status !== previousStatus && myCheckin.status !== 'ממתינה') {
+  if (myCheckin && myCheckin.status !== previousStatus && myCheckin.status !== 'ממתינה' && myCheckin.status !== 'הושלם') {
     const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
     currentPoints = profile?.points ?? currentPoints
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
@@ -447,6 +447,11 @@ async function refreshActiveLessonAndCheckin() {
     if (myCheckin.status === 'אושר') showToast('🎉 המורה אישר/ה את הצ\'ק-אין שלך!')
     else if (myCheckin.status === 'נדחה') showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
   }
+}
+
+function formatTime(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
 }
 
 function renderCheckinCard() {
@@ -470,11 +475,20 @@ function renderCheckinCard() {
   } else if (myCheckin.status === 'ממתינה') {
     card.innerHTML = `
       <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status pending">📥 נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
+      <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י את השיעור או המשימה, סמן/י צ'ק-אאוט.</p>
+      <button class="checkin-btn" onclick="doCheckout()">🏁 צ'ק-אאוט - סיימתי</button>
+    `
+  } else if (myCheckin.status === 'הושלם') {
+    card.innerHTML = `
+      <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status pending">📥 נכנסת ${formatTime(myCheckin.check_in_at)} · 📤 יצאת ${formatTime(myCheckin.check_out_at)}</div>
       <div class="checkin-status pending">⏳ ממתין/ה לאישור המורה...</div>
     `
   } else if (myCheckin.status === 'אושר') {
     card.innerHTML = `
       <h3>📍 שיעור פעיל: ${activeLesson.subject}</h3>
+      <div class="checkin-status pending" style="font-size:0.8rem">📥 ${formatTime(myCheckin.check_in_at)} · 📤 ${formatTime(myCheckin.check_out_at)}</div>
       <div class="checkin-status approved">✓ אושר! קיבלת ${myCheckin.points || ''} נקודות</div>
     `
   } else {
@@ -489,7 +503,7 @@ async function doCheckin() {
   if (!activeLesson) return
   const { data, error } = await supabaseClient
     .from('checkins')
-    .insert({ lesson_id: activeLesson.id, student_id: currentUser.id, status: 'ממתינה' })
+    .insert({ lesson_id: activeLesson.id, student_id: currentUser.id, status: 'ממתינה', check_in_at: new Date().toISOString() })
     .select()
     .single()
 
@@ -497,7 +511,23 @@ async function doCheckin() {
 
   myCheckin = data
   renderCheckinCard()
-  showToast('הצ\'ק-אין נשלח למורה ✅')
+  showToast('נרשם צ\'ק-אין! בהצלחה 💪')
+}
+
+async function doCheckout() {
+  if (!myCheckin || myCheckin.status !== 'ממתינה') return
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .update({ status: 'הושלם', check_out_at: new Date().toISOString() })
+    .eq('id', myCheckin.id)
+    .select()
+    .single()
+
+  if (error) { showToast('שגיאה בשליחת הצ\'ק-אאוט', true); return }
+
+  myCheckin = data
+  renderCheckinCard()
+  showToast('הצ\'ק-אאוט נשלח לאישור המנהל/ה ✅')
 }
 
 async function loadActivity(studentId) {
