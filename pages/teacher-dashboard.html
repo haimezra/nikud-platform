@@ -231,6 +231,7 @@ tr:last-child td{border-bottom:none}
 
   <div class="top-tabs">
     <button class="top-tab active" id="lessonTabBtn" onclick="setTopTab('lesson')">🏫 ניהול שיעור</button>
+    <button class="top-tab" id="attendanceTabBtn" onclick="setTopTab('attendance')">🕒 נוכחות <span id="attendanceBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
     <button class="top-tab" id="tasksTabBtn" onclick="setTopTab('tasks')">📋 משימות</button>
   </div>
 
@@ -292,6 +293,20 @@ tr:last-child td{border-bottom:none}
         <tbody id="tasksBody"></tbody>
       </table>
       <div class="empty-state hidden" id="tasksEmpty">עדיין לא יצרת משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
+    </div>
+  </div>
+
+  <div id="attendanceView" class="hidden">
+    <div class="panel" id="attendancePanel">
+      <div class="panel-head">
+        <h3>צ'ק-אין / צ'ק-אאוט ממתינים לאישור</h3>
+      </div>
+      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px">תלמיד/עובד עושה צ'ק-אין בתחילת הפעילות וצ'ק-אאוט בסיום, בכל שעה, בלי צורך בשיעור פתוח מראש. לאחר הצ'ק-אאוט יש לך עד 8 שעות לאשר. הנקודות תמיד 3, ללא אפשרות שינוי.</p>
+      <table>
+        <thead><tr><th>תלמיד/עובד</th><th>כיתה/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+        <tbody id="attendanceBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="attendanceEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
     </div>
   </div>
 
@@ -405,17 +420,88 @@ async function init() {
   const { data: school } = await supabaseClient.from('schools').select('plan').eq('id', profile.school_id).single()
   currentSchoolPlan = school ? school.plan : 'trial'
 
+  await loadPendingCheckins()
+  setInterval(loadPendingCheckins, 30000)
+
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('mainContent').classList.remove('hidden')
 }
 
 function setTopTab(tab) {
   document.getElementById('lessonTabBtn').classList.toggle('active', tab === 'lesson')
+  document.getElementById('attendanceTabBtn').classList.toggle('active', tab === 'attendance')
   document.getElementById('tasksTabBtn').classList.toggle('active', tab === 'tasks')
   document.getElementById('lessonView').classList.toggle('hidden', tab !== 'lesson')
+  document.getElementById('attendanceView').classList.toggle('hidden', tab !== 'attendance')
   document.getElementById('tasksView').classList.toggle('hidden', tab !== 'tasks')
   document.getElementById('summaryBar').classList.toggle('hidden', tab !== 'lesson' || !currentLesson)
   if (tab === 'tasks') loadMyTasks()
+  if (tab === 'attendance') loadPendingCheckins()
+}
+
+let pendingCheckins = []
+
+function fmtTime(iso) {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+}
+
+function hoursLeftLabel(checkoutIso) {
+  const deadline = new Date(checkoutIso).getTime() + 8 * 60 * 60 * 1000
+  const msLeft = deadline - Date.now()
+  if (msLeft <= 0) return `<span style="color:var(--red);font-weight:700">⚠️ עברו 8 שעות</span>`
+  const h = Math.floor(msLeft / 3600000)
+  const m = Math.floor((msLeft % 3600000) / 60000)
+  return `${h}ש ${m}ד נותרו`
+}
+
+async function loadPendingCheckins() {
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*, users:student_id(name, class_name)')
+    .eq('school_id', currentUser.school_id)
+    .eq('status', 'הושלם')
+    .order('check_out_at', { ascending: true })
+
+  if (error) { console.error(error); return }
+
+  pendingCheckins = data || []
+  document.getElementById('attendanceBadge').classList.toggle('hidden', pendingCheckins.length === 0)
+  document.getElementById('attendanceBadge').textContent = pendingCheckins.length
+  renderPendingCheckins()
+}
+
+function renderPendingCheckins() {
+  const tbody = document.getElementById('attendanceBody')
+  document.getElementById('attendanceEmpty').classList.toggle('hidden', pendingCheckins.length > 0)
+
+  tbody.innerHTML = pendingCheckins.map(c => `
+    <tr>
+      <td>${escapeHtml(c.users?.name || '—')}</td>
+      <td>${escapeHtml(c.users?.class_name || '—')}</td>
+      <td>${fmtTime(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_out_at)}</td>
+      <td>${hoursLeftLabel(c.check_out_at)}</td>
+      <td>
+        <button class="task-done-btn" onclick="approveCheckin('${c.id}')">✓ אשר (3 נק')</button>
+        <button class="task-done-btn" style="background:var(--red);color:#fff" onclick="rejectCheckin('${c.id}')">✗ דחה</button>
+      </td>
+    </tr>
+  `).join('')
+}
+
+async function approveCheckin(id) {
+  const { error } = await supabaseClient.from('checkins').update({ status: 'אושר' }).eq('id', id)
+  if (error) { showToast('שגיאה באישור', true); return }
+  showToast('אושר! 3 נקודות ניתנו ✅')
+  await loadPendingCheckins()
+}
+
+async function rejectCheckin(id) {
+  const { error } = await supabaseClient.from('checkins').update({ status: 'נדחה' }).eq('id', id)
+  if (error) { showToast('שגיאה בדחייה', true); return }
+  showToast('הצ\'ק-אין נדחה')
+  await loadPendingCheckins()
 }
 
 function taskStatusLabel(status) {
