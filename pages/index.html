@@ -357,6 +357,12 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   box-shadow:var(--sh-3),var(--hl);padding:24px;
 }
 .pv-grid{display:grid;grid-template-columns:1.42fr 1fr;gap:16px;margin-top:16px}
+/* FIX: grid children default to min-width:auto, which lets wide, nowrap tables
+   force the whole grid (and its parent .preview/.console) past the viewport
+   on mobile even though .pv-table-wrap has overflow-x:auto. Allowing these
+   items to shrink lets the internal scroll container do its job instead of
+   pushing the outer frame out of bounds. */
+.pv-grid > *, .console-row > *, .kpis > *{min-width:0}
 .pv-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .pv-table{width:100%;border-collapse:collapse}
 .pv-table th{
