@@ -528,7 +528,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 
 /* ============ LIVE TOASTS ============ */
 .toast-stack{
-  position:fixed;bottom:24px;left:24px;z-index:500;
+  position:fixed;top:50%;left:24px;transform:translateY(-50%);z-index:500;
   display:flex;flex-direction:column;gap:10px;pointer-events:none;
 }
 .toast{
@@ -550,7 +550,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .toast-pts{font-family:'Rubik',sans-serif;font-size:0.82rem;font-weight:700;color:var(--green)}
 .toast-pts.neg{color:var(--ink-3)}
 @media(max-width:600px){
-  .toast-stack{left:12px;right:auto;bottom:16px}
+  .toast-stack{left:12px;right:auto}
   .toast{min-width:0;max-width:calc(100vw - 24px)}
 }
 
@@ -1324,7 +1324,7 @@ function showToast() {
 if (!window.__nikudToastStarted) {
   window.__nikudToastStarted = true
   setTimeout(showToast, 2500)
-  setInterval(showToast, 8000)
+  setInterval(showToast, 7000)
 }
 
 /* ---------- Quick signup + payment ---------- */
