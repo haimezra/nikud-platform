@@ -197,6 +197,34 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .hero-copy .hero-sub{margin-left:auto;margin-right:auto}
 .hero-copy .hero-btns,.hero-copy .hero-trust{justify-content:center}
 
+.phone-cta-wrap{text-align:left;margin-bottom:18px}
+.phone-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:var(--pill);
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));
+  color:#fff;text-decoration:none;
+  font-family:'Rubik',sans-serif;font-size:0.86rem;font-weight:700;
+  box-shadow:var(--sh-brand),var(--hl);
+  animation:phoneWobble 2.6s ease-in-out infinite;
+  transform-origin:center;
+}
+.phone-cta svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;flex-shrink:0}
+.phone-cta:hover{animation-play-state:paused;transform:translateY(-2px)}
+@keyframes phoneWobble{
+  0%,100%{transform:rotate(0deg)}
+  8%{transform:rotate(-9deg)}
+  16%{transform:rotate(9deg)}
+  24%{transform:rotate(-7deg)}
+  32%{transform:rotate(7deg)}
+  40%{transform:rotate(-4deg)}
+  48%{transform:rotate(4deg)}
+  56%,100%{transform:rotate(0deg)}
+}
+@media(max-width:600px){
+  .phone-cta{font-size:0.8rem;padding:9px 16px}
+  .phone-cta-wrap{margin-bottom:14px}
+}
+
 /* ============ LIVE CONSOLE ============ */
 .console-wrap{position:relative}
 .console{
@@ -374,11 +402,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   box-shadow:var(--sh-3),var(--hl);padding:24px;
 }
 .pv-grid{display:grid;grid-template-columns:1.42fr 1fr;gap:16px;margin-top:16px}
-/* FIX: grid children default to min-width:auto, which lets wide, nowrap tables
-   force the whole grid (and its parent .preview/.console) past the viewport
-   on mobile even though .pv-table-wrap has overflow-x:auto. Allowing these
-   items to shrink lets the internal scroll container do its job instead of
-   pushing the outer frame out of bounds. */
 .pv-grid > *, .console-row > *, .kpis > *{min-width:0}
 .pv-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 .pv-table{width:100%;border-collapse:collapse}
@@ -693,6 +716,12 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 <section class="hero">
   <div class="hero-grid">
     <div class="hero-copy">
+      <div class="phone-cta-wrap">
+        <a href="tel:029999119" class="phone-cta">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+          חייגו עכשיו 029999119
+        </a>
+      </div>
       <div class="eyebrow">FOR MANAGERS WHO WANT RESULTS</div>
       <h1>הופכים נוכחות וביצועים ל<em>ניהול מבוסס נתונים</em></h1>
       <p class="hero-sub">ניקוד מחברת בין נוכחות, משימות וביצועים לבין תגמול אמיתי. עובדים ותלמידים צוברים נקודות על הגעה ועמידה ביעדים, וממירים אותן לפרסים. המנהלים מקבלים שליטה ונתונים בזמן אמת.</p>
@@ -1212,6 +1241,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
         </div>
         <div class="foot-col">
           <h4>יצירת קשר</h4>
+          <a href="tel:029999119">029999119</a>
           <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
           <a href="mailto:nikud@outlook.co.il">nikud@outlook.co.il</a>
           <a href="https://wa.me/972543771767" target="_blank" class="btn btn-ghost" style="margin-top:6px;padding:9px 18px;font-size:0.82rem">💬 וואטסאפ</a>
