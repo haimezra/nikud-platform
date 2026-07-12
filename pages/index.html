@@ -96,7 +96,8 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 @keyframes twinkle{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.18) rotate(8deg);opacity:0.85}}
 .logo .beacon{
   display:inline-block;width:8px;height:8px;border-radius:50%;
-  background:var(--brand);margin-right:1px;flex-shrink:0;
+  background:var(--brand);margin-right:6px;flex-shrink:0;
+  align-self:baseline;position:relative;top:3px;
   animation:beacon 1.6s ease-in-out infinite;
 }
 @keyframes beacon{
@@ -106,12 +107,12 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 }
 .logo-tagline{
   font-family:'Heebo',sans-serif;
-  font-size:0.68rem;
-  font-weight:500;
+  font-size:0.85rem;
+  font-weight:600;
   color:#000;
   margin-right:8px;
   letter-spacing:0;
-  align-self:center;
+  align-self:baseline;
   white-space:nowrap;
 }
 .nav-links{display:flex;gap:28px;align-items:center}
@@ -650,7 +651,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .kpi-lbl{font-size:0.72rem}
   .feed-txt{font-size:0.78rem}
   .btn{font-size:1rem;padding:15px 24px}
-  .logo-tagline{font-size:0.6rem;margin-right:6px}
+  .logo-tagline{font-size:0.74rem;margin-right:6px}
 
   /* מניעת גלישה אופקית: כל אלמנט רחב מדי נכנס לגבולות המסך */
   .console,.device-card,.preview{padding:16px}
@@ -668,7 +669,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="beacon"></span><span class="logo-tagline">פתרונות נוכחות לעסקים</span></a>
+    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="logo-tagline">פתרונות נוכחות לעסקים</span><span class="beacon"></span></a>
     <div class="nav-links">
       <a href="#features">יכולות</a>
       <a href="#how">איך זה עובד</a>
