@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2E5BFF">
+<meta name="theme-color" content="#2453F7">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -22,17 +22,17 @@
 :root{
   --paper:#FBFCFF;
   --paper-2:#F2F5FD;
-  --ink:#080E28;
-  --ink-2:#3E466A;
-  --ink-3:#7C85A6;
-  --brand:#2E5BFF;
-  --brand-2:#1636BE;
-  --violet:#6C43F0;
-  --gold:#E7A93A;
-  --gold-soft:#F5C869;
-  --green:#0AA478;
-  --line:rgba(8,14,40,0.08);
-  --line-2:rgba(8,14,40,0.05);
+  --ink:#060B22;
+  --ink-2:#353D61;
+  --ink-3:#6E7796;
+  --brand:#2453F7;
+  --brand-2:#1230B8;
+  --violet:#6A3DEE;
+  --gold:#DE9B1F;
+  --gold-soft:#F3C258;
+  --green:#079A6E;
+  --line:rgba(8,14,40,0.10);
+  --line-2:rgba(8,14,40,0.06);
   --glass:rgba(255,255,255,0.72);
   --glass-2:rgba(255,255,255,0.55);
   --glass-border:rgba(8,14,40,0.08);
@@ -89,7 +89,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   text-decoration:none;display:inline-flex;align-items:baseline;gap:2px;color:var(--ink);
 }
 .logo .grad{
-  background:linear-gradient(94deg,#1636BE,#2E5BFF 40%,#6C43F0);
+  background:linear-gradient(94deg,#1230B8,#2453F7 40%,#6A3DEE);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .logo .star{color:var(--gold);animation:twinkle 3.4s ease-in-out infinite;display:inline-block}
@@ -103,6 +103,16 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   0%,100%{opacity:0.25;box-shadow:0 0 2px rgba(46,91,255,0.35)}
   6%{opacity:1;box-shadow:0 0 9px 3px rgba(46,91,255,0.9)}
   13%{opacity:0.25;box-shadow:0 0 2px rgba(46,91,255,0.35)}
+}
+.logo-tagline{
+  font-family:'Heebo',sans-serif;
+  font-size:0.68rem;
+  font-weight:500;
+  color:#000;
+  margin-right:8px;
+  letter-spacing:0;
+  align-self:center;
+  white-space:nowrap;
 }
 .nav-links{display:flex;gap:28px;align-items:center}
 .nav-links a{color:var(--ink-2);text-decoration:none;font-size:0.92rem;font-weight:500;transition:color 0.2s}
@@ -130,8 +140,14 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   text-decoration:none;transition:transform 0.25s var(--ease),box-shadow 0.25s,border-color 0.25s,color 0.2s;
 }
 .btn-primary{
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  background:linear-gradient(110deg,var(--brand-2) 0%,var(--brand) 30%,var(--violet) 55%,var(--brand) 80%,var(--brand-2) 100%);
+  background-size:300% 100%;color:#fff;
   box-shadow:var(--sh-brand),var(--hl);
+  animation:btnFlow 5s ease-in-out infinite;
+}
+@keyframes btnFlow{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
 }
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 44px rgba(46,91,255,0.42)}
 .btn-ghost{
@@ -487,8 +503,8 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .cta-box{
   max-width:1160px;margin:0 auto;text-align:center;
   border-radius:var(--r-lg);padding:76px 28px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#0F308F 0%,#2E5BFF 52%,#6C43F0 128%);
-  box-shadow:0 32px 84px rgba(46,91,255,0.32);
+  background:linear-gradient(135deg,#0C2A85 0%,#2453F7 52%,#6A3DEE 128%);
+  box-shadow:0 32px 84px rgba(36,83,247,0.34);
 }
 .cta-box::before{
   content:'';position:absolute;inset:0;
@@ -634,6 +650,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .kpi-lbl{font-size:0.72rem}
   .feed-txt{font-size:0.78rem}
   .btn{font-size:1rem;padding:15px 24px}
+  .logo-tagline{font-size:0.6rem;margin-right:6px}
 
   /* מניעת גלישה אופקית: כל אלמנט רחב מדי נכנס לגבולות המסך */
   .console,.device-card,.preview{padding:16px}
@@ -651,7 +668,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="beacon"></span></a>
+    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="beacon"></span><span class="logo-tagline">פתרונות נוכחות לעסקים</span></a>
     <div class="nav-links">
       <a href="#features">יכולות</a>
       <a href="#how">איך זה עובד</a>
@@ -931,7 +948,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
         <div class="stars">★★★★★</div>
         <p class="quote">הנוכחות בסניף שלי עלתה מ-70% ל-94% תוך חודש. העובדים פשוט רוצים להיות כאן.</p>
         <div class="author">
-          <div class="avatar" style="background:linear-gradient(135deg,#2E5BFF,#6C43F0)">מ</div>
+          <div class="avatar" style="background:linear-gradient(135deg,#2453F7,#6A3DEE)">מ</div>
           <div><div class="a-name">מרים לוי</div><div class="a-role">מנהלת פיצריה, תל אביב</div></div>
         </div>
       </div>
