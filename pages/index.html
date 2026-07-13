@@ -181,7 +181,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .hero h1{
   font-size:clamp(2.5rem,5.1vw,4rem);font-weight:800;
   line-height:1.08;letter-spacing:-1.8px;margin-bottom:24px;
-  /* שחור מבריק - אפקט מראה: השתקפות בהירה למעלה, שחור עמוק במרכז, קו אור כמו אופק */
   background:linear-gradient(180deg,
     #6B7590 0%,
     #2A3148 22%,
@@ -695,6 +694,17 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .qs-submit:disabled{opacity:0.6;cursor:wait}
 .qs-cancel{text-align:center;margin-top:14px;color:var(--ink-3);font-size:0.85rem;cursor:pointer}
 
+/* ============ ROLE CHOICE MODAL ============ */
+.role-opt{
+  width:100%;padding:16px 18px;border:1px solid var(--line);border-radius:14px;
+  background:#fff;cursor:pointer;margin-bottom:12px;text-align:right;
+  transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
+  font-family:'Heebo',sans-serif;
+}
+.role-opt:hover{border-color:var(--brand);transform:translateY(-2px);box-shadow:var(--sh-1)}
+.role-opt b{display:block;font-family:'Rubik',sans-serif;font-size:0.98rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.role-opt span{font-size:0.82rem;color:var(--ink-3)}
+
 /* ============ RESPONSIVE ============ */
 @media(max-width:1300px){
   .hero-grid{grid-template-columns:0.96fr 1.04fr}
@@ -723,7 +733,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .hero-btns .btn{width:100%}
   .trusted-row{gap:26px}
 
-  /* טיפוגרפיה גדולה יותר וברורה יותר לנייד */
   .hero h1{font-size:clamp(2.1rem,8.5vw,2.6rem);letter-spacing:-1px}
   .hero-sub{font-size:1.02rem;line-height:1.75;max-width:none}
   .hero-logo{height:52px;margin-bottom:16px}
@@ -747,7 +756,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .btn{font-size:1rem;padding:15px 24px}
   .logo-tagline{font-size:0.82rem;margin-right:6px}
 
-  /* מניעת גלישה אופקית: כל אלמנט רחב מדי נכנס לגבולות המסך */
   .console,.device-card,.preview{padding:16px}
   .preview-frame{padding:12px}
   .pv-table th,.pv-table td{padding:9px 8px;font-size:0.78rem}
@@ -1072,7 +1080,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           <li class="no">התראות למנהלים ולמנהלי צוותים</li>
           <li class="no">דוחות נוכחות ופעילות</li>
         </ul>
-        <button onclick="openFreeSignup()" class="btn btn-ghost">התחל חינם</button>
+        <button onclick="openRoleChoice()" class="btn btn-ghost">התחל חינם</button>
       </div>
       <div class="plan popular rv">
         <div class="pop-badge">הכי פופולרי</div>
@@ -1311,6 +1319,27 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   </div>
 </footer>
 
+<!-- ROLE CHOICE MODAL -->
+<div id="roleModal" class="qs-overlay">
+  <div class="qs-box">
+    <h3>איך תרצה/י להירשם?</h3>
+    <p>בחר/י את הסוג המתאים, וניקח אותך להרשמה הנכונה</p>
+    <button type="button" class="role-opt" onclick="chooseRole('principal')">
+      <b>בעל עסק / מנהל ראשי</b>
+      <span>פותח עסק חדש במערכת ומקבל קוד הצטרפות לצוות</span>
+    </button>
+    <button type="button" class="role-opt" onclick="chooseRole('teacher')">
+      <b>מנהל צוות</b>
+      <span>מצטרף לעסק קיים באמצעות קוד הצטרפות שקיבל</span>
+    </button>
+    <button type="button" class="role-opt" onclick="chooseRole('student')">
+      <b>עובד</b>
+      <span>מצטרף לעסק קיים באמצעות קוד הצטרפות שקיבל</span>
+    </button>
+    <div class="qs-cancel" onclick="closeRoleChoice()">ביטול</div>
+  </div>
+</div>
+
 <!-- QUICK SIGNUP MODAL -->
 <div id="qsModal" class="qs-overlay">
   <div class="qs-box">
@@ -1319,7 +1348,9 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
     <div id="qsError" class="qs-err"></div>
     <form onsubmit="submitQuickSignup(event)">
       <input type="hidden" id="qsPlan">
+      <input type="hidden" id="qsRole" value="principal">
       <input id="qsSchoolName" placeholder="שם העסק" required>
+      <input id="qsInviteCode" placeholder="קוד הצטרפות מהעסק" style="display:none">
       <input id="qsName" placeholder="שם מלא" required>
       <input id="qsEmail" type="email" placeholder="אימייל" required>
       <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required>
@@ -1397,7 +1428,6 @@ let toastIdx = 0
 function showToast() {
   const stack = document.getElementById('toastStack')
   if (!stack) return
-  // הגנה: אם כבר יש התראה על המסך, לא מציגים עוד אחת
   if (stack.querySelector('.toast')) return
   const t = TOASTS[toastIdx]
   const el = document.createElement('div')
@@ -1414,7 +1444,6 @@ function showToast() {
   }, 5000)
   toastIdx = (toastIdx + 1) % TOASTS.length
 }
-// הגנה מפני הרצה כפולה של הסקריפט (מונע כפילויות)
 if (!window.__nikudToastStarted) {
   window.__nikudToastStarted = true
   setTimeout(showToast, 2500)
@@ -1426,8 +1455,37 @@ const QS_SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const QS_SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 const qsClient = window.supabase.createClient(QS_SUPABASE_URL, QS_SUPABASE_KEY)
 
+/* --- Role choice (shown before the "free trial" quick-signup) --- */
+function openRoleChoice() {
+  document.getElementById('roleModal').style.display = 'flex'
+}
+function closeRoleChoice() {
+  document.getElementById('roleModal').style.display = 'none'
+}
+function chooseRole(role) {
+  closeRoleChoice()
+  if (role === 'principal') {
+    openFreeSignup()
+  } else {
+    openJoinSignup(role)
+  }
+}
+
+/* Reset the shared modal fields back to the "new business" (principal) layout */
+function resetQsFieldsForPrincipal() {
+  const schoolNameEl = document.getElementById('qsSchoolName')
+  const inviteCodeEl = document.getElementById('qsInviteCode')
+  schoolNameEl.style.display = 'block'
+  schoolNameEl.required = true
+  inviteCodeEl.style.display = 'none'
+  inviteCodeEl.required = false
+  inviteCodeEl.value = ''
+}
+
 function openQuickSignup(plan) {
   document.getElementById('qsPlan').value = plan
+  document.getElementById('qsRole').value = 'principal'
+  resetQsFieldsForPrincipal()
   const h = document.querySelector('#qsModal h3')
   const p = document.querySelector('#qsModal .qs-box>p, #qsModal p')
   if (h) h.textContent = 'הרשמה מהירה + תשלום'
@@ -1437,6 +1495,8 @@ function openQuickSignup(plan) {
 }
 function openFreeSignup() {
   document.getElementById('qsPlan').value = 'free'
+  document.getElementById('qsRole').value = 'principal'
+  resetQsFieldsForPrincipal()
   const h = document.querySelector('#qsModal h3')
   const p = document.querySelector('#qsModal .qs-box>p, #qsModal p')
   if (h) h.textContent = 'הרשמה לניסיון חינם'
@@ -1444,6 +1504,27 @@ function openFreeSignup() {
   document.getElementById('qsSubmitBtn').textContent = 'צור חשבון ניסיון ←'
   document.getElementById('qsModal').style.display = 'flex'
 }
+
+/* New: employee / team-manager join-by-invite-code flow (always the free trial) */
+function openJoinSignup(role) {
+  document.getElementById('qsPlan').value = 'free'
+  document.getElementById('qsRole').value = role
+  const schoolNameEl = document.getElementById('qsSchoolName')
+  const inviteCodeEl = document.getElementById('qsInviteCode')
+  schoolNameEl.style.display = 'none'
+  schoolNameEl.required = false
+  inviteCodeEl.style.display = 'block'
+  inviteCodeEl.required = true
+
+  const roleLabel = role === 'teacher' ? 'מנהל צוות' : 'עובד'
+  const h = document.querySelector('#qsModal h3')
+  const p = document.querySelector('#qsModal .qs-box>p, #qsModal p')
+  if (h) h.textContent = 'הצטרפות כ' + roleLabel
+  if (p) p.textContent = 'הזן/י את קוד ההצטרפות שקיבלת מהעסק שלך כדי להתחבר לחשבון הנכון'
+  document.getElementById('qsSubmitBtn').textContent = 'הצטרף לעסק ←'
+  document.getElementById('qsModal').style.display = 'flex'
+}
+
 function closeQuickSignup() {
   document.getElementById('qsModal').style.display = 'none'
 }
@@ -1451,8 +1532,8 @@ function closeQuickSignup() {
 async function submitQuickSignup(e) {
   e.preventDefault()
   const plan = document.getElementById('qsPlan').value
+  const role = document.getElementById('qsRole').value
   const isFree = plan === 'free'
-  const schoolName = document.getElementById('qsSchoolName').value
   const name = document.getElementById('qsName').value
   const email = document.getElementById('qsEmail').value
   const password = document.getElementById('qsPassword').value
@@ -1461,6 +1542,10 @@ async function submitQuickSignup(e) {
   errBox.style.display = 'none'
   btn.disabled = true
   btn.textContent = 'רגע...'
+
+  const btnLabel = isFree
+    ? (role === 'principal' ? 'צור חשבון ניסיון ←' : 'הצטרף לעסק ←')
+    : 'המשך לתשלום ←'
 
   try {
     // שלב 1: הרשמה/התחברות קודם - כך כישלון לא משאיר עסק "יתום"
@@ -1482,21 +1567,40 @@ async function submitQuickSignup(e) {
     const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
     let schoolId = existingProfile ? existingProfile.school_id : null
 
-    // שלב 3: יצירת עסק + פרופיל רק אם עדיין אין
-    if (!schoolId) {
-      const { data: school, error: schoolErr } = await qsClient
-        .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
-      if (schoolErr) throw schoolErr
-      schoolId = school.id
+    if (role === 'principal') {
+      // בעל עסק: יצירת עסק חדש + פרופיל מנהל (כמו קודם)
+      if (!schoolId) {
+        const schoolName = document.getElementById('qsSchoolName').value
+        const { data: school, error: schoolErr } = await qsClient
+          .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
+        if (schoolErr) throw schoolErr
+        schoolId = school.id
 
-      const { error: profileErr } = await qsClient.from('users').insert({
-        id: userId, name, email, role: 'principal', school_id: schoolId, points: 0
-      })
-      if (profileErr) throw profileErr
+        const { error: profileErr } = await qsClient.from('users').insert({
+          id: userId, name, email, role: 'principal', school_id: schoolId, points: 0
+        })
+        if (profileErr) throw profileErr
+      }
+    } else {
+      // עובד / מנהל צוות: מצטרפים לעסק קיים לפי קוד הצטרפות
+      if (!schoolId) {
+        const inviteCode = document.getElementById('qsInviteCode').value.trim().toUpperCase()
+        const { data: school, error: findErr } = await qsClient
+          .from('schools').select('id').eq('invite_code', inviteCode).single()
+        if (findErr || !school) throw new Error('קוד ההצטרפות לא נמצא. ודא/י שהקוד הוקלד נכון, כמו שקיבלת מהעסק שלך')
+        schoolId = school.id
+
+        const { error: profileErr } = await qsClient.from('users').insert({
+          id: userId, name, email, role, school_id: schoolId, points: 0
+        })
+        if (profileErr) throw profileErr
+      }
     }
 
-    // מסלול חינם: נרשם כ-trial ועובר ישר לדשבורד. מסלול תשלום: עובר ל-Hyp.
+    // מסלול חינם: כל תפקיד עובר ישר לדשבורד המתאים לו. מסלול תשלום: עובר ל-Hyp (רק לבעלי עסק).
     if (isFree) {
+      if (role === 'teacher') { window.location.href = 'teacher-dashboard.html'; return }
+      if (role === 'student') { window.location.href = 'student-dashboard.html'; return }
       window.location.href = 'principal.html'
       return
     }
@@ -1506,7 +1610,7 @@ async function submitQuickSignup(e) {
     errBox.textContent = err.message || 'משהו השתבש, נסה שוב'
     errBox.style.display = 'block'
     btn.disabled = false
-    btn.textContent = isFree ? 'צור חשבון ניסיון ←' : 'המשך לתשלום ←'
+    btn.textContent = btnLabel
   }
 }
 
