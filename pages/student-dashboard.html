@@ -289,7 +289,8 @@ async function init() {
   if (!user) { window.location.href = 'login.html'; return }
 
   const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
-  if (!profile || profile.role !== 'employee') { window.location.href = 'login.html'; return }
+  // ה-role של עובד במסד הנתונים נשאר 'student' (ירושה מגרסת בית הספר)
+  if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
 
   currentUser = profile
   currentPoints = profile.points || 0
@@ -563,7 +564,7 @@ async function loadLeaderboard(companyId, teamName, currentUserId) {
     .select('id, name, points')
     .eq('school_id', companyId)
     .eq('class_name', teamName)
-    .eq('role', 'employee')
+    .eq('role', 'student')
     .order('points', { ascending: false })
     .limit(8)
 
