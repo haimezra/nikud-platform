@@ -357,7 +357,7 @@ async function handleSubmit(e) {
 
       showSuccess('התחברת בהצלחה! מעביר אותך...')
       setTimeout(() => {
-        if (profile.role === 'student') window.location.href = 'school-dashboard.html'
+        if (profile.role === 'student') window.location.href = 'student-dashboard.html'
         else if (profile.role === 'teacher') window.location.href = 'teacher-dashboard.html'
         else window.location.href = 'principal.html'
       }, 800)
