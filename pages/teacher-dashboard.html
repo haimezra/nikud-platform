@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מסך מורה – ניקוד★</title>
+<title>מסך מנהל – ניקוד★</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,7 +56,7 @@ nav{
 }
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-.main{max-width:700px;margin:0 auto;padding:24px 20px 120px}
+.main{max-width:820px;margin:0 auto;padding:24px 20px 80px}
 
 .top-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content}
 .top-tab{
@@ -65,103 +65,6 @@ nav{
   transition:all 0.2s;
 }
 .top-tab.active{background:var(--brand);color:#fff}
-
-.setup-card{
-  background:var(--glass);backdrop-filter:blur(14px);
-  border:1px solid var(--glass-border);border-radius:var(--r);padding:24px;margin-bottom:20px;
-  box-shadow:var(--sh-1),var(--hl);
-}
-.setup-card h3{font-size:1rem;margin-bottom:14px;color:var(--ink)}
-.setup-row{display:flex;gap:10px;margin-bottom:10px}
-.setup-row select,.setup-row input{
-  flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 14px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.9rem;transition:border-color 0.2s;
-}
-.setup-row select:focus,.setup-row input:focus{outline:none;border-color:var(--brand)}
-.start-btn{
-  width:100%;padding:13px;border:none;border-radius:var(--r-sm);cursor:pointer;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
-  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.95rem;box-shadow:var(--sh-brand);
-}
-
-.lesson-header{
-  background:var(--glass);backdrop-filter:blur(14px);
-  border:1px solid var(--glass-border);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;
-  box-shadow:var(--sh-1),var(--hl);
-}
-.lesson-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
-.lesson-title{font-family:'Rubik',sans-serif;font-size:1.2rem;font-weight:800;letter-spacing:-0.4px}
-.lesson-meta{font-size:0.82rem;color:var(--ink-3);margin-top:4px}
-.lesson-stats{display:flex;gap:18px}
-.l-stat{text-align:center}
-.l-stat-num{font-family:'Rubik',sans-serif;font-size:1.4rem;font-weight:800}
-.l-stat-lbl{font-size:0.72rem;color:var(--ink-3)}
-
-.budget-box{margin-top:16px;padding-top:16px;border-top:1px solid var(--line-2)}
-.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.82rem}
-.budget-label{color:var(--ink-3)}
-.budget-value{font-weight:700;color:var(--ink);font-family:'Rubik',sans-serif}
-.budget-track{height:8px;border-radius:var(--pill);background:var(--line-2);overflow:hidden}
-.budget-fill{height:100%;background:var(--green);border-radius:var(--pill);transition:width 0.3s}
-.budget-fill.warn{background:var(--gold)}
-.budget-fill.over{background:var(--red)}
-.budget-note{font-size:0.74rem;color:var(--ink-3);margin-top:6px}
-
-.controls{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
-.ctrl-btn{flex:1;min-width:110px;padding:11px 14px;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;transition:transform 0.2s}
-.ctrl-btn:hover{transform:translateY(-1px)}
-.ctrl-green{background:var(--green);color:#fff}
-.ctrl-red{background:rgba(226,85,85,0.10);color:var(--red);border:1px solid rgba(226,85,85,0.28)}
-.ctrl-purple{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:var(--sh-brand)}
-
-.student-card{
-  background:var(--glass);backdrop-filter:blur(10px);
-  border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:13px 16px;margin-bottom:9px;display:flex;align-items:center;gap:12px;box-shadow:var(--hl);
-}
-.student-card.approved{border-color:rgba(10,164,120,0.4);background:rgba(10,164,120,0.05)}
-.student-card.bonus{border-color:rgba(231,169,58,0.4);background:rgba(231,169,58,0.05)}
-.student-card.rejected{border-color:rgba(226,85,85,0.35);background:rgba(226,85,85,0.05);opacity:0.75}
-.stu-avatar{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-.stu-name{font-weight:700;font-size:0.9rem;color:var(--ink)}
-.stu-info{flex:1}
-.stu-actions{display:flex;gap:5px}
-.act-btn{width:34px;height:34px;border-radius:9px;border:none;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;justify-content:center;transition:transform 0.15s}
-.act-btn:hover{transform:translateY(-1px)}
-.btn-approve{background:rgba(10,164,120,0.12);color:var(--green)}
-.btn-approve.selected{background:var(--green);color:#fff}
-.btn-bonus{background:rgba(231,169,58,0.12);color:#9A6B10}
-.btn-bonus.selected{background:var(--gold);color:#fff}
-.btn-reject{background:rgba(226,85,85,0.12);color:var(--red)}
-.btn-reject.selected{background:var(--red);color:#fff}
-
-.stu-personal-bonus{display:flex;align-items:center;gap:6px;margin-top:4px}
-.pb-btn{padding:3px 10px;border-radius:var(--pill);border:1px solid rgba(231,169,58,0.35);background:rgba(231,169,58,0.08);color:#9A6B10;font-size:0.7rem;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif}
-.pb-btn:disabled{opacity:0.35;cursor:not-allowed}
-.pb-count{font-size:0.68rem;color:var(--ink-3)}
-
-.summary-bar{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
-  border-top:1px solid var(--glass-border);
-  padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-}
-.sum-item{text-align:center}
-.sum-num{font-family:'Rubik',sans-serif;font-size:1.2rem;font-weight:800}
-.sum-lbl{font-size:0.7rem;color:var(--ink-3)}
-.submit-btn{
-  margin-right:auto;padding:12px 24px;border:none;border-radius:var(--r-sm);cursor:pointer;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
-  font-family:'Rubik',sans-serif;font-weight:700;box-shadow:var(--sh-brand);
-}
-.submit-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
-
-.toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(40px);
-  background:var(--green);color:#fff;padding:12px 22px;border-radius:var(--pill);
-  font-weight:700;font-size:0.88rem;z-index:300;opacity:0;transition:all 0.3s;box-shadow:var(--sh-2);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 .hidden{display:none}
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
@@ -173,6 +76,7 @@ nav{
 }
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
 .panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
+.panel-intro{color:var(--ink-3);font-size:0.85rem;margin:0;padding:14px 22px 0}
 .add-btn{
   background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;padding:9px 16px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
@@ -185,6 +89,11 @@ td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);colo
 tr:last-child td{border-bottom:none}
 .points-tag{color:#9A6B10;font-weight:700}
 .empty-state{padding:40px;text-align:center;color:var(--ink-3);font-size:0.9rem}
+
+.task-done-btn{
+  background:var(--green);color:#fff;border:none;padding:7px 13px;border-radius:10px;
+  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;white-space:nowrap;margin-left:4px;
+}
 
 .task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
 .task-status-badge.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
@@ -213,6 +122,13 @@ tr:last-child td{border-bottom:none}
 .modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700}
 .btn-cancel{background:var(--glass-2);color:var(--ink-3);border:1px solid var(--line)}
 .btn-confirm{background:var(--brand);color:#fff}
+
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(40px);
+  background:var(--green);color:#fff;padding:12px 22px;border-radius:var(--pill);
+  font-weight:700;font-size:0.88rem;z-index:300;opacity:0;transition:all 0.3s;box-shadow:var(--sh-2);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -230,83 +146,38 @@ tr:last-child td{border-bottom:none}
 <div class="main hidden" id="mainContent">
 
   <div class="top-tabs">
-    <button class="top-tab active" id="lessonTabBtn" onclick="setTopTab('lesson')">🏫 ניהול שיעור</button>
-    <button class="top-tab" id="attendanceTabBtn" onclick="setTopTab('attendance')">🕒 נוכחות <span id="attendanceBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+    <button class="top-tab active" id="attendanceTabBtn" onclick="setTopTab('attendance')">🕒 נוכחות <span id="attendanceBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
     <button class="top-tab" id="tasksTabBtn" onclick="setTopTab('tasks')">📋 משימות</button>
   </div>
 
-  <div id="lessonView">
-    <div class="setup-card" id="setupCard">
-      <h3>🆕 פתח שיעור חדש</h3>
-      <div class="setup-row">
-        <input type="text" id="subjectInput" placeholder="מקצוע (למשל: מתמטיקה)">
-        <input type="text" id="classInput" placeholder='כיתה (למשל: י"א 3)'>
+  <!-- נוכחות -->
+  <div id="attendanceView">
+    <div class="panel" id="attendancePanel">
+      <div class="panel-head">
+        <h3>צ'ק-אין / צ'ק-אאוט ממתינים לאישור</h3>
       </div>
-      <button class="start-btn" onclick="startLesson()">▶ התחל שיעור</button>
-    </div>
-
-    <div id="activeLessonSection" class="hidden">
-      <div class="lesson-header">
-        <div class="lesson-top">
-          <div>
-            <div class="lesson-title" id="lessonTitle"></div>
-            <div class="lesson-meta" id="lessonMeta"></div>
-          </div>
-        </div>
-        <div class="lesson-stats">
-          <div class="l-stat"><div class="l-stat-num" style="color:var(--green)" id="statApproved">0</div><div class="l-stat-lbl">אושרו</div></div>
-          <div class="l-stat"><div class="l-stat-num" style="color:var(--red)" id="statRejected">0</div><div class="l-stat-lbl">לא אושרו</div></div>
-          <div class="l-stat"><div class="l-stat-num" style="color:var(--ink-3)" id="statPending">0</div><div class="l-stat-lbl">ממתינים</div></div>
-        </div>
-
-        <div class="budget-box">
-          <div class="budget-top">
-            <span class="budget-label">תקציב נקודות לכיתה החודש</span>
-            <span class="budget-value" id="budgetValueText">—</span>
-          </div>
-          <div class="budget-track"><div class="budget-fill" id="budgetFill" style="width:0%"></div></div>
-          <div class="budget-note" id="budgetNote"></div>
-        </div>
-      </div>
-
-      <div class="controls">
-        <button class="ctrl-btn ctrl-green" onclick="approveAll()">✅ אשר הכל</button>
-        <button class="ctrl-btn ctrl-red" onclick="clearAll()">🔄 אפס</button>
-        <button class="ctrl-btn ctrl-purple" onclick="openSubmit()">📤 שלח ואשר</button>
-      </div>
-      <div class="controls">
-        <button class="ctrl-btn" style="background:var(--glass-2);border:1px solid var(--line);color:var(--ink)" onclick="refreshCheckins()">🔄 רענן צ'ק-אינים</button>
-      </div>
-
-      <div id="studentList"></div>
+      <p class="panel-intro">העובד מדווח צ'ק-אין בתחילת המשמרת וצ'ק-אאוט בסיום, בכל שעה, בלי הגבלת כמות. לאחר הצ'ק-אאוט יש לך עד 8 שעות לאשר. עם האישור העובד מזוכה אוטומטית ב-3 נקודות — הסכום קבוע ולא ניתן לשינוי, ואי אפשר לחלק נקודות בונוס ידניות.</p>
+      <table style="margin-top:14px">
+        <thead><tr><th>עובד</th><th>מחלקה</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+        <tbody id="attendanceBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="attendanceEmpty">אין כרגע דיווחי נוכחות הממתינים לאישור.</div>
     </div>
   </div>
 
+  <!-- משימות -->
   <div id="tasksView" class="hidden">
     <div class="panel" id="tasksPanel">
       <div class="panel-head">
         <h3>משימות שיצרתי</h3>
         <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
       </div>
-      <table>
-        <thead><tr><th>תלמיד/עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+      <p class="panel-intro">כל משימה שאתה מאשר מזכה את העובד ב-3 נקודות אוטומטית (סכום קבוע).</p>
+      <table style="margin-top:14px">
+        <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
         <tbody id="tasksBody"></tbody>
       </table>
-      <div class="empty-state hidden" id="tasksEmpty">עדיין לא יצרת משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
-    </div>
-  </div>
-
-  <div id="attendanceView" class="hidden">
-    <div class="panel" id="attendancePanel">
-      <div class="panel-head">
-        <h3>צ'ק-אין / צ'ק-אאוט ממתינים לאישור</h3>
-      </div>
-      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px">תלמיד/עובד עושה צ'ק-אין בתחילת הפעילות וצ'ק-אאוט בסיום, בכל שעה, בלי צורך בשיעור פתוח מראש. לאחר הצ'ק-אאוט יש לך עד 8 שעות לאשר. הנקודות תמיד 3, ללא אפשרות שינוי.</p>
-      <table>
-        <thead><tr><th>תלמיד/עובד</th><th>כיתה/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
-        <tbody id="attendanceBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="attendanceEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
+      <div class="empty-state hidden" id="tasksEmpty">עדיין לא יצרת משימות. לחץ על "משימה חדשה" כדי להתחיל.</div>
     </div>
   </div>
 
@@ -316,7 +187,7 @@ tr:last-child td{border-bottom:none}
   <div class="modal">
     <h3>משימה חדשה</h3>
     <div class="field">
-      <label>תלמיד/עובד</label>
+      <label>עובד</label>
       <select id="taskStudentSelect"></select>
     </div>
     <div class="field">
@@ -338,12 +209,6 @@ tr:last-child td{border-bottom:none}
   </div>
 </div>
 
-<div class="summary-bar hidden" id="summaryBar">
-  <div class="sum-item"><div class="sum-num" style="color:var(--green)" id="sumApproved">0</div><div class="sum-lbl">אושרו</div></div>
-  <div class="sum-item"><div class="sum-num" style="color:var(--brand)" id="sumPts">0</div><div class="sum-lbl">נקודות לחלק</div></div>
-  <button class="submit-btn" onclick="openSubmit()">📤 שלח ואשר</button>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
@@ -351,74 +216,28 @@ const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 let supabaseClient = null
 let currentUser = null
-let currentSchoolPlan = 'trial'
-let currentLesson = null
-let students = []
-const state = {} // student_id -> 'approved' | 'bonus' | 'rejected' | null
-
-// ---- Points awarded ----
-const ATTENDANCE_POINTS = 3   // was 20 (base value, before surge)
-const BONUS_POINTS = 5        // was 35 (base value, before surge)
-let currentAttendancePoints = ATTENDANCE_POINTS   // dynamic - may be boosted by surge for this specific lesson
-let currentBonusPoints = BONUS_POINTS
-let isSurgeActive = false
-let surgeDemandScore = null
-
-// ---- Surge Points: automatically boosts points for time-slots with chronically low attendance ----
-const SURGE_LOW_THRESHOLD = 0.6     // if historical attendance rate for this subject+day-of-week < 60%, activate surge
-const SURGE_MULTIPLIER = 1.5        // points multiplier when surge is active
-const SURGE_LOOKBACK_DAYS = 90      // how far back to look for historical pattern
-
-// ---- Personal bonus (teacher can give any student, any time, independent of approval flow) ----
-const PERSONAL_BONUS_POINTS = 5
-const PERSONAL_BONUS_MONTHLY_CAP = 50   // per student, per calendar month
-let personalBonusUsed = {}              // student_id -> points already given this month via personal bonus
-
-// ---- Per-student monthly point cap (all reasons combined) ----
-const STUDENT_MONTHLY_CAP = 300   // max points any single student can receive per calendar month, across ALL reasons
-let studentMonthlyTotal = {}      // student_id -> total points already received this month (any reason)
-
-// ---- Class monthly point budget ----
-// School allocates 300 ₪ per class per month. Conversion rate: 30 points = 1 ₪.
-const POINTS_PER_ILS = 30
-const CLASS_MONTHLY_BUDGET_ILS = 300
-const CLASS_MONTHLY_BUDGET_POINTS = CLASS_MONTHLY_BUDGET_ILS * POINTS_PER_ILS // 9000
-let issuedThisMonth = 0   // points already given to this class this calendar month (before this lesson)
-let remainingBudget = CLASS_MONTHLY_BUDGET_POINTS
-
-// ---- Student self check-ins for the active lesson ----
-let checkins = {}          // student_id -> checkin row {id, status, points}
-let checkinPollTimer = null
-
-// ---- Tasks (teacher-assigned) ----
+let pendingCheckins = []
 let schoolStudentsForTasks = []
 let myCreatedTasks = []
-
-function firstOfMonthISO() {
-  const d = new Date()
-  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString()
-}
 
 async function init() {
   try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   } catch(e) {
     document.getElementById('loadingScreen').innerHTML =
-      '⚠️ המערכת לא מחוברת ל-Supabase עדיין. חבר את הפרטים כדי להפעיל נתונים אמיתיים.'
+      '⚠️ המערכת לא מחוברת ל-Supabase עדיין.'
     return
   }
 
   const { data: { user } } = await supabaseClient.auth.getUser()
   if (!user) { window.location.href = 'login.html'; return }
 
+  // הרשאת מנהל (role השמור במסד הוא 'teacher')
   const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
   if (!profile || profile.role !== 'teacher') { window.location.href = 'login.html'; return }
 
   currentUser = profile
   document.getElementById('userName').textContent = profile.name
-
-  const { data: school } = await supabaseClient.from('schools').select('plan').eq('id', profile.school_id).single()
-  currentSchoolPlan = school ? school.plan : 'trial'
 
   await loadPendingCheckins()
   setInterval(loadPendingCheckins, 30000)
@@ -428,18 +247,13 @@ async function init() {
 }
 
 function setTopTab(tab) {
-  document.getElementById('lessonTabBtn').classList.toggle('active', tab === 'lesson')
   document.getElementById('attendanceTabBtn').classList.toggle('active', tab === 'attendance')
   document.getElementById('tasksTabBtn').classList.toggle('active', tab === 'tasks')
-  document.getElementById('lessonView').classList.toggle('hidden', tab !== 'lesson')
   document.getElementById('attendanceView').classList.toggle('hidden', tab !== 'attendance')
   document.getElementById('tasksView').classList.toggle('hidden', tab !== 'tasks')
-  document.getElementById('summaryBar').classList.toggle('hidden', tab !== 'lesson' || !currentLesson)
   if (tab === 'tasks') loadMyTasks()
   if (tab === 'attendance') loadPendingCheckins()
 }
-
-let pendingCheckins = []
 
 function fmtTime(iso) {
   if (!iso) return '—'
@@ -455,6 +269,13 @@ function hoursLeftLabel(checkoutIso) {
   return `${h}ש ${m}ד נותרו`
 }
 
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
+}
+
+// ---- נוכחות ----
 async function loadPendingCheckins() {
   const { data, error } = await supabaseClient
     .from('checkins')
@@ -466,8 +287,9 @@ async function loadPendingCheckins() {
   if (error) { console.error(error); return }
 
   pendingCheckins = data || []
-  document.getElementById('attendanceBadge').classList.toggle('hidden', pendingCheckins.length === 0)
-  document.getElementById('attendanceBadge').textContent = pendingCheckins.length
+  const badge = document.getElementById('attendanceBadge')
+  badge.classList.toggle('hidden', pendingCheckins.length === 0)
+  badge.textContent = pendingCheckins.length
   renderPendingCheckins()
 }
 
@@ -491,6 +313,7 @@ function renderPendingCheckins() {
 }
 
 async function approveCheckin(id) {
+  // רק שינוי הסטטוס ל'אושר'. הזיכוי (3 נקודות קבוע) מתבצע אוטומטית ע"י טריגר במסד הנתונים.
   const { error } = await supabaseClient.from('checkins').update({ status: 'אושר' }).eq('id', id)
   if (error) { showToast('שגיאה באישור', true); return }
   showToast('אושר! 3 נקודות ניתנו ✅')
@@ -500,14 +323,11 @@ async function approveCheckin(id) {
 async function rejectCheckin(id) {
   const { error } = await supabaseClient.from('checkins').update({ status: 'נדחה' }).eq('id', id)
   if (error) { showToast('שגיאה בדחייה', true); return }
-  showToast('הצ\'ק-אין נדחה')
+  showToast('הדיווח נדחה')
   await loadPendingCheckins()
 }
 
-function taskStatusLabel(status) {
-  return { pending: '⏳ ממתין לביצוע', submitted: '📩 ממתין לאישור שלך', approved: '✓ אושר', rejected: '✗ נדחה' }[status] || status
-}
-
+// ---- משימות ----
 async function loadSchoolStudentsForTasks() {
   const { data } = await supabaseClient
     .from('users').select('id, name, class_name')
@@ -521,7 +341,7 @@ async function openTaskModal() {
   if (schoolStudentsForTasks.length === 0) await loadSchoolStudentsForTasks()
   const select = document.getElementById('taskStudentSelect')
   select.innerHTML = schoolStudentsForTasks.map(s => `<option value="${s.id}">${escapeHtml(s.name)}${s.class_name ? ' - ' + escapeHtml(s.class_name) : ''}</option>`).join('')
-  if (schoolStudentsForTasks.length === 0) select.innerHTML = '<option value="">אין עדיין תלמידים/עובדים רשומים בבית הספר</option>'
+  if (schoolStudentsForTasks.length === 0) select.innerHTML = '<option value="">אין עדיין עובדים רשומים בארגון</option>'
   document.getElementById('taskTitleInput').value = ''
   document.getElementById('taskDescInput').value = ''
   document.getElementById('taskModalOverlay').classList.add('show')
@@ -536,7 +356,7 @@ async function createTask() {
   const title = document.getElementById('taskTitleInput').value.trim()
   const description = document.getElementById('taskDescInput').value.trim()
 
-  if (!studentId) { showToast('נא לבחור תלמיד/עובד', true); return }
+  if (!studentId) { showToast('נא לבחור עובד', true); return }
   if (!title) { showToast('נא למלא כותרת למשימה', true); return }
 
   try {
@@ -570,6 +390,10 @@ async function loadMyTasks() {
   renderMyTasks()
 }
 
+function taskStatusLabel(status) {
+  return { pending: '⏳ ממתין לביצוע', submitted: '📩 ממתין לאישור שלך', approved: '✓ אושר', rejected: '✗ נדחה' }[status] || status
+}
+
 function renderMyTasks() {
   document.getElementById('tasksEmpty').classList.toggle('hidden', myCreatedTasks.length > 0)
   document.getElementById('tasksBody').innerHTML = myCreatedTasks.map(t => {
@@ -598,9 +422,8 @@ async function approveTask(taskId) {
   if (!confirm(`לאשר את המשימה "${task.title}" ולהעניק ${task.points} נקודות?`)) return
 
   try {
-    // A database trigger automatically awards the points (inserts into point_logs
-    // and updates the student's balance) the moment status moves to 'approved'.
-    // Don't award points here too, or the student would be credited twice.
+    // טריגר במסד הנתונים מזכה אוטומטית בנקודות ברגע שהסטטוס עובר ל'approved'.
+    // אין לזכות כאן ידנית - זה יגרום לזיכוי כפול (וממילא נחסם במסד).
     const { error: taskErr } = await supabaseClient.from('tasks')
       .update({ status: 'approved' })
       .eq('id', taskId)
@@ -630,423 +453,6 @@ async function rejectTask(taskId) {
     showToast('המשימה נדחתה')
   } catch (err) {
     showToast(err.message || 'שגיאה בדחיית המשימה', true)
-  }
-}
-
-function formatTime(iso) {
-  if (!iso) return ''
-  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div')
-  div.textContent = str ?? ''
-  return div.innerHTML
-}
-
-async function getClassBudgetRemaining(class_name) {
-  const { data: monthLogs, error } = await supabaseClient
-    .from('point_logs')
-    .select('points, lessons!inner(class_name, school_id, created_at)')
-    .eq('lessons.class_name', class_name)
-    .eq('lessons.school_id', currentUser.school_id)
-    .gte('lessons.created_at', firstOfMonthISO())
-
-  if (error) { console.error(error); return CLASS_MONTHLY_BUDGET_POINTS }
-
-  const used = (monthLogs || []).reduce((sum, log) => sum + log.points, 0)
-  return CLASS_MONTHLY_BUDGET_POINTS - used
-}
-
-function renderBudgetBar(afterThisAward = 0) {
-  const projected = remainingBudget - afterThisAward
-  const usedPoints = CLASS_MONTHLY_BUDGET_POINTS - projected
-  const pctUsed = Math.min(100, Math.max(0, (usedPoints / CLASS_MONTHLY_BUDGET_POINTS) * 100))
-
-  const fill = document.getElementById('budgetFill')
-  fill.style.width = pctUsed + '%'
-  fill.className = 'budget-fill' + (projected < 0 ? ' over' : pctUsed >= 80 ? ' warn' : '')
-
-  document.getElementById('budgetValueText').textContent =
-    `${Math.max(0, projected).toLocaleString()} נקודות נותרו (₪${Math.max(0,(projected/POINTS_PER_ILS)).toFixed(0)})`
-
-  const note = document.getElementById('budgetNote')
-  if (projected < 0) {
-    note.textContent = `⚠️ חריגה של ${Math.abs(projected)} נקודות מהתקציב החודשי של הכיתה!`
-    note.style.color = 'var(--red)'
-  } else if (pctUsed >= 80) {
-    note.textContent = `⚠️ מתקרבים לתקרת התקציב החודשי (${CLASS_MONTHLY_BUDGET_ILS} ₪ לכיתה)`
-    note.style.color = '#9A6B10'
-  } else {
-    note.textContent = `מתוך ${CLASS_MONTHLY_BUDGET_POINTS.toLocaleString()} נקודות (${CLASS_MONTHLY_BUDGET_ILS} ₪) לחודש`
-    note.style.color = 'var(--ink-3)'
-  }
-}
-
-async function refreshCheckins() {
-  if (!currentLesson) return
-  const { data, error } = await supabaseClient
-    .from('checkins')
-    .select('*')
-    .eq('lesson_id', currentLesson.id)
-
-  if (error) { console.error(error); return }
-
-  checkins = {}
-  ;(data || []).forEach(c => { checkins[c.student_id] = c })
-  renderList()
-}
-
-function startCheckinPolling() {
-  stopCheckinPolling()
-  checkinPollTimer = setInterval(refreshCheckins, 6000)
-}
-function stopCheckinPolling() {
-  if (checkinPollTimer) clearInterval(checkinPollTimer)
-  checkinPollTimer = null
-}
-
-async function startLesson() {
-  const subject = document.getElementById('subjectInput').value
-  const class_name = document.getElementById('classInput').value
-  if (!subject || !class_name) { showToast('נא למלא מקצוע וכיתה', true); return }
-
-  const { data: lesson, error } = await supabaseClient.from('lessons').insert({
-    teacher_id: currentUser.id,
-    school_id: currentUser.school_id,
-    class_name, subject, status: 'active'
-  }).select().single()
-
-  if (error) { showToast('שגיאה ביצירת השיעור', true); return }
-
-  currentLesson = lesson
-
-  const { data: classStudents } = await supabaseClient
-    .from('users').select('id, name, avatar_color')
-    .eq('school_id', currentUser.school_id)
-    .eq('class_name', class_name)
-    .eq('role', 'student')
-    .order('name')
-
-  students = classStudents || []
-  students.forEach(s => state[s.id] = null)
-
-  remainingBudget = await getClassBudgetRemaining(class_name)
-  await loadPersonalBonusUsage(students.map(s => s.id))
-  await computeSurgeMultiplier(class_name, subject, students.length)
-
-  document.getElementById('setupCard').classList.add('hidden')
-  document.getElementById('activeLessonSection').classList.remove('hidden')
-  document.getElementById('summaryBar').classList.remove('hidden')
-  document.getElementById('lessonTitle').textContent = `${subject} – ${class_name}`
-  document.getElementById('lessonMeta').textContent = new Date().toLocaleString('he-IL')
-  renderSurgeBadge()
-
-  renderList()
-  updateSummary()
-
-  await refreshCheckins()
-  startCheckinPolling()
-
-  if (remainingBudget <= 0) {
-    showToast('⚠️ תקציב הנקודות של הכיתה לחודש זה כבר אזל', true)
-  }
-  if (students.length === 0) {
-    showToast('⚠️ אין תלמידים רשומים בכיתה הזו עדיין', true)
-  }
-  if (isSurgeActive) {
-    showToast(`🔥 שיעור בביקוש נמוך - נקודות מוכפלות פי ${SURGE_MULTIPLIER} היום!`)
-  }
-}
-
-async function computeSurgeMultiplier(class_name, subject, studentCount) {
-  currentAttendancePoints = ATTENDANCE_POINTS
-  currentBonusPoints = BONUS_POINTS
-  isSurgeActive = false
-  surgeDemandScore = null
-
-  if (!studentCount) return
-
-  const todayDow = new Date().getDay()
-  const lookbackDate = new Date(Date.now() - SURGE_LOOKBACK_DAYS * 24 * 60 * 60 * 1000).toISOString()
-
-  const { data: pastLessons, error } = await supabaseClient
-    .from('lessons')
-    .select('id, created_at')
-    .eq('class_name', class_name)
-    .eq('subject', subject)
-    .gte('created_at', lookbackDate)
-
-  if (error || !pastLessons || pastLessons.length < 2) return
-
-  const matchingLessons = pastLessons.filter(l => new Date(l.created_at).getDay() === todayDow)
-  if (matchingLessons.length < 2) return
-
-  const lessonIds = matchingLessons.map(l => l.id)
-  const { data: logs } = await supabaseClient
-    .from('point_logs')
-    .select('lesson_id, student_id')
-    .in('lesson_id', lessonIds)
-    .in('reason', ['attendance', 'approved', 'bonus'])
-
-  const attendedPerLesson = {}
-  ;(logs || []).forEach(row => {
-    if (!attendedPerLesson[row.lesson_id]) attendedPerLesson[row.lesson_id] = new Set()
-    attendedPerLesson[row.lesson_id].add(row.student_id)
-  })
-
-  const rates = lessonIds.map(id => (attendedPerLesson[id] ? attendedPerLesson[id].size : 0) / studentCount)
-  const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length
-  surgeDemandScore = avgRate
-
-  if (avgRate < SURGE_LOW_THRESHOLD) {
-    isSurgeActive = true
-    currentBonusPoints = Math.round(BONUS_POINTS * SURGE_MULTIPLIER)
-  }
-}
-
-function renderSurgeBadge() {
-  const meta = document.getElementById('lessonMeta')
-  if (!meta) return
-  if (isSurgeActive) {
-    meta.innerHTML = meta.textContent + ` <span style="background:rgba(226,85,85,0.12);color:var(--red);padding:2px 10px;border-radius:99px;font-size:0.72rem;font-weight:700;margin-right:8px">🔥 ביקוש נמוך - נקודות פי ${SURGE_MULTIPLIER}</span>`
-  }
-}
-
-async function loadPersonalBonusUsage(studentIds) {
-  if (!studentIds.length) { personalBonusUsed = {}; studentMonthlyTotal = {}; return }
-
-  studentIds.forEach(id => studentMonthlyTotal[id] = 0)
-
-  const { data: allLogs, error: allErr } = await supabaseClient
-    .from('point_logs')
-    .select('student_id, points')
-    .in('student_id', studentIds)
-    .gte('created_at', firstOfMonthISO())
-
-  studentMonthlyTotal = {}
-  studentIds.forEach(id => studentMonthlyTotal[id] = 0)
-  if (!allErr) {
-    ;(allLogs || []).forEach(row => {
-      studentMonthlyTotal[row.student_id] = (studentMonthlyTotal[row.student_id] || 0) + row.points
-    })
-  }
-
-  const { data, error } = await supabaseClient
-    .from('point_logs')
-    .select('student_id, points')
-    .eq('reason', 'personal_bonus')
-    .in('student_id', studentIds)
-    .gte('created_at', firstOfMonthISO())
-
-  personalBonusUsed = {}
-  studentIds.forEach(id => personalBonusUsed[id] = 0)
-  if (error) { console.error(error); return }
-  ;(data || []).forEach(row => {
-    personalBonusUsed[row.student_id] = (personalBonusUsed[row.student_id] || 0) + row.points
-  })
-}
-
-async function givePersonalBonus(studentId, studentName) {
-  if (currentSchoolPlan !== 'premium') {
-    showToast('🔒 בונוסים אישיים זמינים רק במנוי הפרימיום (₪699)', true)
-    return
-  }
-  const used = personalBonusUsed[studentId] || 0
-  if (used + PERSONAL_BONUS_POINTS > PERSONAL_BONUS_MONTHLY_CAP) {
-    showToast(`❌ ${studentName} כבר קיבל/ה ${used} נקודות בונוס אישי החודש (מקסימום ${PERSONAL_BONUS_MONTHLY_CAP})`, true)
-    return
-  }
-  const totalUsed = studentMonthlyTotal[studentId] || 0
-  if (totalUsed + PERSONAL_BONUS_POINTS > STUDENT_MONTHLY_CAP) {
-    showToast(`❌ ${studentName} כבר קיבל/ה ${totalUsed} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP} לתלמיד) - כדי לפנות מקום לשאר הכיתה`, true)
-    return
-  }
-  if (PERSONAL_BONUS_POINTS > remainingBudget) {
-    showToast('❌ תקציב הנקודות של הכיתה לחודש זה אזל', true)
-    return
-  }
-
-  try {
-    const { error } = await supabaseClient.from('point_logs').insert({
-      lesson_id: currentLesson ? currentLesson.id : null,
-      student_id: studentId,
-      points: PERSONAL_BONUS_POINTS,
-      reason: 'personal_bonus'
-    })
-    if (error) throw error
-
-    personalBonusUsed[studentId] = used + PERSONAL_BONUS_POINTS
-    studentMonthlyTotal[studentId] = totalUsed + PERSONAL_BONUS_POINTS
-    remainingBudget -= PERSONAL_BONUS_POINTS
-    renderList()
-    renderBudgetBar(pointsToAward())
-    showToast(`🎁 ${studentName} קיבל/ה ${PERSONAL_BONUS_POINTS} נקודות בונוס אישי!`)
-  } catch (err) {
-    showToast('שגיאה במתן הבונוס', true)
-  }
-}
-
-function renderList() {
-  document.getElementById('studentList').innerHTML = students.map(s => {
-    const st = state[s.id]
-    const cardClass = st === 'approved' ? 'approved' : st === 'bonus' ? 'bonus' : st === 'rejected' ? 'rejected' : ''
-    const checkin = checkins[s.id]
-    const checkinBadge = checkin && checkin.status === 'ממתינה'
-      ? '<span style="font-size:0.68rem;background:rgba(46,91,255,0.10);color:var(--brand);padding:2px 8px;border-radius:99px;margin-right:6px">📍 בשיעור</span>'
-      : checkin && checkin.status === 'הושלם'
-      ? '<span style="font-size:0.68rem;background:rgba(181,124,16,0.12);color:#B57C10;padding:2px 8px;border-radius:99px;margin-right:6px">🏁 סיים/ה - ' + formatTime(checkin.check_in_at) + '-' + formatTime(checkin.check_out_at) + '</span>'
-      : checkin && checkin.status === 'אושר'
-      ? '<span style="font-size:0.68rem;background:rgba(10,164,120,0.12);color:var(--green);padding:2px 8px;border-radius:99px;margin-right:6px">✓ אושר</span>'
-      : ''
-    const totalUsed = studentMonthlyTotal[s.id] || 0
-    const atCap = totalUsed >= STUDENT_MONTHLY_CAP
-    const approveDisabled = st !== 'approved' && (totalUsed + currentAttendancePoints > STUDENT_MONTHLY_CAP)
-    const bonusDisabled = st !== 'bonus' && (totalUsed + currentBonusPoints > STUDENT_MONTHLY_CAP)
-    const capLabel = `<span class="pb-count" style="${atCap ? 'color:var(--red)' : ''}">${totalUsed}/${STUDENT_MONTHLY_CAP} סה"כ החודש</span>`
-    return `
-    <div class="student-card ${cardClass}">
-      <div class="stu-avatar" style="background:${s.avatar_color || '#2E5BFF'}">${s.name[0]}</div>
-      <div class="stu-info">
-        <div class="stu-name">${s.name} ${checkinBadge}</div>
-        <div class="stu-personal-bonus">
-          ${capLabel}
-        </div>
-      </div>
-      <div class="stu-actions">
-        <button class="act-btn btn-approve ${st==='approved'?'selected':''}" ${approveDisabled ? 'disabled' : ''} onclick="setState('${s.id}','approved')">✅</button>
-        <button class="act-btn btn-reject ${st==='rejected'?'selected':''}" onclick="setState('${s.id}','rejected')">❌</button>
-      </div>
-    </div>`
-  }).join('')
-}
-
-function setState(id, newState) {
-  if (newState === 'approved' && state[id] !== 'approved' && (studentMonthlyTotal[id]||0) + currentAttendancePoints > STUDENT_MONTHLY_CAP) {
-    showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
-    return
-  }
-  if (newState === 'bonus' && state[id] !== 'bonus' && (studentMonthlyTotal[id]||0) + currentBonusPoints > STUDENT_MONTHLY_CAP) {
-    showToast(`❌ התלמיד/ה כבר קיבל/ה ${studentMonthlyTotal[id]||0} נקודות החודש (מקסימום ${STUDENT_MONTHLY_CAP})`, true)
-    return
-  }
-  state[id] = state[id] === newState ? null : newState
-  updateSummary()
-  renderList()
-}
-
-function pointsToAward() {
-  const approved = students.filter(s => state[s.id] === 'approved').length
-  const bonus = students.filter(s => state[s.id] === 'bonus').length
-  return approved * currentAttendancePoints + bonus * currentBonusPoints
-}
-
-function updateSummary() {
-  const approved = students.filter(s => state[s.id] === 'approved').length
-  const bonus = students.filter(s => state[s.id] === 'bonus').length
-  const rejected = students.filter(s => state[s.id] === 'rejected').length
-  const pending = students.filter(s => state[s.id] === null).length
-  const pts = pointsToAward()
-
-  document.getElementById('statApproved').textContent = approved
-  document.getElementById('statRejected').textContent = rejected
-  document.getElementById('statPending').textContent = pending
-  document.getElementById('sumApproved').textContent = approved + bonus
-  document.getElementById('sumPts').textContent = pts
-
-  renderBudgetBar(pts)
-}
-
-function approveAll() {
-  students.forEach(s => {
-    const totalUsed = studentMonthlyTotal[s.id] || 0
-    if (totalUsed + currentAttendancePoints <= STUDENT_MONTHLY_CAP) state[s.id] = 'approved'
-  })
-  updateSummary(); renderList()
-}
-function clearAll() {
-  students.forEach(s => state[s.id] = null)
-  updateSummary(); renderList()
-}
-
-async function openSubmit() {
-  const hoursSinceLesson = (Date.now() - new Date(currentLesson.created_at).getTime()) / (1000 * 60 * 60)
-  if (hoursSinceLesson > 8) {
-    const proceed = confirm(`⚠️ עברו מעל 8 שעות מאז שהשיעור נפתח (${Math.floor(hoursSinceLesson)} שעות). התלמידים כבר לא רואים אותו כשיעור פעיל. להמשיך לאשר בכל זאת?`)
-    if (!proceed) return
-  }
-
-  const approvals = students
-    .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus')
-    .map(s => ({
-      student_id: s.id,
-      points: state[s.id] === 'bonus' ? currentBonusPoints : currentAttendancePoints,
-      reason: state[s.id]
-    }))
-
-  if (approvals.length === 0) { showToast('לא אישרת אף תלמיד', true); return }
-
-  const overCapStudent = approvals.find(a => (studentMonthlyTotal[a.student_id] || 0) + a.points > STUDENT_MONTHLY_CAP)
-  if (overCapStudent) {
-    const s = students.find(x => x.id === overCapStudent.student_id)
-    showToast(`❌ ${s ? s.name : 'תלמיד/ה'} יחרוג/תחרוג מתקרת ${STUDENT_MONTHLY_CAP} הנקודות לחודש - בטל/י את הסימון עבורו/ה`, true)
-    return
-  }
-
-  const totalPoints = approvals.reduce((sum, a) => sum + a.points, 0)
-
-  if (totalPoints > remainingBudget) {
-    showToast(`❌ חריגה מהתקציב החודשי של הכיתה! נותרו ${Math.max(0,remainingBudget)} נקודות (₪${Math.max(0,(remainingBudget/POINTS_PER_ILS)).toFixed(0)}), וניסית לחלק ${totalPoints}.`, true)
-    return
-  }
-
-  const afterAward = remainingBudget - totalPoints
-  if (afterAward < CLASS_MONTHLY_BUDGET_POINTS * 0.2) {
-    const proceed = confirm(`⚠️ לאחר החלוקה הזו יישארו לכיתה רק ${afterAward} נקודות (₪${(afterAward/POINTS_PER_ILS).toFixed(0)}) לשארית החודש. להמשיך?`)
-    if (!proceed) return
-  }
-
-  if (!confirm(`לשלוח נקודות ל-${approvals.length} תלמידים (סה"כ ${totalPoints} נקודות)?`)) return
-
-  try {
-    const logs = approvals.map(a => ({
-      lesson_id: currentLesson.id, student_id: a.student_id,
-      points: a.points, reason: a.reason
-    }))
-    const { error: logsError } = await supabaseClient.from('point_logs').insert(logs)
-    if (logsError) throw logsError
-
-    const checkinUpdates = students
-      .filter(s => state[s.id] === 'approved' || state[s.id] === 'bonus' || state[s.id] === 'rejected')
-      .map(s => ({
-        lesson_id: currentLesson.id,
-        student_id: s.id,
-        status: state[s.id] === 'rejected' ? 'נדחה' : 'אושר',
-        points: state[s.id] === 'bonus' ? currentBonusPoints : state[s.id] === 'approved' ? currentAttendancePoints : null,
-        updated_at: new Date().toISOString()
-      }))
-    if (checkinUpdates.length > 0) {
-      await supabaseClient.from('checkins').upsert(checkinUpdates, { onConflict: 'lesson_id,student_id' })
-    }
-
-    await supabaseClient.from('lessons').update({ status: 'completed' }).eq('id', currentLesson.id)
-
-    remainingBudget -= totalPoints
-    approvals.forEach(a => {
-      studentMonthlyTotal[a.student_id] = (studentMonthlyTotal[a.student_id] || 0) + a.points
-    })
-    stopCheckinPolling()
-
-    showToast(`🎉 נקודות חולקו ל-${approvals.length} תלמידים!`)
-    setTimeout(() => {
-      document.getElementById('activeLessonSection').classList.add('hidden')
-      document.getElementById('summaryBar').classList.add('hidden')
-      document.getElementById('setupCard').classList.remove('hidden')
-      document.getElementById('subjectInput').value = ''
-      document.getElementById('classInput').value = ''
-    }, 1500)
-  } catch (err) {
-    showToast('שגיאה בשליחת הנקודות', true)
   }
 }
 
