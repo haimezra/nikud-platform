@@ -790,7 +790,7 @@ async function loadDashboard() {
     return
   }
   if (profile.role !== 'principal') {
-    window.location.href = profile.role === 'teacher' ? 'teacher-dashboard.html' : 'school-dashboard.html'
+    window.location.href = profile.role === 'teacher' ? 'teacher-dashboard.html' : 'student-dashboard.html'
     return
   }
 
