@@ -4,88 +4,173 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>הדשבורד שלי – ניקוד★</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2E5BFF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ניקוד★">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#0A0E1A;--surface:#111827;--card:#1C2333;--border:#2A3450;
-  --accent:#6C63FF;--accent2:#FF6B6B;--gold:#FFD166;--green:#06D6A0;
-  --text:#E8EBF4;--muted:#8892AA;--r:16px;
+  --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
+  --brand:#2E5BFF;--brand-2:#1636BE;--violet:#6C43F0;--gold:#E7A93A;--gold-soft:#F5C869;
+  --green:#0AA478;--red:#E25555;
+  --line:rgba(8,14,40,0.08);--line-2:rgba(8,14,40,0.05);
+  --glass:rgba(255,255,255,0.72);--glass-2:rgba(255,255,255,0.55);--glass-border:rgba(8,14,40,0.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.85);
+  --sh-1:0 1px 2px rgba(8,14,40,0.04),0 3px 10px rgba(8,14,40,0.05);
+  --sh-2:0 4px 14px rgba(8,14,40,0.06),0 18px 44px rgba(8,14,40,0.08);
+  --sh-brand:0 12px 30px rgba(46,91,255,0.30);
+  --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;min-height:100vh}
+body{
+  background:var(--paper);color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(ellipse 50% 40% at 90% -6%, rgba(46,91,255,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 42% 36% at 2% 6%, rgba(108,67,240,0.09) 0%, transparent 58%);
+  background-attachment:fixed;
+}
+h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 
-nav{display:flex;justify-content:space-between;align-items:center;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(10,14,26,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
-.logo{font-size:1.4rem;font-weight:900;color:var(--accent)}
+nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
+  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
+  border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
+  position:sticky;top:16px;z-index:50;
+}
+.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--ink);letter-spacing:-0.4px}
 .logo span{color:var(--gold)}
 .nav-right{display:flex;align-items:center;gap:14px}
-.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:7px 16px;border-radius:99px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem}
-.logout-btn:hover{border-color:var(--accent2);color:var(--accent2)}
+.logout-btn{
+  background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
+  padding:8px 18px;border-radius:var(--pill);cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:500;transition:all 0.2s;
+}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-.dashboard{padding:28px 32px;max-width:1100px;margin:0 auto}
-.dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px}
-.welcome h2{font-size:1.5rem;font-weight:800}
-.welcome p{color:var(--muted);font-size:0.9rem}
-.points-badge{background:linear-gradient(135deg,var(--accent),#9B5DE5);border-radius:var(--r);padding:14px 26px;text-align:center}
-.pts-num{font-size:2rem;font-weight:900;color:var(--gold)}
-.pts-label{font-size:0.78rem;color:rgba(255,255,255,0.7)}
-.pts-ils{font-size:0.76rem;color:rgba(255,255,255,0.85);margin-top:2px}
+.dashboard{padding:24px 20px 60px;max-width:1080px;margin:0 auto}
+.dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:14px}
+.welcome h2{font-size:1.5rem;font-weight:800;letter-spacing:-0.6px}
+.welcome p{color:var(--ink-3);font-size:0.9rem;margin-top:4px}
+.points-badge{
+  background:linear-gradient(135deg,var(--brand),var(--violet));
+  border-radius:var(--r);padding:14px 30px;text-align:center;
+  box-shadow:var(--sh-brand),var(--hl);
+}
+.pts-num{font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px}
+.pts-label{font-size:0.76rem;color:rgba(255,255,255,0.82);font-weight:500}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
-.card h3{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.attn-track{height:8px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;margin-top:8px}
+.attn-fill{height:100%;border-radius:var(--pill);background:var(--green);transition:width 0.4s}
+.card{
+  background:var(--glass);backdrop-filter:blur(14px);
+  border:1px solid var(--glass-border);border-radius:var(--r);
+  padding:22px;box-shadow:var(--sh-1),var(--hl);
+}
+.card h3{font-size:0.78rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px}
 
-.activity-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:0.88rem}
+.activity-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);font-size:0.88rem;color:var(--ink-2)}
 .activity-item:last-child{border-bottom:none}
-.activity-pts{margin-right:auto;color:var(--green);font-weight:700}
+.activity-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif}
 
-.lb-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)}
 .lb-item:last-child{border-bottom:none}
-.lb-rank{font-size:0.8rem;color:var(--muted);width:20px;font-weight:700}
-.lb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700}
-.lb-name{flex:1;font-size:0.88rem}
-.lb-pts{font-weight:700;color:var(--gold);font-size:0.88rem}
+.lb-rank{font-size:0.8rem;color:var(--ink-3);width:20px;font-weight:700}
+.lb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;color:#fff;box-shadow:var(--hl)}
+.lb-name{flex:1;font-size:0.88rem;color:var(--ink-2)}
+.lb-pts{font-weight:700;color:var(--ink);font-size:0.88rem;font-family:'Rubik',sans-serif}
 
 .store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.store-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:border-color 0.2s}
-.store-item:hover{border-color:var(--gold)}
+.store-item{
+  background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--hl);
+}
+.store-item:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh-1),var(--hl)}
 .item-icon{font-size:1.7rem;margin-bottom:6px}
-.item-name{font-size:0.8rem;font-weight:600}
-.item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px}
-.item-ils{font-size:0.7rem;color:var(--muted)}
+.item-name{font-size:0.8rem;font-weight:600;color:var(--ink)}
+.item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px;font-weight:600}
 
-.earn-list{display:flex;flex-direction:column;gap:2px;margin-top:14px}
-.earn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--surface);border-radius:12px}
+.earn-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.earn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--line-2);border-radius:var(--r-sm)}
 .earn-icon{font-size:1.3rem}
-.earn-text{font-size:0.85rem}
-.earn-text b{color:var(--text);font-weight:700}
-.earn-text span{color:var(--muted);display:block;font-size:0.78rem;margin-top:1px}
+.earn-text{font-size:0.85rem;color:var(--ink-2)}
+.earn-text b{color:var(--ink);font-weight:700}
+.earn-text span{color:var(--ink-3);display:block;font-size:0.78rem;margin-top:1px}
 
 .expired-screen{max-width:440px;margin:80px auto;text-align:center;padding:0 20px}
 .expired-screen .icon{font-size:3rem;margin-bottom:16px}
-.expired-screen h2{font-size:1.3rem;margin-bottom:10px}
-.expired-screen p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
-.expired-screen a{display:inline-block;padding:14px 30px;background:var(--accent);color:#fff;text-decoration:none;border-radius:99px;font-weight:700;font-size:0.95rem}
+.expired-screen h2{font-size:1.3rem;margin-bottom:10px;font-weight:800}
+.expired-screen p{color:var(--ink-2);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
+.expired-screen a{
+  display:inline-block;padding:14px 30px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  text-decoration:none;border-radius:var(--pill);font-weight:700;font-size:0.95rem;
+  box-shadow:var(--sh-brand);
+}
 
-.demo-banner{background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.4);border-radius:12px;padding:12px 18px;margin-bottom:18px;font-size:0.85rem;color:var(--gold);display:flex;align-items:center;gap:10px}
+.demo-banner{
+  background:rgba(231,169,58,0.10);border:1px solid rgba(231,169,58,0.3);
+  border-radius:var(--r-sm);padding:12px 18px;margin-bottom:18px;
+  font-size:0.85rem;color:#9A6B10;display:flex;align-items:center;gap:10px;
+}
 
-.empty-state{text-align:center;padding:30px 16px;color:var(--muted);font-size:0.88rem}
+.empty-state{text-align:center;padding:30px 16px;color:var(--ink-3);font-size:0.88rem}
 
-.checkin-btn{width:100%;padding:14px;background:var(--accent);border:none;border-radius:12px;color:#fff;font-family:'Heebo',sans-serif;font-weight:700;cursor:pointer;font-size:0.95rem}
-.checkin-btn:disabled{opacity:0.5;cursor:not-allowed}
+.checkin-btn{
+  width:100%;padding:14px;border:none;border-radius:var(--r-sm);cursor:pointer;
+  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.95rem;
+  box-shadow:var(--sh-brand);transition:transform 0.2s;
+}
+.checkin-btn:hover:not(:disabled){transform:translateY(-1px)}
+.checkin-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
 .checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
-.checkin-status.pending{color:var(--gold)}
+.checkin-status.pending{color:#B57C10}
 .checkin-status.approved{color:var(--green)}
-.checkin-status.rejected{color:var(--accent2)}
+.checkin-status.rejected{color:var(--red)}
 
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green);color:#0A0E1A;padding:13px 26px;border-radius:99px;font-weight:700;font-size:0.9rem;z-index:999;transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--green);color:#fff;padding:13px 26px;border-radius:var(--pill);
+  font-weight:700;font-size:0.9rem;z-index:999;box-shadow:var(--sh-2);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-.loading{text-align:center;padding:80px 20px;color:var(--muted)}
+.loading{text-align:center;padding:100px 20px;color:var(--ink-3);font-size:0.95rem}
+
+.task-item{
+  display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-2);
+}
+.task-item:last-child{border-bottom:none}
+.task-icon{font-size:1.3rem}
+.task-body{flex:1}
+.task-title{font-weight:700;font-size:0.9rem;color:var(--ink)}
+.task-desc{font-size:0.78rem;color:var(--ink-3);margin-top:2px}
+.task-status-tag{font-size:0.74rem;font-weight:700;padding:3px 10px;border-radius:var(--pill);white-space:nowrap}
+.task-status-tag.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
+.task-status-tag.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
+.task-status-tag.approved{background:rgba(10,164,120,0.12);color:var(--green)}
+.task-status-tag.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-done-btn{
+  background:var(--brand);color:#fff;border:none;padding:7px 14px;border-radius:var(--r-sm);
+  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;white-space:nowrap;
+}
 
 @media(max-width:700px){
-  .dashboard{padding:18px 16px}
+  .dashboard{padding:18px 4px 40px}
   .grid-2{grid-template-columns:1fr}
+  nav{margin:12px 12px 0;padding:11px 18px}
 }
 </style>
 </head>
@@ -94,7 +179,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 <nav>
   <div class="logo">ניקוד<span>★</span></div>
   <div class="nav-right">
-    <span id="userName" style="font-size:0.88rem;color:var(--muted)"></span>
+    <span id="userName" style="font-size:0.88rem;color:var(--ink-3)"></span>
     <button class="logout-btn" onclick="logout()">יציאה</button>
   </div>
 </nav>
@@ -106,61 +191,75 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:16px 3
 <div id="expiredScreen" class="expired-screen" style="display:none">
   <div class="icon">⏳</div>
   <h2>תקופת הניסיון הסתיימה</h2>
-  <p>15 הימים של הניסיון החינמי של בית הספר שלך הסתיימו. כדי להמשיך להשתמש במערכת, צריך לאשר את בית הספר למנוי רשמי.</p>
+  <p>15 הימים של הניסיון החינמי של הארגון שלך הסתיימו. כדי להמשיך להשתמש במערכת, צריך לאשר את הארגון למנוי רשמי.</p>
   <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%20%D7%94%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F%20%D7%A9%D7%9C%D7%99%20%D7%94%D7%A1%D7%AA%D7%99%D7%99%D7%9E%D7%94%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%94%D7%A6%D7%98%D7%A8%D7%A3" target="_blank">דברו איתנו בוואטסאפ</a>
 </div>
 
-<div class="dashboard hidden" id="dashboard" style="display:none">
-  <div class="dashboard-header">
-    <div class="welcome">
-      <h2 id="welcomeText">שלום 👋</h2>
-      <p id="classInfo"></p>
+<div id="dashboard" style="display:none">
+  <div class="dashboard">
+    <div class="dashboard-header">
+      <div class="welcome">
+        <h2 id="welcomeText">שלום 👋</h2>
+        <p id="classInfo"></p>
+      </div>
+      <div class="points-badge">
+        <div class="pts-num" id="pointsDisplay">0</div>
+        <div class="pts-label">נקודות</div>
+      </div>
     </div>
-    <div class="points-badge">
-      <div class="pts-num" id="pointsDisplay">0</div>
-      <div class="pts-label">נקודות</div>
+
+    <div class="demo-banner hidden" id="demoBanner" style="display:none">
+      <span>🎬</span>
+      <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של הארגון.</span>
     </div>
-  </div>
 
-  <div class="demo-banner hidden" id="demoBanner" style="display:none">
-    <span>🎬</span>
-    <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של בית הספר.</span>
-  </div>
+    <div class="card hidden" id="checkinCard" style="margin-bottom:16px"></div>
 
-  <div class="card hidden" id="checkinCard" style="margin-bottom:18px"></div>
+    <div class="card hidden" id="tasksCard" style="margin-bottom:16px">
+      <h3>📋 המשימות שלי</h3>
+      <div id="tasksList"></div>
+    </div>
 
-  <div class="grid-2">
+    <div class="card" id="attendanceCard" style="margin-bottom:16px">
+      <h3>📈 נוכחות מאושרת</h3>
+      <div id="attendanceContent" style="margin-top:10px">
+        <div class="empty-state">אין עדיין מספיק נתונים להצגת נוכחות</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚡ פעילות אחרונה</h3>
+        <div id="activityList"><div class="empty-state">אין עדיין פעילות. הדיווח הראשון שלך יופיע כאן!</div></div>
+      </div>
+      <div class="card">
+        <h3>🏆 דירוג המחלקה</h3>
+        <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג במחלקה</div></div>
+      </div>
+    </div>
+
     <div class="card">
-      <h3>⚡ פעילות אחרונה</h3>
-      <div id="activityList"><div class="empty-state">אין עדיין פעילות. השיעור הראשון שלך יופיע כאן!</div></div>
-    </div>
-    <div class="card">
-      <h3>🏆 ליגת הכיתה</h3>
-      <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בכיתה</div></div>
-    </div>
-  </div>
+      <h3>🎁 חנות פרסים – יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
+      <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
 
-  <div class="card">
-    <h3>🎁 חנות פרסים – יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
-    <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
-
-    <h3 style="margin-top:22px">💡 איך צוברים נקודות</h3>
-    <div class="earn-list">
-      <div class="earn-item">
-        <div class="earn-icon">📚</div>
-        <div class="earn-text"><b>נוכחות בשיעור</b><span>מגיע/ה לשיעור וסימנת נוכחות</span></div>
-      </div>
-      <div class="earn-item">
-        <div class="earn-icon">🌟</div>
-        <div class="earn-text"><b>בונוס התנהגות טובה</b><span>המורה מעניקה בונוס על התנהגות לדוגמה</span></div>
-      </div>
-      <div class="earn-item">
-        <div class="earn-icon">🙋</div>
-        <div class="earn-text"><b>בונוס בקשה מהמורה</b><span>ביצעת בקשה או משימה שהמורה ביקשה</span></div>
-      </div>
-      <div class="earn-item">
-        <div class="earn-icon">📝</div>
-        <div class="earn-text"><b>בונוס שיעורי בית</b><span>הגשת שיעורי בית במועד</span></div>
+      <h3 style="margin-top:22px">💡 איך צוברים נקודות</h3>
+      <div class="earn-list">
+        <div class="earn-item">
+          <div class="earn-icon">📍</div>
+          <div class="earn-text"><b>נוכחות מאושרת</b><span>מדווחים צ'ק-אין וצ'ק-אאוט, המנהל מאשר - ו-3 נקודות נכנסות אוטומטית</span></div>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">✅</div>
+          <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה שהוטלה, והמנהל מאשר את הביצוע</span></div>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">⏱️</div>
+          <div class="earn-text"><b>תיעוד שעות מלא</b><span>שעת הכניסה והיציאה נשמרות בכל דיווח נוכחות</span></div>
+        </div>
+        <div class="earn-item">
+          <div class="earn-icon">🛡️</div>
+          <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור מנהל - אי אפשר לחלק נקודות ידנית לאף אחד</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -175,6 +274,7 @@ let currentPoints = 0
 let myCheckin = null
 let checkinPollTimer = null
 let isDemoAccount = false
+let myTasks = []
 
 async function init() {
   try {
@@ -188,6 +288,7 @@ async function init() {
   const { data: { user } } = await supabaseClient.auth.getUser()
   if (!user) { window.location.href = 'login.html'; return }
 
+  // עובד (role השמור במסד הוא 'student')
   const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
   if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
 
@@ -208,23 +309,99 @@ async function init() {
 
   document.getElementById('userName').textContent = profile.name
   document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
-  document.getElementById('classInfo').textContent = `כיתה ${profile.class_name || ''}`
+  document.getElementById('classInfo').textContent = profile.class_name ? `מחלקה ${profile.class_name}` : ''
   document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
   document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
 
   await loadActivity(profile.id)
   await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
+  await loadAttendanceStats(profile.id)
   await loadStore()
+  await loadTasks()
   await refreshMyCheckin()
-  checkinPollTimer = setInterval(refreshMyCheckin, 6000)
+  checkinPollTimer = setInterval(refreshMyCheckinAndTasks, 6000)
 
   document.getElementById('loadingScreen').style.display = 'none'
   document.getElementById('dashboard').style.display = 'block'
 }
 
-function formatTime(iso) {
-  if (!iso) return ''
-  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+async function refreshMyCheckinAndTasks() {
+  await refreshMyCheckin()
+  await loadTasks()
+}
+
+async function loadTasks() {
+  const { data, error } = await supabaseClient
+    .from('tasks')
+    .select('*')
+    .eq('student_id', currentUser.id)
+    .order('created_at', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  const previousApprovedIds = new Set(myTasks.filter(t => t.status === 'approved').map(t => t.id))
+  myTasks = data || []
+
+  // זיהוי משימות שאושרו מאז הרענון האחרון - לרענן נקודות ולחגוג
+  const newlyApproved = myTasks.filter(t => t.status === 'approved' && !previousApprovedIds.has(t.id))
+  if (newlyApproved.length > 0) {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    await loadActivity(currentUser.id)
+    showToast(`🎉 המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
+  }
+
+  renderTasks()
+}
+
+function taskStatusLabel(status) {
+  return { pending: 'לביצוע', submitted: 'ממתין לאישור', approved: 'אושר', rejected: 'לא אושר' }[status] || status
+}
+
+function renderTasks() {
+  const card = document.getElementById('tasksCard')
+  if (myTasks.length === 0) { card.classList.add('hidden'); return }
+  card.classList.remove('hidden')
+
+  document.getElementById('tasksList').innerHTML = myTasks.map(t => {
+    const icon = t.status === 'approved' ? '✅' : t.status === 'rejected' ? '✗' : t.status === 'submitted' ? '📩' : '📋'
+    const action = t.status === 'pending'
+      ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">סמן כבוצע</button>`
+      : `<span class="task-status-tag ${t.status}">${taskStatusLabel(t.status)}${t.status === 'approved' ? ' +' + t.points : ''}</span>`
+    return `<div class="task-item">
+      <div class="task-icon">${icon}</div>
+      <div class="task-body">
+        <div class="task-title">${escapeHtml(t.title)}</div>
+        ${t.description ? `<div class="task-desc">${escapeHtml(t.description)}</div>` : ''}
+      </div>
+      ${action}
+    </div>`
+  }).join('')
+}
+
+async function markTaskDone(taskId) {
+  try {
+    const { error } = await supabaseClient
+      .from('tasks')
+      .update({ status: 'submitted', submitted_at: new Date().toISOString() })
+      .eq('id', taskId)
+    if (error) throw error
+
+    const task = myTasks.find(t => t.id === taskId)
+    if (task) task.status = 'submitted'
+    renderTasks()
+    showToast('סומן כבוצע! ממתין לאישור המנהל/ת ✅')
+  } catch (err) {
+    showToast('שגיאה בסימון המשימה', true)
+  }
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
 }
 
 async function refreshMyCheckin() {
@@ -242,16 +419,21 @@ async function refreshMyCheckin() {
   card.classList.remove('hidden')
   renderCheckinCard()
 
-  // If a teacher/manager just approved or rejected us, refresh points + activity
   if (myCheckin && myCheckin.status !== previousStatus && (myCheckin.status === 'אושר' || myCheckin.status === 'נדחה')) {
     const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
     currentPoints = profile?.points ?? currentPoints
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
     document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
     await loadActivity(currentUser.id)
-    if (myCheckin.status === 'אושר') showToast('🎉 הצ\'ק-אין שלך אושר!')
+    await loadAttendanceStats(currentUser.id)
+    if (myCheckin.status === 'אושר') showToast('🎉 המנהל/ת אישר/ה את הצ\'ק-אין שלך!')
     else showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
   }
+}
+
+function formatTime(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
 }
 
 function renderCheckinCard() {
@@ -261,7 +443,7 @@ function renderCheckinCard() {
     card.innerHTML = `
       <h3>📍 נוכחות פעילה</h3>
       <div class="checkin-status pending">📥 נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
-      <p style="color:var(--muted);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י, לחץ/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
+      <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
       <button class="checkin-btn" onclick="doCheckout()">🏁 צ'ק-אאוט - סיימתי</button>
     `
     return
@@ -271,20 +453,20 @@ function renderCheckinCard() {
     card.innerHTML = `
       <h3>📍 נוכחות</h3>
       <div class="checkin-status pending">📥 נכנסת ${formatTime(myCheckin.check_in_at)} · 📤 יצאת ${formatTime(myCheckin.check_out_at)}</div>
-      <div class="checkin-status pending">⏳ ממתין/ה לאישור המורה/המנהל (עד 8 שעות)...</div>
+      <div class="checkin-status pending">⏳ ממתין/ה לאישור המנהל/ה (עד 8 שעות)...</div>
     `
     return
   }
 
   const lastResult = myCheckin && myCheckin.status === 'אושר'
-    ? `<div class="checkin-status approved">✓ הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
+    ? `<div class="checkin-status approved" style="font-size:0.8rem">✓ הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
     : myCheckin && myCheckin.status === 'נדחה'
-    ? `<div class="checkin-status rejected">✗ הצ'ק-אין הקודם לא אושר</div>`
+    ? `<div class="checkin-status rejected">✗ הצ'ק-אין הקודם לא אושר הפעם</div>`
     : ''
 
   card.innerHTML = `
     <h3>📍 צ'ק-אין</h3>
-    <p style="color:var(--muted);font-size:0.85rem;margin:8px 0 14px">לחץ/י כשאת/ה מתחיל/ה. אפשר בכל שעה, בלי צורך בשיעור פתוח מראש.</p>
+    <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
     <button class="checkin-btn" onclick="doCheckin()">✅ צ'ק-אין</button>
     ${lastResult}
   `
@@ -317,27 +499,65 @@ async function doCheckout() {
 
   myCheckin = data
   renderCheckinCard()
-  showToast('הצ\'ק-אאוט נשלח לאישור ✅')
+  showToast('הצ\'ק-אאוט נשלח לאישור המנהל/ה ✅')
+}
+
+// תווית לפי סוג הנקודה (reason) - תואם למה שה-DB רושם בפועל
+function reasonLabel(reason) {
+  if (reason === 'checkin_approved' || reason === 'attendance' || reason === 'approved') return 'נוכחות מאושרת'
+  if (reason === 'task' || reason === 'task_completed') return 'משימה שאושרה'
+  if (reason === 'streak') return 'רצף נוכחות'
+  return 'פעילות'
 }
 
 async function loadActivity(studentId) {
   const { data } = await supabaseClient
     .from('point_logs')
-    .select('*, lessons(subject)')
+    .select('*')
     .eq('student_id', studentId)
     .order('created_at', { ascending: false })
     .limit(10)
 
   if (!data || data.length === 0) return
 
-  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📚' }
+  const icons = { checkin_approved: '📍', attendance: '📍', approved: '📍', task: '✅', task_completed: '✅', streak: '🔥' }
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
       <div>${icons[log.reason] || '📌'}</div>
-      <div>${log.lessons?.subject || 'פעילות'}<br><span style="font-size:0.76rem;color:var(--muted)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div>${reasonLabel(log.reason)}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
       <div class="activity-pts">+${log.points}</div>
     </div>
   `).join('')
+}
+
+// נוכחות מאושרת = כמה מהדיווחים שלך אושרו, מתוך כלל הדיווחים
+async function loadAttendanceStats(studentId) {
+  const { data: checks } = await supabaseClient
+    .from('checkins')
+    .select('status')
+    .eq('student_id', studentId)
+
+  const total = (checks || []).length
+  const content = document.getElementById('attendanceContent')
+
+  if (total === 0) {
+    content.innerHTML = '<div class="empty-state">אין עדיין דיווחי נוכחות</div>'
+    return
+  }
+
+  const approved = (checks || []).filter(c => c.status === 'אושר').length
+  const pct = Math.round((approved / total) * 100)
+  const barColor = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--red)'
+
+  content.innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;color:${barColor}">${pct}%</div>
+      <div style="flex:1">
+        <div class="attn-track"><div class="attn-fill" style="width:${pct}%;background:${barColor}"></div></div>
+        <div style="font-size:0.78rem;color:var(--ink-3);margin-top:6px">${approved} מתוך ${total} דיווחי נוכחות אושרו</div>
+      </div>
+    </div>
+  `
 }
 
 async function loadLeaderboard(schoolId, className, currentUserId) {
@@ -352,12 +572,12 @@ async function loadLeaderboard(schoolId, className, currentUserId) {
 
   if (!data || data.length === 0) return
 
-  const colors = ['#6C63FF,#9B5DE5', '#06D6A0,#0CB', '#FFD166,#F4A261', '#FF6B6B,#E63']
+  const colors = ['#2E5BFF,#6C43F0', '#0AA478,#0891B2', '#E7A93A,#F5C869', '#E25555,#FF8A8A']
   document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
     <div class="lb-item">
       <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
       <div class="lb-avatar" style="background:linear-gradient(135deg,${colors[i % colors.length]})">${s.name[0]}</div>
-      <div class="lb-name" style="${s.id===currentUserId?'color:var(--gold);font-weight:700':''}">${s.name}${s.id===currentUserId?' (אתה)':''}</div>
+      <div class="lb-name" style="${s.id===currentUserId?'color:var(--brand);font-weight:700':''}">${s.name}${s.id===currentUserId?' (אתה)':''}</div>
       <div class="lb-pts">${s.points.toLocaleString()}</div>
     </div>
   `).join('')
@@ -385,7 +605,6 @@ async function buyItem(itemId, name, cost) {
       student_id: currentUser.id, item_id: itemId, points_spent: cost
     })
     if (error) throw error
-    // הערה: לא צריך UPDATE ידני נוסף ל-users.points - טריגר במסד הנתונים מנכה את זה אוטומטית
 
     currentPoints -= cost
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
@@ -406,14 +625,20 @@ let toastTimer
 function showToast(msg, isError) {
   const t = document.getElementById('toast')
   t.textContent = msg
-  t.style.background = isError ? 'var(--accent2)' : 'var(--green)'
-  t.style.color = isError ? '#fff' : '#0A0E1A'
+  t.style.background = isError ? 'var(--red)' : 'var(--green)'
+  t.style.color = '#fff'
   t.classList.add('show')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
 }
 
 init()
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+  })
+}
 </script>
 </body>
 </html>
