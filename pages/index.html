@@ -95,15 +95,15 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .logo .star{color:var(--gold);animation:twinkle 3.4s ease-in-out infinite;display:inline-block}
 @keyframes twinkle{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.18) rotate(8deg);opacity:0.85}}
 .logo .beacon{
-  display:inline-block;width:8px;height:8px;border-radius:50%;
-  background:var(--brand);margin-right:6px;flex-shrink:0;
-  align-self:baseline;position:relative;top:3px;
-  animation:beacon 1.6s ease-in-out infinite;
+  display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--green);margin-right:7px;flex-shrink:0;
+  align-self:baseline;position:relative;top:2px;
+  animation:beacon 1.8s ease-in-out infinite;
 }
 @keyframes beacon{
-  0%,100%{opacity:0.25;box-shadow:0 0 2px rgba(29,70,216,0.35)}
-  6%{opacity:1;box-shadow:0 0 9px 3px rgba(29,70,216,0.9)}
-  13%{opacity:0.25;box-shadow:0 0 2px rgba(29,70,216,0.35)}
+  0%,100%{opacity:0.2;box-shadow:0 0 2px rgba(7,144,104,0.3)}
+  5%{opacity:1;box-shadow:0 0 8px 3px rgba(7,144,104,0.95)}
+  11%{opacity:0.2;box-shadow:0 0 2px rgba(7,144,104,0.3)}
 }
 .logo-tagline{
   font-family:'Heebo',sans-serif;
@@ -763,7 +763,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 <!-- NAV -->
 <nav class="nav">
   <div class="nav-inner">
-    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="logo-tagline">פתרונות נוכחות לעסקים</span></a>
+    <a href="#" class="logo"><span class="grad">NIKUD</span><span class="logo-tagline">פתרונות נוכחות לעסקים</span><span class="beacon"></span></a>
     <div class="nav-links">
       <a href="#features">יכולות</a>
       <a href="#how">איך זה עובד</a>
