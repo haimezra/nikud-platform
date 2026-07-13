@@ -20,27 +20,27 @@
 <style>
 /* ============ TOKENS ============ */
 :root{
-  --paper:#FAFBFE;
-  --paper-2:#F1F4FB;
-  --ink:#080D24;
-  --ink-2:#2E3757;
-  --ink-3:#606A8C;
-  --brand:#1D46D8;
-  --brand-2:#0B1F86;
-  --violet:#5A31DE;
-  --gold:#A9781A;
-  --gold-soft:#E3B355;
-  --green:#0B8A63;
-  --line:rgba(8,14,40,0.11);
-  --line-2:rgba(8,14,40,0.065);
-  --glass:rgba(255,255,255,0.74);
-  --glass-2:rgba(255,255,255,0.56);
-  --glass-border:rgba(8,14,40,0.09);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.9);
-  --sh-1:0 1px 2px rgba(8,14,40,0.05),0 3px 11px rgba(8,14,40,0.06);
-  --sh-2:0 4px 15px rgba(8,14,40,0.07),0 18px 46px rgba(10,26,90,0.10);
-  --sh-3:0 10px 30px rgba(8,14,40,0.09),0 40px 96px rgba(12,32,110,0.17);
-  --sh-brand:0 12px 30px rgba(15,42,150,0.30);
+  --paper:#FBFCFF;
+  --paper-2:#F0F3FB;
+  --ink:#04081A;
+  --ink-2:#2A3355;
+  --ink-3:#5B6588;
+  --brand:#1A41DE;
+  --brand-2:#081C8E;
+  --violet:#5A2EE6;
+  --gold:#B07E14;
+  --gold-soft:#EDBE52;
+  --green:#079068;
+  --line:rgba(4,8,26,0.12);
+  --line-2:rgba(4,8,26,0.07);
+  --glass:rgba(255,255,255,0.78);
+  --glass-2:rgba(255,255,255,0.60);
+  --glass-border:rgba(4,8,26,0.10);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.95);
+  --sh-1:0 1px 2px rgba(4,8,26,0.06),0 3px 12px rgba(4,8,26,0.07);
+  --sh-2:0 4px 16px rgba(4,8,26,0.08),0 20px 50px rgba(8,24,95,0.12);
+  --sh-3:0 10px 32px rgba(4,8,26,0.10),0 44px 104px rgba(10,30,115,0.19);
+  --sh-brand:0 14px 34px rgba(12,38,155,0.34);
   --r:22px;
   --r-lg:28px;
   --r-sm:14px;
@@ -61,9 +61,9 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .ambient{
   position:fixed;inset:0;z-index:-2;pointer-events:none;
   background:
-    radial-gradient(ellipse 50% 42% at 88% -8%, rgba(29,70,216,0.13) 0%, transparent 62%),
-    radial-gradient(ellipse 42% 38% at 4% 8%, rgba(90,49,222,0.11) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 45% at 50% 116%, rgba(200,150,50,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 42% at 88% -8%, rgba(26,65,222,0.15) 0%, transparent 62%),
+    radial-gradient(ellipse 42% 38% at 4% 8%, rgba(90,46,230,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 45% at 50% 116%, rgba(210,155,45,0.08) 0%, transparent 60%),
     var(--paper);
 }
 .grain{
@@ -89,7 +89,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   text-decoration:none;display:inline-flex;align-items:baseline;gap:2px;color:var(--ink);
 }
 .logo .grad{
-  background:linear-gradient(94deg,#10289E,#2148E6 40%,#5F35E2);
+  background:linear-gradient(94deg,#0B1F8E,#1E45E8 40%,#5B2FE8);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .logo .star{color:var(--gold);animation:twinkle 3.4s ease-in-out infinite;display:inline-block}
@@ -166,6 +166,11 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   max-width:1160px;margin:0 auto;width:100%;
   display:grid;grid-template-columns:0.96fr 1.04fr;gap:60px;align-items:center;
 }
+.hero-logo{
+  height:64px;width:auto;display:block;
+  margin:0 auto 20px;
+  filter:drop-shadow(0 6px 16px rgba(8,14,40,0.14));
+}
 .eyebrow{
   display:inline-flex;align-items:center;gap:9px;
   font-size:0.82rem;font-weight:600;color:var(--ink-2);margin-bottom:28px;
@@ -176,9 +181,23 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .hero h1{
   font-size:clamp(2.5rem,5.1vw,4rem);font-weight:800;
   line-height:1.08;letter-spacing:-1.8px;margin-bottom:24px;
+  /* שחור מבריק - אפקט מראה: השתקפות בהירה למעלה, שחור עמוק במרכז, קו אור כמו אופק */
+  background:linear-gradient(180deg,
+    #6B7590 0%,
+    #2A3148 22%,
+    #05070F 44%,
+    #010208 50%,
+    #3D4763 54%,
+    #0A0E1D 62%,
+    #01030A 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 0 rgba(255,255,255,0.65)) drop-shadow(0 10px 22px rgba(4,8,26,0.18));
 }
 .hero h1 em{
-  font-style:normal;color:var(--ink);
+  font-style:normal;
+}
+@supports not (-webkit-background-clip:text){
+  .hero h1{background:none;color:#04081A;filter:none}
 }
 .hero-sub{
   font-size:1.1rem;color:var(--ink-2);max-width:496px;font-weight:400;
@@ -707,6 +726,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   /* טיפוגרפיה גדולה יותר וברורה יותר לנייד */
   .hero h1{font-size:clamp(2.1rem,8.5vw,2.6rem);letter-spacing:-1px}
   .hero-sub{font-size:1.02rem;line-height:1.75;max-width:none}
+  .hero-logo{height:52px;margin-bottom:16px}
   .sec-title{font-size:clamp(1.6rem,7vw,2rem)}
   .sec-sub{font-size:0.96rem;max-width:none}
   .eyebrow{font-size:0.78rem}
@@ -773,6 +793,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           חייגו עכשיו 029999119
         </a>
       </div>
+      <img src="images/logo.png" alt="לוגו ניקוד" class="hero-logo">
       <div class="eyebrow">FOR MANAGERS WHO WANT RESULTS</div>
       <h1>הופכים נוכחות וביצועים ל<em>ניהול מבוסס נתונים</em></h1>
       <p class="hero-sub">ניקוד מחברת בין נוכחות, משימות וביצועים לבין תגמול אמיתי. העובדים צוברים נקודות על הגעה ועמידה ביעדים, וממירים אותן לפרסים. המנהלים מקבלים שליטה ונתונים בזמן אמת. מתאים לעסקים, מוסדות וארגונים.</p>
