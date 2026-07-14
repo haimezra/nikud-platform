@@ -130,10 +130,22 @@ nav{
   width:100%;padding:14px;border:none;border-radius:var(--r-sm);cursor:pointer;
   background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
   font-family:'Rubik',sans-serif;font-weight:700;font-size:0.95rem;
-  box-shadow:var(--sh-brand);transition:transform 0.2s;
+  box-shadow:var(--sh-brand);transition:transform 0.2s, background 0.4s;
 }
 .checkin-btn:hover:not(:disabled){transform:translateY(-1px)}
 .checkin-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
+
+/* כפתור במצב "במשמרת" (אחרי צ'ק-אין, לפני צ'ק-אאוט) - אדום חלש ומהבהב לאט */
+.checkin-btn.active-shift{
+  background:linear-gradient(135deg,#E88A8A,#D96666);
+  box-shadow:0 12px 30px rgba(226,85,85,0.28);
+  animation:activeShiftPulse 2.4s ease-in-out infinite;
+}
+@keyframes activeShiftPulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.55}
+}
+
 .checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
 .checkin-status.pending{color:#B57C10}
 .checkin-status.approved{color:var(--green)}
@@ -439,11 +451,12 @@ function renderCheckinCard() {
   const card = document.getElementById('checkinCard')
 
   if (myCheckin && myCheckin.status === 'ממתינה') {
+    // במשמרת פעילה: הכפתור הופך לאדום חלש ומהבהב לאט עד לצ'ק-אאוט
     card.innerHTML = `
       <h3>📍 נוכחות פעילה</h3>
       <div class="checkin-status pending">📥 נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
       <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
-      <button class="checkin-btn" onclick="doCheckout()">🏁 צ'ק-אאוט - סיימתי</button>
+      <button class="checkin-btn active-shift" onclick="doCheckout()">🏁 צ'ק-אאוט - סיימתי</button>
     `
     return
   }
@@ -463,6 +476,7 @@ function renderCheckinCard() {
     ? `<div class="checkin-status rejected">✗ הצ'ק-אין הקודם לא אושר הפעם</div>`
     : ''
 
+  // אין משמרת פעילה: הכפתור הרגיל בצבע כחול
   card.innerHTML = `
     <h3>📍 צ'ק-אין</h3>
     <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
