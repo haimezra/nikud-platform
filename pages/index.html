@@ -1586,6 +1586,16 @@ async function submitQuickSignup(e) {
       })
       if (authErr) throw authErr
       userId = authData.user.id
+
+      // אם נדרש אימות אימייל, signUp לא מייצר session פעיל -
+      // לא ניתן להעביר לדשבורד (הוא יבדוק session ויחזיר ללוגין). מציגים הודעה במקום.
+      if (!authData.session) {
+        errBox.style.cssText = 'display:block;background:rgba(11,138,99,0.12);border-color:rgba(11,138,99,0.35);color:#0B8A63'
+        errBox.textContent = 'נרשמת בהצלחה! בדוק/י את תיבת האימייל שלך לאימות החשבון, ולאחר מכן היכנס/י דרך login.html.'
+        btn.disabled = false
+        btn.textContent = btnLabel
+        return
+      }
     }
 
     if (!schoolId) throw new Error('לא נמצא עסק משויך לחשבון. פנה/י לתמיכה.')
