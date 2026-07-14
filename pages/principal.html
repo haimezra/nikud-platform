@@ -311,6 +311,33 @@ tr.clickable{cursor:pointer}
   </div>
 </div>
 
+<div class="modal-overlay" id="attendanceDetailModalOverlay" onclick="if(event.target===this) closeAttendanceDetailModal()">
+  <div class="modal" style="max-width:520px">
+    <h3 id="attendanceDetailName">עובד/ת</h3>
+    <div style="display:flex;gap:16px;margin-bottom:18px">
+      <div class="stat-card" style="flex:1;padding:14px">
+        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.5rem">—</div>
+        <div class="stat-label">צוות/מחלקה</div>
+      </div>
+      <div class="stat-card gold" style="flex:1;padding:14px">
+        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.5rem">—</div>
+        <div class="stat-label">אחוז נוכחות</div>
+      </div>
+    </div>
+    <h3 style="font-size:0.9rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
+    <div id="attendanceDetailHistory" style="max-height:380px;overflow-y:auto">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
+        <tbody id="attendanceDetailBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="attendanceDetailEmpty" style="padding:20px 0">אין עדיין רשומות נוכחות לעובד זה.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAttendanceDetailModal()">סגור</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="taskModalOverlay" onclick="if(event.target===this) closeTaskModal()">
   <div class="modal">
     <h3>משימה חדשה</h3>
@@ -353,6 +380,7 @@ let allTeachers = []   // מנהלי צוותים (role במסד: 'teacher')
 let allLessons = []    // משמרות (הטבלה במסד נשארת lessons)
 let allPointLogs = []
 let allTasks = []
+let attendanceCheckinsPerStudent = {}
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -435,6 +463,41 @@ function closeStudentModal() {
   document.getElementById('studentModalOverlay').classList.remove('show')
 }
 
+function openAttendanceDetailModal(studentId) {
+  const student = allStudents.find(s => s.id === studentId)
+  if (!student) return
+
+  const checkins = (attendanceCheckinsPerStudent[studentId] || [])
+    .slice()
+    .sort((a, b) => new Date(b.check_in_at) - new Date(a.check_in_at))
+
+  document.getElementById('attendanceDetailName').textContent = student.name || 'עובד/ת'
+  document.getElementById('attendanceDetailClass').textContent = student.class_name || '—'
+
+  const approved = checkins.filter(c => c.status === 'אושר').length
+  const pct = checkins.length > 0 ? Math.round((approved / checkins.length) * 100) : 0
+  document.getElementById('attendanceDetailPct').textContent = checkins.length > 0 ? pct + '%' : '—'
+
+  const statusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ נדחה', 'הושלם': '⏳ ממתין לאישור' }
+
+  const tbody = document.getElementById('attendanceDetailBody')
+  document.getElementById('attendanceDetailEmpty').classList.toggle('hidden', checkins.length > 0)
+  tbody.innerHTML = checkins.map(c => `
+    <tr>
+      <td style="padding:6px 4px;font-size:0.85rem">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
+      <td style="padding:6px 4px;font-size:0.85rem">${fmtTime(c.check_in_at)}</td>
+      <td style="padding:6px 4px;font-size:0.85rem">${fmtTime(c.check_out_at)}</td>
+      <td style="padding:6px 4px;font-size:0.85rem">${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
+    </tr>
+  `).join('')
+
+  document.getElementById('attendanceDetailModalOverlay').classList.add('show')
+}
+
+function closeAttendanceDetailModal() {
+  document.getElementById('attendanceDetailModalOverlay').classList.remove('show')
+}
+
 async function renderAttendanceReport() {
   const AT_RISK_THRESHOLD = 70
   const TREND_WINDOW_DAYS = 14
@@ -467,6 +530,7 @@ async function renderAttendanceReport() {
     if (!checkinsPerStudent[c.student_id]) checkinsPerStudent[c.student_id] = []
     checkinsPerStudent[c.student_id].push(c)
   })
+  attendanceCheckinsPerStudent = checkinsPerStudent
 
   function statsFor(list) {
     if (!list || list.length === 0) return null
@@ -517,7 +581,7 @@ async function renderAttendanceReport() {
         ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${r.student.name.replace(/'/g,"")}')">📱 הוסף טלפון</button>`
       : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
-    return `<tr class="${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}">
+    return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${fmtTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
@@ -525,7 +589,7 @@ async function renderAttendanceReport() {
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
       <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
-      <td>${alertCell}</td>
+      <td onclick="event.stopPropagation()">${alertCell}</td>
     </tr>`
   }).join('')
 }
