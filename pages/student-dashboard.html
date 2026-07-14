@@ -511,11 +511,11 @@ async function loadActivity(employeeId) {
 
   if (!data || data.length === 0) return
 
-  const icons = { attendance: '📚', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📚', checkin_approved: '📚', task_completed: '✅' }
+  const icons = { attendance: '📍', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📍', checkin_approved: '📍', task_completed: '✅' }
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
       <div>${icons[log.reason] || '📌'}</div>
-      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'פעילות')}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'נוכחות במשמרת')}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
       <div class="activity-pts">+${log.points}</div>
     </div>
   `).join('')
