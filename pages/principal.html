@@ -939,28 +939,22 @@ async function exportToExcel() {
   if (!currentSchoolId) { showToast('עדיין טוען נתונים, נסה/י שוב בעוד רגע', 'error'); return }
   showToast('מכין קובץ אקסל...', 'success')
 
-  const lessonIds = allLessons.map(l => l.id)
-  let checkinRows = []
-  if (lessonIds.length > 0) {
-    const { data: checkins, error } = await supabaseClient
-      .from('checkins')
-      .select('*')
-      .in('lesson_id', lessonIds)
-      .order('check_in_at', { ascending: false })
-    if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
-    checkinRows = checkins || []
-  }
+  const { data: checkins, error } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('school_id', currentSchoolId)
+    .order('check_in_at', { ascending: false })
+  if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
+  const checkinRows = checkins || []
 
   const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
 
   const attendanceSheet = checkinRows.map(c => {
     const student = allStudents.find(s => s.id === c.student_id)
-    const lesson = allLessons.find(l => l.id === c.lesson_id)
     const checkInDate = c.check_in_at ? new Date(c.check_in_at) : null
     return {
       'שם עובד/ת': student ? student.name : '—',
       'צוות/מחלקה': student ? (student.class_name || '—') : '—',
-      'משמרת': lesson ? lesson.subject : '—',
       'תאריך': checkInDate ? checkInDate.toLocaleDateString('he-IL') : '—',
       'שעת כניסה (צ\'ק-אין)': checkInDate ? checkInDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
       'שעת יציאה (צ\'ק-אאוט)': c.check_out_at ? new Date(c.check_out_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
