@@ -16,6 +16,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
@@ -56,9 +57,9 @@ nav{
 }
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
 
-.main{max-width:820px;margin:0 auto;padding:24px 20px 80px}
+.main{max-width:920px;margin:0 auto;padding:24px 20px 80px}
 
-.top-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content}
+.top-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content;flex-wrap:wrap}
 .top-tab{
   padding:9px 18px;border:none;background:none;color:var(--ink-3);
   border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
@@ -74,7 +75,7 @@ nav{
   border:1px solid var(--glass-border);border-radius:var(--r);
   overflow:hidden;margin-bottom:20px;box-shadow:var(--sh-1),var(--hl);
 }
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
 .panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
 .panel-intro{color:var(--ink-3);font-size:0.85rem;margin:0;padding:14px 22px 0}
 .add-btn{
@@ -83,6 +84,13 @@ nav{
   box-shadow:var(--sh-brand);transition:all 0.2s;
 }
 .add-btn:hover{transform:translateY(-1px)}
+.export-btn{
+  background:linear-gradient(135deg,var(--green),#0C8F66);border:none;color:#fff;padding:9px 16px;
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
+  box-shadow:0 12px 30px rgba(10,164,120,0.28);transition:all 0.2s;
+}
+.export-btn:hover{transform:translateY(-1px)}
+.export-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 table{width:100%;border-collapse:collapse}
 th{text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line-2)}
 td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
@@ -104,6 +112,21 @@ tr:last-child td{border-bottom:none}
 .task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700}
 .task-act-approve{background:rgba(10,164,120,0.12);color:var(--green)}
 .task-act-reject{background:rgba(226,85,85,0.12);color:var(--red)}
+
+.report-filters{display:flex;gap:10px;padding:14px 22px 0;flex-wrap:wrap;align-items:flex-end}
+.report-filters .field{margin-bottom:0;min-width:150px}
+.report-filters label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:5px}
+.report-filters input,.report-filters select{
+  width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.85rem;outline:none;
+}
+.report-summary{display:flex;gap:14px;padding:14px 22px 0;flex-wrap:wrap}
+.report-stat{background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 16px;font-size:0.82rem;color:var(--ink-2)}
+.report-stat b{display:block;font-family:'Rubik',sans-serif;font-size:1.1rem;color:var(--ink)}
+.status-pill{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
+.status-pill.st-approved{background:rgba(10,164,120,0.12);color:var(--green)}
+.status-pill.st-rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.status-pill.st-pending{background:rgba(231,169,58,0.14);color:#9A6B10}
 
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,14,40,0.42);backdrop-filter:blur(7px);align-items:center;justify-content:center;z-index:400;padding:20px}
 .modal-overlay.show{display:flex}
@@ -148,6 +171,7 @@ tr:last-child td{border-bottom:none}
   <div class="top-tabs">
     <button class="top-tab active" id="attendanceTabBtn" onclick="setTopTab('attendance')">🕒 נוכחות <span id="attendanceBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
     <button class="top-tab" id="tasksTabBtn" onclick="setTopTab('tasks')">📋 משימות</button>
+    <button class="top-tab" id="reportsTabBtn" onclick="setTopTab('reports')">📊 דוחות</button>
   </div>
 
   <!-- נוכחות -->
@@ -178,6 +202,49 @@ tr:last-child td{border-bottom:none}
         <tbody id="tasksBody"></tbody>
       </table>
       <div class="empty-state hidden" id="tasksEmpty">עדיין לא יצרת משימות. לחץ על "משימה חדשה" כדי להתחיל.</div>
+    </div>
+  </div>
+
+  <!-- דוחות -->
+  <div id="reportsView" class="hidden">
+    <div class="panel" id="reportsPanel">
+      <div class="panel-head">
+        <h3>דוח נוכחות</h3>
+        <button class="export-btn" id="exportBtn" onclick="exportReportToExcel()" disabled>⬇️ ייצוא לאקסל</button>
+      </div>
+      <p class="panel-intro">כל דיווחי הנוכחות של העובדים בארגון - כולל ממתינים, מאושרים ונדחים.</p>
+      <div class="report-filters">
+        <div class="field">
+          <label>מעובד</label>
+          <select id="reportStudentFilter" onchange="loadAttendanceReport()">
+            <option value="">כל העובדים</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>מתאריך</label>
+          <input type="date" id="reportFromDate" onchange="loadAttendanceReport()">
+        </div>
+        <div class="field">
+          <label>עד תאריך</label>
+          <input type="date" id="reportToDate" onchange="loadAttendanceReport()">
+        </div>
+        <div class="field">
+          <label>סטטוס</label>
+          <select id="reportStatusFilter" onchange="loadAttendanceReport()">
+            <option value="">הכל</option>
+            <option value="אושר">אושר</option>
+            <option value="נדחה">נדחה</option>
+            <option value="הושלם">ממתין לאישור</option>
+            <option value="ממתינה">משמרת פעילה</option>
+          </select>
+        </div>
+      </div>
+      <div class="report-summary" id="reportSummary"></div>
+      <table style="margin-top:14px">
+        <thead><tr><th>עובד</th><th>מחלקה</th><th>תאריך</th><th>שעת כניסה</th><th>שעת יציאה</th><th>סטטוס</th><th>נקודות</th></tr></thead>
+        <tbody id="reportBody"></tbody>
+      </table>
+      <div class="empty-state hidden" id="reportEmpty">אין דיווחי נוכחות התואמים את הסינון שנבחר.</div>
     </div>
   </div>
 
@@ -219,6 +286,7 @@ let currentUser = null
 let pendingCheckins = []
 let schoolStudentsForTasks = []
 let myCreatedTasks = []
+let reportRows = []
 
 async function init() {
   try {
@@ -249,15 +317,23 @@ async function init() {
 function setTopTab(tab) {
   document.getElementById('attendanceTabBtn').classList.toggle('active', tab === 'attendance')
   document.getElementById('tasksTabBtn').classList.toggle('active', tab === 'tasks')
+  document.getElementById('reportsTabBtn').classList.toggle('active', tab === 'reports')
   document.getElementById('attendanceView').classList.toggle('hidden', tab !== 'attendance')
   document.getElementById('tasksView').classList.toggle('hidden', tab !== 'tasks')
+  document.getElementById('reportsView').classList.toggle('hidden', tab !== 'reports')
   if (tab === 'tasks') loadMyTasks()
   if (tab === 'attendance') loadPendingCheckins()
+  if (tab === 'reports') loadAttendanceReport()
 }
 
 function fmtTime(iso) {
   if (!iso) return '—'
   return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString('he-IL')
 }
 
 function hoursLeftLabel(checkoutIso) {
@@ -454,6 +530,104 @@ async function rejectTask(taskId) {
   } catch (err) {
     showToast(err.message || 'שגיאה בדחיית המשימה', true)
   }
+}
+
+// ---- דוחות נוכחות ----
+async function ensureReportStudentOptions() {
+  if (schoolStudentsForTasks.length === 0) await loadSchoolStudentsForTasks()
+  const select = document.getElementById('reportStudentFilter')
+  if (select.options.length <= 1) {
+    select.innerHTML = '<option value="">כל העובדים</option>' +
+      schoolStudentsForTasks.map(s => `<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('')
+  }
+}
+
+async function loadAttendanceReport() {
+  await ensureReportStudentOptions()
+
+  const studentId = document.getElementById('reportStudentFilter').value
+  const fromDate = document.getElementById('reportFromDate').value
+  const toDate = document.getElementById('reportToDate').value
+  const statusFilter = document.getElementById('reportStatusFilter').value
+
+  let query = supabaseClient
+    .from('checkins')
+    .select('*, users:student_id(name, class_name)')
+    .eq('school_id', currentUser.school_id)
+    .order('check_in_at', { ascending: false })
+
+  if (studentId) query = query.eq('student_id', studentId)
+  if (statusFilter) query = query.eq('status', statusFilter)
+  if (fromDate) query = query.gte('check_in_at', fromDate + 'T00:00:00')
+  if (toDate) query = query.lte('check_in_at', toDate + 'T23:59:59')
+
+  const { data, error } = await query
+  if (error) { console.error(error); showToast('שגיאה בטעינת הדוח', true); return }
+
+  reportRows = data || []
+  renderAttendanceReport()
+}
+
+function reportStatusPill(status) {
+  const map = {
+    'אושר': { cls: 'st-approved', label: '✓ אושר' },
+    'נדחה': { cls: 'st-rejected', label: '✗ נדחה' },
+    'הושלם': { cls: 'st-pending', label: '⏳ ממתין לאישור' },
+    'ממתינה': { cls: 'st-pending', label: '📍 משמרת פעילה' }
+  }
+  const s = map[status] || { cls: '', label: status }
+  return `<span class="status-pill ${s.cls}">${s.label}</span>`
+}
+
+function renderAttendanceReport() {
+  const tbody = document.getElementById('reportBody')
+  document.getElementById('reportEmpty').classList.toggle('hidden', reportRows.length > 0)
+  document.getElementById('exportBtn').disabled = reportRows.length === 0
+
+  tbody.innerHTML = reportRows.map(c => `
+    <tr>
+      <td>${escapeHtml(c.users?.name || '—')}</td>
+      <td>${escapeHtml(c.users?.class_name || '—')}</td>
+      <td>${fmtDate(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_out_at)}</td>
+      <td>${reportStatusPill(c.status)}</td>
+      <td class="points-tag">${c.status === 'אושר' ? (c.points || 3) : '—'}</td>
+    </tr>
+  `).join('')
+
+  const approvedCount = reportRows.filter(c => c.status === 'אושר').length
+  const totalPoints = approvedCount * 3
+  const pendingCount = reportRows.filter(c => c.status === 'הושלם').length
+  document.getElementById('reportSummary').innerHTML = `
+    <div class="report-stat">סה"כ רשומות<b>${reportRows.length}</b></div>
+    <div class="report-stat">משמרות מאושרות<b>${approvedCount}</b></div>
+    <div class="report-stat">ממתינות לאישור<b>${pendingCount}</b></div>
+    <div class="report-stat">סה"כ נקודות שחולקו<b>${totalPoints}</b></div>
+  `
+}
+
+function exportReportToExcel() {
+  if (reportRows.length === 0) { showToast('אין נתונים לייצוא', true); return }
+
+  const exportData = reportRows.map(c => ({
+    'עובד': c.users?.name || '',
+    'מחלקה': c.users?.class_name || '',
+    'תאריך': fmtDate(c.check_in_at),
+    'שעת כניסה': fmtTime(c.check_in_at),
+    'שעת יציאה': fmtTime(c.check_out_at),
+    'סטטוס': c.status,
+    'נקודות': c.status === 'אושר' ? (c.points || 3) : 0
+  }))
+
+  const worksheet = XLSX.utils.json_to_sheet(exportData)
+  worksheet['!cols'] = [{ wch: 18 }, { wch: 14 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 10 }]
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'דוח נוכחות')
+
+  const todayStr = new Date().toISOString().slice(0, 10)
+  XLSX.writeFile(workbook, `דוח-נוכחות-${todayStr}.xlsx`)
+  showToast('הקובץ יוצא בהצלחה ✅')
 }
 
 async function logout() {
