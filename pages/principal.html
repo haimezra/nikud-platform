@@ -258,7 +258,7 @@ tr.clickable{cursor:pointer}
     <div class="panel hidden" id="attendancePanel">
       <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
       <table>
-        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
+        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
         <tbody id="attendanceBody"></tbody>
       </table>
       <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
@@ -376,6 +376,7 @@ function setTab(tab, btn) {
   document.getElementById('teacherActivityPanel').classList.toggle('hidden', tab !== 'teacherActivity')
   document.getElementById('tasksPanel').classList.toggle('hidden', tab !== 'tasks')
   if (tab === 'checkinApproval') loadCheckinApprovals()
+  if (tab === 'attendance') renderAttendanceReport()
 }
 
 function copyInviteCode() {
@@ -434,7 +435,7 @@ function closeStudentModal() {
   document.getElementById('studentModalOverlay').classList.remove('show')
 }
 
-function renderAttendanceReport() {
+async function renderAttendanceReport() {
   const AT_RISK_THRESHOLD = 70
   const TREND_WINDOW_DAYS = 14
   const TREND_DROP_THRESHOLD = 20
@@ -442,48 +443,58 @@ function renderAttendanceReport() {
   const recentStart = now - TREND_WINDOW_DAYS * 86400000
   const previousStart = now - 2 * TREND_WINDOW_DAYS * 86400000
 
-  const lessonsPerClass = {}
-  allLessons.forEach(l => { lessonsPerClass[l.class_name] = (lessonsPerClass[l.class_name] || 0) + 1 })
+  // שולף את נתוני הנוכחות האמיתיים (כניסה/יציאה בפועל) מטבלת checkins,
+  // במקום המנגנון הישן של lessons/point_logs שלא היה מקושר לצ'ק-אין בפועל.
+  const { data: checkins, error: checkinsErr } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('school_id', currentSchoolId)
 
-  const recentLessonsPerClass = {}
-  const previousLessonsPerClass = {}
-  allLessons.forEach(l => {
-    const t = new Date(l.created_at).getTime()
-    if (t >= recentStart) {
-      if (!recentLessonsPerClass[l.class_name]) recentLessonsPerClass[l.class_name] = []
-      recentLessonsPerClass[l.class_name].push(l.id)
-    } else if (t >= previousStart) {
-      if (!previousLessonsPerClass[l.class_name]) previousLessonsPerClass[l.class_name] = []
-      previousLessonsPerClass[l.class_name].push(l.id)
-    }
+  if (checkinsErr) {
+    showToast('שגיאה בטעינת נתוני נוכחות: ' + checkinsErr.message, 'error')
+    document.getElementById('attendanceEmpty').classList.remove('hidden')
+    document.getElementById('attendanceBody').innerHTML = ''
+    return
+  }
+
+  const allCheckins = checkins || []
+
+  // "משמרת שנערכה" = צ'ק-אין שהושלם (יש לו גם שעת יציאה), בכל סטטוס אישור
+  const completedCheckins = allCheckins.filter(c => c.check_out_at)
+
+  const checkinsPerStudent = {}
+  completedCheckins.forEach(c => {
+    if (!checkinsPerStudent[c.student_id]) checkinsPerStudent[c.student_id] = []
+    checkinsPerStudent[c.student_id].push(c)
   })
 
-  const attendedLessonsPerStudent = {}
-  allPointLogs
-    .filter(l => l.reason === 'attendance' || l.reason === 'approved' || l.reason === 'bonus')
-    .forEach(l => {
-      if (!attendedLessonsPerStudent[l.student_id]) attendedLessonsPerStudent[l.student_id] = new Set()
-      attendedLessonsPerStudent[l.student_id].add(l.lesson_id)
-    })
-
-  function pctFor(studentId, lessonIds) {
-    if (!lessonIds || lessonIds.length === 0) return null
-    const attendedSet = attendedLessonsPerStudent[studentId] || new Set()
-    const attended = lessonIds.filter(id => attendedSet.has(id)).length
-    return Math.round((attended / lessonIds.length) * 100)
+  function statsFor(list) {
+    if (!list || list.length === 0) return null
+    const total = list.length
+    const approved = list.filter(c => c.status === 'אושר').length
+    return Math.round((approved / total) * 100)
   }
 
   const rows = allStudents.map(s => {
-    const totalLessons = lessonsPerClass[s.class_name] || 0
-    const attended = attendedLessonsPerStudent[s.id] ? attendedLessonsPerStudent[s.id].size : 0
+    const studentCheckins = checkinsPerStudent[s.id] || []
+    const totalLessons = studentCheckins.length
+    const attended = studentCheckins.filter(c => c.status === 'אושר').length
     const pct = totalLessons > 0 ? Math.round((attended / totalLessons) * 100) : null
 
-    const recentPct = pctFor(s.id, recentLessonsPerClass[s.class_name])
-    const previousPct = pctFor(s.id, previousLessonsPerClass[s.class_name])
+    const recentCheckins = studentCheckins.filter(c => new Date(c.check_in_at).getTime() >= recentStart)
+    const previousCheckins = studentCheckins.filter(c => {
+      const t = new Date(c.check_in_at).getTime()
+      return t >= previousStart && t < recentStart
+    })
+    const recentPct = statsFor(recentCheckins)
+    const previousPct = statsFor(previousCheckins)
     const decliningTrend = recentPct !== null && previousPct !== null &&
       previousPct >= 50 && (previousPct - recentPct) >= TREND_DROP_THRESHOLD
 
-    return { student: s, totalLessons, attended, pct, recentPct, previousPct, decliningTrend }
+    const sortedByCheckIn = [...studentCheckins].sort((a, b) => new Date(b.check_in_at) - new Date(a.check_in_at))
+    const lastCheckin = sortedByCheckIn[0] || null
+
+    return { student: s, totalLessons, attended, pct, recentPct, previousPct, decliningTrend, lastCheckin }
   })
   .filter(r => r.totalLessons > 0)
   .sort((a, b) => a.pct - b.pct)
@@ -509,6 +520,8 @@ function renderAttendanceReport() {
     return `<tr class="${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
+      <td>${fmtTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
+      <td>${fmtTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
       <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
@@ -531,7 +544,7 @@ async function promptParentPhone(studentId, studentName) {
   const student = allStudents.find(s => s.id === studentId)
   if (student) student.parent_phone = phone
   showToast('הטלפון נשמר', 'success')
-  renderAttendanceReport()
+  await renderAttendanceReport()
 }
 
 function renderTeacherActivity() {
@@ -759,6 +772,7 @@ async function approveCheckinRow(id) {
   if (error) { showToast('שגיאה באישור', 'error'); return }
   showToast('אושר! 3 נקודות ניתנו ✅', 'success')
   await loadCheckinApprovals()
+  await renderAttendanceReport()
 }
 
 async function rejectCheckinRow(id) {
@@ -766,6 +780,7 @@ async function rejectCheckinRow(id) {
   if (error) { showToast('שגיאה בדחייה', 'error'); return }
   showToast('הצ\'ק-אין נדחה', 'success')
   await loadCheckinApprovals()
+  await renderAttendanceReport()
 }
 
 function escapeHtml(str) {
@@ -846,7 +861,7 @@ async function loadDashboard() {
     allPointLogs = []
   }
 
-  renderAttendanceReport()
+  await renderAttendanceReport()
   renderTeacherActivity()
   await loadTasks()
   await loadCheckinApprovals()
