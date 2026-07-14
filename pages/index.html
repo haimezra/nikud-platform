@@ -1548,53 +1548,53 @@ async function submitQuickSignup(e) {
     : 'המשך לתשלום ←'
 
   try {
-    // שלב 1: הרשמה/התחברות קודם - כך כישלון לא משאיר עסק "יתום"
+    // שלב 1: נסה להתחבר קודם - למקרה שזה ניסיון חוזר עם חשבון קיים
     let userId = null
-    const { data: authData, error: authErr } = await qsClient.auth.signUp({ email, password })
-    if (authErr) {
-      if ((authErr.message || '').toLowerCase().includes('already')) {
-        const { data: signInData, error: signInErr } = await qsClient.auth.signInWithPassword({ email, password })
-        if (signInErr) throw new Error('האימייל כבר רשום - נסה סיסמה נכונה או כתובת אחרת')
-        userId = signInData.user.id
-      } else {
-        throw authErr
-      }
+    let schoolId = null
+    let isNewSignup = false
+
+    const { data: signInData, error: signInErr } = await qsClient.auth.signInWithPassword({ email, password })
+    if (!signInErr) {
+      userId = signInData.user.id
+      const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
+      schoolId = existingProfile ? existingProfile.school_id : null
     } else {
-      userId = authData.user.id
+      isNewSignup = true
     }
 
-    // שלב 2: אם כבר יש פרופיל ועסק (ניסיון חוזר)
-    const { data: existingProfile } = await qsClient.from('users').select('school_id').eq('id', userId).maybeSingle()
-    let schoolId = existingProfile ? existingProfile.school_id : null
-
-    if (role === 'principal') {
-      // בעל עסק: יצירת עסק חדש + פרופיל מנהל (כמו קודם)
-      if (!schoolId) {
+    if (isNewSignup) {
+      // שלב 2: קובעים/יוצרים את בית העסק *לפני* ההרשמה, כדי להעביר הכל
+      // כ-metadata ל-signUp. פרופיל המשתמש ייווצר אוטומטית ע"י טריגר בשרת
+      // (handle_new_user) - עובד גם לפני אימות אימייל, בלי תלות ב-RLS/session.
+      if (role === 'principal') {
         const schoolName = document.getElementById('qsSchoolName').value
         const { data: school, error: schoolErr } = await qsClient
           .from('schools').insert({ name: schoolName, plan: 'trial' }).select().single()
         if (schoolErr) throw schoolErr
         schoolId = school.id
-
-        const { error: profileErr } = await qsClient.from('users').insert({
-          id: userId, name, email, role: 'principal', school_id: schoolId, points: 0
-        })
-        if (profileErr) throw profileErr
-      }
-    } else {
-      // עובד / מנהל צוות: מצטרפים לעסק קיים לפי קוד הצטרפות
-      if (!schoolId) {
+      } else {
         const inviteCode = document.getElementById('qsInviteCode').value.trim().toUpperCase()
         const { data: school, error: findErr } = await qsClient
           .from('schools').select('id').eq('invite_code', inviteCode).single()
         if (findErr || !school) throw new Error('קוד ההצטרפות לא נמצא. ודא/י שהקוד הוקלד נכון, כמו שקיבלת מהעסק שלך')
         schoolId = school.id
-
-        const { error: profileErr } = await qsClient.from('users').insert({
-          id: userId, name, email, role, school_id: schoolId, points: 0
-        })
-        if (profileErr) throw profileErr
       }
+
+      const { data: authData, error: authErr } = await qsClient.auth.signUp({
+        email, password,
+        options: { data: { name, role, school_id: schoolId } }
+      })
+      if (authErr) throw authErr
+      userId = authData.user.id
+    }
+
+    if (!schoolId) throw new Error('לא נמצא עסק משויך לחשבון. פנה/י לתמיכה.')
+
+    // בדיקת תוקף ניסיון: אם בית העסק בתקופת ניסיון שפג תוקפה - חוסמים כניסה
+    const { data: schoolInfo } = await qsClient.from('schools').select('plan, plan_expires_at').eq('id', schoolId).single()
+    if (schoolInfo && schoolInfo.plan === 'trial' && schoolInfo.plan_expires_at && new Date(schoolInfo.plan_expires_at) < new Date()) {
+      await qsClient.auth.signOut()
+      throw new Error('תקופת הניסיון החינמי (15 יום) הסתיימה. לחידוש הגישה, אנא פנה/י לתמיכה: nikud@outlook.co.il')
     }
 
     // מסלול חינם: כל תפקיד עובר ישר לדשבורד המתאים לו. מסלול תשלום: עובר ל-Hyp (רק לבעלי עסק).
