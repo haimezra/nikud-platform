@@ -49,6 +49,25 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 .banner-above-console{display:block;width:100%;height:auto;border-radius:var(--r);box-shadow:var(--sh-2);margin-bottom:16px}
+.app-join{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--glass-border);
+  border-radius:var(--r);padding:16px 20px;margin-bottom:16px;box-shadow:var(--sh-1),var(--hl);
+}
+.app-join-txt h3{font-family:'Rubik',sans-serif;font-size:1.02rem;font-weight:700;color:var(--ink);margin-bottom:4px}
+.app-join-txt p{font-size:0.8rem;color:var(--ink-3);line-height:1.5;max-width:340px}
+.app-join-btn{
+  display:inline-flex;align-items:center;gap:8px;flex-shrink:0;
+  padding:11px 22px;border-radius:var(--pill);cursor:pointer;text-decoration:none;
+  background:linear-gradient(110deg,var(--brand-2) 0%,var(--brand) 30%,var(--violet) 55%,var(--brand) 80%,var(--brand-2) 100%);
+  background-size:300% 100%;color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.86rem;
+  box-shadow:var(--sh-brand),var(--hl);
+  animation:btnFlow 5s ease-in-out infinite;
+  transition:transform 0.25s var(--ease),box-shadow 0.25s;
+}
+.app-join-btn svg{width:17px;height:17px}
+.app-join-btn:hover{transform:translateY(-2px)}
 html{scroll-behavior:smooth}
 body{
   background:var(--paper);color:var(--ink);
@@ -879,6 +898,16 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
     <div class="console-wrap">
       <div class="chip chip-1"><span class="star">★</span> נועה קיבלה +25 נקודות</div>
       <div class="chip chip-2">הנוכחות עלתה ב-16%<small>ב-30 הימים האחרונים</small></div>
+      <div class="app-join">
+        <div class="app-join-txt">
+          <h3>הצטרפו לאפליקציה שלנו</h3>
+          <p>נהלו הכל מהנייד</p>
+        </div>
+        <a href="login.html" class="app-join-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          הורדת האפליקציה
+        </a>
+      </div>
       <img class="banner-above-console" src="images/nikud-banner.jpg" alt="ניקוד – פתרונות נוכחות לעסקים">
       <div class="console" role="img" aria-label="תצוגת דשבורד המערכת">
         <div class="console-top">
