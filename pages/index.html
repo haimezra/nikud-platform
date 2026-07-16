@@ -625,6 +625,60 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .foot-col a{display:block;color:var(--ink-2);text-decoration:none;font-size:0.87rem;margin-bottom:11px;transition:color 0.2s}
 .foot-col a:hover{color:var(--brand)}
 .foot-copy{text-align:center;padding-top:28px;color:var(--ink-3);font-size:0.8rem;line-height:1.9}
+.foot-support-note{font-size:0.78rem;color:var(--ink-3);margin:2px 0 10px;line-height:1.5}
+
+/* ============ CONTACT FORM ============ */
+.contact-card{
+  max-width:640px;margin:44px auto 0;
+  background:var(--glass);backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  border:1px solid var(--glass-border);border-radius:var(--r-lg);
+  box-shadow:var(--sh-2),var(--hl);padding:38px 34px;position:relative;overflow:hidden;
+}
+.contact-card::after{
+  content:'';position:absolute;top:0;right:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--brand),var(--violet));
+}
+.contact-head{display:flex;align-items:center;gap:11px;margin-bottom:8px}
+.contact-head .ic{
+  width:42px;height:42px;border-radius:13px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(29,70,216,0.12),rgba(90,49,222,0.12));
+  border:1px solid rgba(29,70,216,0.14);box-shadow:var(--hl);
+}
+.contact-head .ic svg{width:20px;height:20px;stroke:var(--brand);fill:none;stroke-width:2}
+.contact-head h3{font-family:'Rubik',sans-serif;font-size:1.24rem;font-weight:800;letter-spacing:-0.4px}
+.contact-card>p{font-size:0.92rem;color:var(--ink-2);line-height:1.7;margin-bottom:24px}
+.contact-field{margin-bottom:14px}
+.contact-field label{display:block;font-size:0.82rem;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+.contact-field input,.contact-field textarea{
+  width:100%;padding:14px 15px;border-radius:12px;
+  border:1px solid var(--line);background:#fff;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.94rem;transition:border-color 0.2s,box-shadow 0.2s;
+}
+.contact-field textarea{resize:vertical;min-height:96px;line-height:1.6}
+.contact-field input:focus,.contact-field textarea:focus{
+  outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(29,70,216,0.12)
+}
+.contact-submit{
+  padding:12px 34px;border:none;border-radius:12px;cursor:pointer;margin-top:6px;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:linear-gradient(135deg,#25D366,#1EA952);color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.94rem;
+  box-shadow:0 12px 30px rgba(30,169,82,0.32),var(--hl);
+  transition:transform 0.25s var(--ease),box-shadow 0.25s;
+}
+.contact-submit svg{width:19px;height:19px;fill:#fff;flex-shrink:0}
+.contact-submit:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(30,169,82,0.42)}
+.contact-ok{
+  display:none;margin-top:16px;padding:14px 16px;border-radius:12px;
+  background:rgba(11,138,99,0.1);border:1px solid rgba(11,138,99,0.3);
+  color:#0B8A63;font-size:0.9rem;font-weight:600;line-height:1.6;text-align:center;
+}
+.contact-hours{font-size:0.78rem;color:var(--ink-3);text-align:center;margin-top:16px;line-height:1.6}
+@media(max-width:600px){
+  .contact-card{padding:26px 20px;margin-top:32px}
+  .contact-head h3{font-size:1.1rem}
+}
 
 /* ============ REVEAL ============ */
 .rv{opacity:0;transform:translateY(30px);transition:opacity 0.75s ease,transform 0.75s var(--ease)}
@@ -1282,6 +1336,46 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   </div>
 </section>
 
+<!-- CONTACT / QUICK LEAD FORM -->
+<section class="section" style="padding-top:0" id="contact">
+  <div class="inner">
+    <div class="rv center">
+      <h2 class="sec-title">רוצים לשמוע עוד? השאירו פרטים</h2>
+      <p class="sec-sub">מלאו את הטופס ונחזור אליכם בהקדם. הפנייה נשלחת ישירות לוואטסאפ שלנו למענה מהיר.</p>
+    </div>
+    <div class="contact-card rv">
+      <div class="contact-head">
+        <div class="ic">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4z"/><path d="M8 9h8M8 12h5"/></svg>
+        </div>
+        <h3>פנייה מהירה</h3>
+      </div>
+      <p>השאירו שם, טלפון וכמה מילים, ונציג יחזור אליכם בהקדם.</p>
+      <form onsubmit="submitContactForm(event)">
+        <div class="contact-field">
+          <label for="cfName">שם מלא</label>
+          <input id="cfName" placeholder="איך קוראים לך?" required>
+        </div>
+        <div class="contact-field">
+          <label for="cfPhone">טלפון</label>
+          <input id="cfPhone" type="tel" placeholder="מספר להחזרת שיחה" required>
+        </div>
+        <div class="contact-field">
+          <label for="cfMsg">איך נוכל לעזור?</label>
+          <textarea id="cfMsg" placeholder="ספרו לנו בקצרה מה אתם צריכים"></textarea>
+        </div>
+        <button type="submit" class="contact-submit">
+          שלח
+        </button>
+      </form>
+      <div class="contact-ok" id="cfOk">
+        תודה! נפתח וואטסאפ עם הפרטים שמילאתם, לחצו שם על "שלח" כדי לסיים. נחזור אליכם בהקדם ✓
+      </div>
+      <p class="contact-hours">שירות הלקוחות פתוח בימים א׳–ה׳, 10:00–17:00</p>
+    </div>
+  </div>
+</section>
+
 <!-- FOOTER -->
 <footer class="footer">
   <div class="foot-inner">
@@ -1309,6 +1403,8 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           <a href="https://wa.me/972543771767" target="_blank">וואטסאפ - מענה מהיר</a>
           <a href="mailto:nikud@outlook.co.il">nikud@outlook.co.il</a>
           <a href="https://wa.me/972543771767" target="_blank" class="btn btn-ghost" style="margin-top:6px;padding:9px 18px;font-size:0.82rem">💬 וואטסאפ</a>
+          <p class="foot-support-note">שירות טכני פתוח בימים א׳–ד׳, 10:00–15:00</p>
+          <a href="https://wa.me/972543771767" target="_blank" class="btn btn-ghost" style="margin-top:2px;padding:9px 18px;font-size:0.82rem">🛠️ וואטסאפ שירות טכני</a>
         </div>
       </div>
     </div>
@@ -1448,6 +1544,26 @@ if (!window.__nikudToastStarted) {
   window.__nikudToastStarted = true
   setTimeout(showToast, 2500)
   setInterval(showToast, 7000)
+}
+
+/* ---------- Contact / quick lead form ---------- */
+function submitContactForm(e) {
+  e.preventDefault()
+  const name = document.getElementById('cfName').value.trim()
+  const phone = document.getElementById('cfPhone').value.trim()
+  const msg = document.getElementById('cfMsg').value.trim()
+
+  let text = 'פנייה חדשה מאתר ניקוד ★\n\n'
+  text += 'שם: ' + name + '\n'
+  text += 'טלפון: ' + phone + '\n'
+  if (msg) text += 'הודעה: ' + msg + '\n'
+  text += '\n(נא לחזור אליי בהקדם)'
+
+  const url = 'https://wa.me/972543771767?text=' + encodeURIComponent(text)
+  window.open(url, '_blank')
+
+  document.getElementById('cfOk').style.display = 'block'
+  e.target.reset()
 }
 
 /* ---------- Quick signup + payment ---------- */
