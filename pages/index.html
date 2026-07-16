@@ -214,14 +214,15 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .hero-badges-img{display:block;width:100%;max-width:150px;height:auto;margin:22px auto 0;filter:drop-shadow(0 6px 16px rgba(8,20,80,0.12))}
 @media(max-width:1000px){.hero-badges-img{margin-left:auto;margin-right:auto}}
 @media(max-width:600px){.hero-badges-img{max-width:130px;margin-top:18px}}
-.hero-badges-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:24px;padding:16px 20px;border-radius:18px;background:var(--glass-2);border:1px solid var(--line-2);box-shadow:var(--sh-1),var(--hl)}
+.hero-badges-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:24px}
 .hero-badges-icon{width:60px;height:auto;flex-shrink:0;filter:drop-shadow(0 6px 16px rgba(8,20,80,0.16))}
 .hero-badges-text{display:flex;flex-direction:column;gap:7px;text-align:right}
-.hero-badges-text strong{font-family:'Rubik',sans-serif;font-size:1.02rem;font-weight:800;color:var(--brand-2);letter-spacing:-0.2px}
+.hero-badges-text strong{font-family:'Rubik',sans-serif;font-size:1.02rem;font-weight:800;color:var(--brand-2);letter-spacing:-0.2px;display:flex;align-items:center;gap:7px;justify-content:flex-end}
+.hero-badges-text strong::before{content:'✓';color:var(--green);font-weight:800;font-size:0.95rem}
 .hero-badges-list{list-style:none;display:flex;flex-direction:column;gap:5px}
 .hero-badges-list li{font-size:0.88rem;color:var(--ink-2);font-weight:600;display:flex;align-items:center;gap:7px;justify-content:flex-end}
-.hero-badges-list li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(7,144,104,0.15);flex-shrink:0}
-@media(max-width:1000px){.hero-badges-row{align-items:center;align-self:center}.hero-badges-text{text-align:center}.hero-badges-list li{justify-content:center}}
+.hero-badges-list li::before{content:'✓';color:var(--green);font-weight:800;font-size:0.9rem;flex-shrink:0}
+@media(max-width:1000px){.hero-badges-row{align-items:center;align-self:center}.hero-badges-text{text-align:center}.hero-badges-list li,.hero-badges-text strong{justify-content:center}}
 @media(max-width:600px){.hero-badges-icon{width:52px}.hero-badges-text strong{font-size:0.96rem}.hero-badges-list li{font-size:0.84rem}}
 .trust-list{flex-direction:column;align-items:flex-start;gap:13px;font-size:0.92rem}
 .trust-list span{justify-content:flex-start}
