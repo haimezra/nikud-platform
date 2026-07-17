@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>דשבורד מנהל העסק – NIKUD★</title>
+<title>דשבורד מנהל העסק – ניקוד★</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -48,8 +48,7 @@ h1,h2,h3,h4{font-family:'Rubik',sans-serif}
   border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
   position:sticky;top:16px;z-index:10;
 }
-.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--ink);letter-spacing:-0.4px}
-.logo span{color:var(--gold)}
+.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--brand);letter-spacing:-0.4px}
 .topbar-right{display:flex;align-items:center;gap:14px}
 .school-pill{
   background:var(--glass-2);border:1px solid var(--line);border-radius:var(--pill);
@@ -185,7 +184,7 @@ tr.clickable{cursor:pointer}
 <body>
 
 <div class="topbar">
-  <div class="logo">ניקוד<span>★</span></div>
+  <div class="logo">nikud</div>
   <div class="topbar-right">
     <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
     <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
@@ -253,7 +252,7 @@ tr.clickable{cursor:pointer}
 
     <div class="panel hidden" id="checkinApprovalPanel">
       <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
-      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות תמיד 3, ללא אפשרות שינוי.</p>
+      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
       <table>
         <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
         <tbody id="checkinApprovalBody"></tbody>
