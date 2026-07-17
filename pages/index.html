@@ -233,14 +233,12 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 
 .phone-cta-wrap{text-align:left;margin-bottom:48px;position:relative;top:-48px}
 @media(min-width:1001px){
-  .phone-cta-wrap{display:flex;justify-content:flex-end;top:-28px;margin-left:0;margin-right:auto}
+  .phone-cta-wrap{display:flex;justify-content:flex-start;top:-28px;margin-right:0;margin-left:auto}
 }
-/* green-invoice badge sits right next to the phone CTA */
-.phone-cta-wrap{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
-@media(min-width:1001px){.phone-cta-wrap{justify-content:flex-end}}
-.green-invoice-badge{display:inline-flex;flex-direction:column;align-items:center;gap:3px}
-.green-invoice-badge img{width:34px;height:auto;display:block;filter:drop-shadow(0 3px 8px rgba(8,20,80,0.12))}
-.green-invoice-badge span{font-family:'Heebo',sans-serif;font-size:0.62rem;font-weight:600;color:var(--ink-3);white-space:nowrap;text-align:center;line-height:1.2}
+/* green-invoice badge sits beside the security badges block */
+.green-invoice-badge{display:inline-flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.green-invoice-badge img{width:48px;height:auto;display:block;filter:drop-shadow(0 4px 10px rgba(8,20,80,0.14))}
+.green-invoice-badge span{font-family:'Heebo',sans-serif;font-size:0.72rem;font-weight:600;color:var(--ink-2);white-space:nowrap;text-align:center;line-height:1.2}
 .hero-inner{width:100%}
 .banner-above-console{margin-top:-80px;margin-bottom:120px}
 @media(min-width:1001px){
@@ -899,10 +897,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
           חייגו עכשיו 029999119
         </a>
-        <div class="green-invoice-badge">
-          <img src="images/nikud-green-invoice.jpg" alt="חשבונית ירוקה">
-          <span>משתמשים בחשבונית ירוקה</span>
-        </div>
       </div>
       <img src="images/logo.png" alt="לוגו ניקוד" class="hero-logo">
       <div class="eyebrow">FOR MANAGERS WHO WANT RESULTS</div>
@@ -921,6 +915,10 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
             <li>ללא כרטיס אשראי</li>
             <li>הקמה תוך שעה</li>
           </ul>
+        </div>
+        <div class="green-invoice-badge">
+          <img src="images/nikud-green-invoice.jpg" alt="חשבונית ירוקה">
+          <span>משתמשים בחשבונית ירוקה</span>
         </div>
       </div>
     </div>
