@@ -348,7 +348,7 @@ tr.clickable{cursor:pointer}
   <div class="modal">
     <h3>משימה חדשה</h3>
     <div class="field">
-      <label>עובד</label>
+      <label>מנהל</label>
       <select id="taskStudentSelect"></select>
     </div>
     <div class="field">
@@ -669,8 +669,8 @@ function taskStatusLabel(status) {
 
 function openTaskModal() {
   const select = document.getElementById('taskStudentSelect')
-  select.innerHTML = allStudents.map(s => `<option value="${s.id}">${escapeHtml(s.name)}${s.class_name ? ' - ' + escapeHtml(s.class_name) : ''}</option>`).join('')
-  if (allStudents.length === 0) select.innerHTML = '<option value="">אין עדיין עובדים רשומים</option>'
+  select.innerHTML = allTeachers.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('')
+  if (allTeachers.length === 0) select.innerHTML = '<option value="">אין עדיין מנהלים רשומים</option>'
   document.getElementById('taskTitleInput').value = ''
   document.getElementById('taskDescInput').value = ''
   document.getElementById('taskModalOverlay').classList.add('show')
@@ -681,18 +681,19 @@ function closeTaskModal() {
 }
 
 async function createTask() {
-  const studentId = document.getElementById('taskStudentSelect').value
+  const managerId = document.getElementById('taskStudentSelect').value
   const title = document.getElementById('taskTitleInput').value.trim()
   const description = document.getElementById('taskDescInput').value.trim()
 
-  if (!studentId) { showToast('נא לבחור עובד', 'error'); return }
+  if (!managerId) { showToast('נא לבחור מנהל', 'error'); return }
   if (!title) { showToast('נא למלא כותרת למשימה', 'error'); return }
 
   try {
+    // student_id הוא שם השדה במסד, אך כאן הוא מכיל את מזהה המנהל (role: 'teacher')
     const { data, error } = await supabaseClient.from('tasks').insert({
       school_id: currentSchoolId,
       created_by: currentUser.id,
-      student_id: studentId,
+      student_id: managerId,
       title, description: description || null,
       points: 3, status: 'pending'
     }).select().single()
