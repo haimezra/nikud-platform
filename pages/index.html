@@ -219,10 +219,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 /* ---- Security card (redesigned) ---- */
 .sec-card{
   width:100%;max-width:360px;
-  background:var(--glass);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
-  border:1px solid var(--glass-border);border-radius:var(--r);
-  box-shadow:var(--sh-1),var(--hl);
-  padding:20px 22px;text-align:right;
+  padding:0;text-align:right;
 }
 .sec-card-head{display:flex;align-items:center;gap:11px;margin-bottom:16px}
 .sec-card-icon{width:42px;height:auto;flex-shrink:0;filter:drop-shadow(0 5px 12px rgba(8,20,80,0.16))}
@@ -231,8 +228,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .sec-chip{
   display:inline-flex;align-items:center;gap:6px;
   font-size:0.8rem;font-weight:600;color:var(--ink-2);
-  background:rgba(7,144,104,0.08);border:1px solid rgba(7,144,104,0.18);
-  padding:6px 12px;border-radius:var(--pill);white-space:nowrap;
+  white-space:nowrap;
 }
 .sec-chip::before{content:'✓';color:var(--green);font-weight:800;font-size:0.82rem}
 .sec-card-foot{
@@ -243,7 +239,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .sec-card-foot span{font-size:0.86rem;font-weight:500;color:var(--ink-2);line-height:1.4}
 .sec-card-foot span b{color:var(--green);font-weight:700}
 @media(max-width:600px){
-  .sec-card{max-width:none;padding:18px 18px}
+  .sec-card{max-width:none;padding:0}
   .sec-card-title{font-size:1rem}
   .sec-chip{font-size:0.78rem}
 }
@@ -937,7 +933,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           </div>
           <div class="sec-card-foot">
             <img src="images/nikud-green-invoice.jpg" alt="חשבונית ירוקה" class="sec-invoice-img">
-            <span>משתמשים ב<b>חשבונית ירוקה</b></span>
+            <span><b>חשבונית ירוקה</b></span>
           </div>
         </div>
       </div>
