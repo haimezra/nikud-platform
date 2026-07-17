@@ -1,0 +1,30 @@
+{
+  "name": "nikud-platform",
+  "version": "1.0.0",
+  "description": "Smart attendance and performance management platform",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haimezra/nikud-platform.git"
+  },
+  "keywords": [
+    "attendance",
+    "nikud",
+    "analytics"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haimezra/nikud-platform/issues"
+  },
+  "homepage": "https://github.com/haimezra/nikud-platform#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
