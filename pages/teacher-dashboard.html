@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מסך מנהל צוות – ניקוד★</title>
+<title>מסך מנהל צוות - NIKUD</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -668,20 +668,38 @@ async function approveTask(taskId) {
   if (!confirm(`לאשר את המשימה "${task.title}" ולהעניק ${task.points} נקודות?`)) return
 
   try {
-    // טריגר במסד הנתונים מזכה אוטומטית בנקודות ברגע שהסטטוס עובר ל'approved'.
+    const student = allStudents.find(s => s.id === task.student_id)
+    const pointsBefore = student ? (student.points || 0) : 0
+
+    // טריגר במסד הנתונים מזכה אוטומטית בנקודות ברגע שהסטטוס עובר ל'approved',
+    // עד למכסה של 3 נקודות ממשימות לכל עובד ביום (מכסה חוצת-משימות).
     const { error: taskErr } = await supabaseClient.from('tasks')
       .update({ status: 'approved' })
       .eq('id', taskId)
     if (taskErr) throw taskErr
 
     task.status = 'approved'
-    const student = allStudents.find(s => s.id === task.student_id)
-    if (student) student.points = (student.points || 0) + task.points
-
     renderTasks()
+
+    // בודקים כמה נקודות באמת הועברו (יכול להיות פחות מ-task.points אם המכסה היומית נוצלה)
+    let pointsAwarded = task.points
+    const { data: freshStudent } = await supabaseClient
+      .from('users').select('points').eq('id', task.student_id).single()
+    if (freshStudent) {
+      pointsAwarded = freshStudent.points - pointsBefore
+      if (student) student.points = freshStudent.points
+    } else if (student) {
+      student.points = pointsBefore + task.points
+    }
+
     renderStudentsTable()
     updateHeaderStats()
-    showToast(`✅ אושר! ${task.points} נקודות הועברו`, 'success')
+
+    if (pointsAwarded > 0) {
+      showToast(`✅ אושר! ${pointsAwarded} נקודות הועברו`, 'success')
+    } else {
+      showToast(`המשימה אושרה, אך העובד כבר קיבל 3 נקודות היום ולכן לא הועברו נקודות נוספות`, 'success')
+    }
   } catch (err) {
     showToast(err.message || 'שגיאה באישור המשימה', 'error')
   }
