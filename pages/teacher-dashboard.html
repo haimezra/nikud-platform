@@ -375,7 +375,7 @@ tr.clickable{cursor:pointer}
           </div>
           <div class="stat-card accent clickable-stat" id="trendsCard" onclick="openTrendsModal()">
             <div class="stat-num" id="statTrends">0</div>
-            <div class="stat-label">📈 מגמות – לחצו לצפייה באחוזי נוכחות של כל העובדים</div>
+            <div class="stat-label">מגמות</div>
           </div>
         </div>
 
@@ -389,7 +389,7 @@ tr.clickable{cursor:pointer}
               <h3>ממתין לטיפול שלך</h3>
             </div>
             <div style="padding:6px 22px 16px" id="overviewPendingList">
-              <div class="empty-state">אין כרגע פעולות הממתינות לטיפול 🎉</div>
+              <div class="empty-state">אין כרגע פעולות הממתינות לטיפול</div>
             </div>
           </div>
           <div class="card" style="margin-bottom:0">
@@ -730,7 +730,7 @@ function renderOverviewSummary() {
   if (!list) return
   list.innerHTML = items.length > 0
     ? items.join('')
-    : '<div class="empty-state">אין כרגע פעולות הממתינות לטיפול 🎉</div>'
+    : '<div class="empty-state">אין כרגע פעולות הממתינות לטיפול</div>'
 }
 
 // ---- עובדים ----
