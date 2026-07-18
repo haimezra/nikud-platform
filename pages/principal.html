@@ -281,11 +281,11 @@ tr.clickable{cursor:pointer}
 
     <div class="panel hidden" id="tasksPanel">
       <div class="panel-head">
-        <h3>משימות לעובדים</h3>
+        <h3>משימות למנהלי צוותים</h3>
         <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
       </div>
       <table>
-        <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+        <thead><tr><th>מנהל</th><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
         <tbody id="tasksBody"></tbody>
       </table>
       <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
@@ -358,10 +358,7 @@ tr.clickable{cursor:pointer}
       <label>תיאור (אופציונלי)</label>
       <textarea id="taskDescInput" placeholder="פרטים נוספים על המשימה"></textarea>
     </div>
-    <div class="field">
-      <label>נקודות בעת אישור</label>
-      <div class="fixed-value">3 נקודות (קבוע לכל המשימות)</div>
-    </div>
+    <p style="color:var(--ink-3);font-size:0.8rem;margin:-4px 0 4px">ℹ️ משימות למנהלי צוותים אינן מזכות בנקודות - הנקודות ניתנות לעובדים בלבד (על נוכחות ומשימות שהם עצמם מקבלים).</p>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeTaskModal()">ביטול</button>
       <button class="btn-confirm" onclick="createTask()">שלח משימה</button>
@@ -689,12 +686,13 @@ async function createTask() {
 
   try {
     // student_id הוא שם השדה במסד, אך כאן הוא מכיל את מזהה המנהל (role: 'teacher')
+    // points קבוע ל-0: מנהלי צוותים לא מקבלים נקודות ממנהל העסק, רק העובדים מקבלים נקודות.
     const { data, error } = await supabaseClient.from('tasks').insert({
       school_id: currentSchoolId,
       created_by: currentUser.id,
       student_id: managerId,
       title, description: description || null,
-      points: 3, status: 'pending'
+      points: 0, status: 'pending'
     }).select().single()
     if (error) throw error
 
@@ -710,25 +708,19 @@ async function createTask() {
 async function approveTask(taskId) {
   const task = allTasks.find(t => t.id === taskId)
   if (!task) return
-  if (!confirm(`לאשר את המשימה "${task.title}" ולהעניק ${task.points} נקודות?`)) return
+  if (!confirm(`לאשר את המשימה "${task.title}"? (משימות מנהלים אינן מזכות בנקודות)`)) return
 
   try {
-    // Just flip the status - a database trigger automatically awards the points
-    // (inserts into point_logs and updates the employee's balance) the moment
-    // status moves from 'submitted' to 'approved'. Don't award points here too,
-    // or the employee would be credited twice.
+    // מנהלי צוותים לא מקבלים נקודות ממנהל העסק - רק מסמנים את המשימה כמאושרת.
     const { error: taskErr } = await supabaseClient.from('tasks')
       .update({ status: 'approved' })
       .eq('id', taskId)
     if (taskErr) throw taskErr
 
     task.status = 'approved'
-    const student = allStudents.find(s => s.id === task.student_id)
-    if (student) student.points = (student.points || 0) + task.points
 
     renderTasks()
-    document.getElementById('studentsBody').innerHTML = allStudents.map(s => renderRow(s, 'student')).join('')
-    showToast(`✅ אושר! ${task.points} נקודות הועברו`, 'success')
+    showToast('✅ המשימה אושרה', 'success')
   } catch (err) {
     showToast(err.message || 'שגיאה באישור המשימה', 'error')
   }
@@ -756,7 +748,8 @@ async function rejectTask(taskId) {
 function renderTasks() {
   document.getElementById('tasksEmpty').classList.toggle('hidden', allTasks.length > 0)
   document.getElementById('tasksBody').innerHTML = allTasks.map(t => {
-    const student = allStudents.find(s => s.id === t.student_id)
+    // student_id בטבלת tasks מכיל את מזהה המנהל (role: 'teacher'), לא עובד רגיל
+    const student = allTeachers.find(s => s.id === t.student_id)
     const actions = t.status === 'submitted'
       ? `<div class="task-actions">
            <button class="task-act-btn task-act-approve" onclick="approveTask('${t.id}')">✅ אשר</button>
@@ -768,7 +761,6 @@ function renderTasks() {
     return `<tr>
       <td>${escapeHtml(student ? student.name : '—')}</td>
       <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.76rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td class="points-tag">${t.points}</td>
       <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
       <td>${actions}</td>
     </tr>`
