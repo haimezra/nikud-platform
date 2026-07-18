@@ -518,8 +518,8 @@ tr.clickable{cursor:pointer}
         <div class="stat-label">נקודות כרגע</div>
       </div>
       <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalClass" style="font-size:1.4rem">—</div>
-        <div class="stat-label">צוות/מחלקה</div>
+        <div class="stat-num" id="studentModalAttendance" style="font-size:1.4rem">—</div>
+        <div class="stat-label">אחוז נוכחות</div>
       </div>
     </div>
     <h3 style="font-size:0.88rem;margin-bottom:10px">היסטוריית פעילות</h3>
@@ -724,7 +724,11 @@ function openStudentModal(studentId) {
 
   document.getElementById('studentModalName').textContent = student.name || 'עובד/ת'
   document.getElementById('studentModalPoints').textContent = student.points ?? 0
-  document.getElementById('studentModalClass').textContent = student.class_name || '—'
+
+  const studentCheckins = attendanceCheckinsPerStudent[studentId] || []
+  const attendedCount = studentCheckins.filter(c => c.status === 'אושר').length
+  const attendancePct = studentCheckins.length > 0 ? Math.round((attendedCount / studentCheckins.length) * 100) : null
+  document.getElementById('studentModalAttendance').textContent = attendancePct !== null ? attendancePct + '%' : '—'
 
   const logs = allPointLogs
     .filter(l => l.student_id === studentId)
