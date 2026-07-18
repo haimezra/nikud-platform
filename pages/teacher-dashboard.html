@@ -768,6 +768,13 @@ async function exportStudentAttendanceToExcel(studentId) {
   if (error) { showToast('שגיאה בטעינת נתוני העובד: ' + error.message, 'error'); return }
 
   const checkins = data || []
+
+  // אם אין לעובד אף רשומת נוכחות — לא מורידים קובץ ריק, אלא מודיעים למשתמש
+  if (checkins.length === 0) {
+    showToast(`ל${student.name || 'עובד זה'} אין עדיין רשומות נוכחות לייצוא`, 'error')
+    return
+  }
+
   const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
 
   const completed = checkins.filter(c => c.check_out_at)
@@ -1091,6 +1098,12 @@ async function exportToExcel() {
   if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
   const checkinRows = checkins || []
 
+  // אם אין בכלל נתונים לייצוא (לא נוכחות, לא עובדים, לא משימות) — לא מורידים קובץ ריק
+  if (checkinRows.length === 0 && allStudents.length === 0 && allTasks.length === 0) {
+    showToast('אין עדיין נתונים לייצוא', 'error')
+    return
+  }
+
   const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
 
   const attendanceSheet = checkinRows.map(c => {
@@ -1127,9 +1140,16 @@ async function exportToExcel() {
   })
 
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tasksSheet), 'משימות')
+  // כל גיליון נוצר רק אם יש בו לפחות שורה אחת — כדי שלא ייווצר קובץ עם גיליונות ריקים
+  if (attendanceSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
+  if (studentsSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
+  if (tasksSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tasksSheet), 'משימות')
+
+  // גיבוי: אם משום מה אף גיליון לא נוצר — לא מנסים לכתוב קובץ ריק (זה גם היה זורק שגיאה)
+  if (wb.SheetNames.length === 0) {
+    showToast('אין עדיין נתונים לייצוא', 'error')
+    return
+  }
 
   const businessName = document.getElementById('schoolNameLabel').textContent || 'עסק'
   const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
