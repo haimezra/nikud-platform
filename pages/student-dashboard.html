@@ -268,9 +268,6 @@ a:hover{color:var(--brand-2)}
       <div class="sidebar-section-label">תפריט</div>
       <nav class="sidebar-nav">
         <a class="nav-item active" href="#overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>לוח בקרה</a>
-        <a class="nav-item" href="#checkinCard"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>נוכחות</a>
-        <a class="nav-item" href="#tasksCard"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>משימות</a>
-        <a class="nav-item" href="#store"><svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="1.2"/><path d="M4 9l2-5h12l2 5"/></svg>חנות פרסים</a>
       </nav>
 
       <div class="sidebar-footer">
@@ -307,6 +304,38 @@ a:hover{color:var(--brand-2)}
         <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של החברה.</span>
       </div>
 
+      <div class="card hidden" id="checkinCard" style="margin-bottom:14px"></div>
+
+      <div class="card hidden" id="tasksCard" style="margin-bottom:14px">
+        <h3>המשימות שלי</h3>
+        <div id="tasksList"></div>
+      </div>
+
+      <div class="card" id="store" style="margin-bottom:14px">
+        <h3 style="text-transform:none;font-size:0.9rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
+        <div class="store-grid" id="storeGrid" style="margin-top:12px"></div>
+
+        <h3 style="margin-top:20px">איך צוברים נקודות</h3>
+        <div class="earn-list">
+          <div class="earn-item">
+            <div class="earn-badge">01</div>
+            <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">02</div>
+            <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">03</div>
+            <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">04</div>
+            <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
+          </div>
+        </div>
+      </div>
+
       <div class="stat-strip">
         <div class="stat-tile">
           <div class="label">יתרת נקודות</div>
@@ -329,13 +358,6 @@ a:hover{color:var(--brand-2)}
         </div>
       </div>
 
-      <div class="card hidden" id="checkinCard" style="margin-bottom:14px"></div>
-
-      <div class="card hidden" id="tasksCard" style="margin-bottom:14px">
-        <h3>המשימות שלי</h3>
-        <div id="tasksList"></div>
-      </div>
-
       <div class="grid-2">
         <div class="card">
           <h3>פעילות אחרונה</h3>
@@ -344,31 +366,6 @@ a:hover{color:var(--brand-2)}
         <div class="card">
           <h3>ליגת הצוות</h3>
           <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
-        </div>
-      </div>
-
-      <div class="card" id="store">
-        <h3 style="text-transform:none;font-size:0.9rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
-        <div class="store-grid" id="storeGrid" style="margin-top:12px"></div>
-
-        <h3 style="margin-top:20px">איך צוברים נקודות</h3>
-        <div class="earn-list">
-          <div class="earn-item">
-            <div class="earn-badge">01</div>
-            <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
-          </div>
-          <div class="earn-item">
-            <div class="earn-badge">02</div>
-            <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
-          </div>
-          <div class="earn-item">
-            <div class="earn-badge">03</div>
-            <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
-          </div>
-          <div class="earn-item">
-            <div class="earn-badge">04</div>
-            <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
-          </div>
         </div>
       </div>
     </main>
