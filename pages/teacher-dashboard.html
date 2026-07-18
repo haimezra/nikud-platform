@@ -558,35 +558,54 @@ function closeStudentModal() {
   document.getElementById('studentModalOverlay').classList.remove('show')
 }
 
-function openAttendanceDetailModal(studentId) {
+async function openAttendanceDetailModal(studentId) {
   const student = allStudents.find(s => s.id === studentId)
   if (!student) return
 
-  const checkins = (attendanceCheckinsPerStudent[studentId] || [])
-    .slice()
-    .sort((a, b) => new Date(b.check_in_at) - new Date(a.check_in_at))
-
   document.getElementById('attendanceDetailName').textContent = student.name || 'עובד/ת'
   document.getElementById('attendanceDetailClass').textContent = student.class_name || '—'
+  document.getElementById('attendanceDetailPct').textContent = '…'
+  document.getElementById('attendanceDetailBody').innerHTML = ''
+  document.getElementById('attendanceDetailEmpty').classList.add('hidden')
+  document.getElementById('attendanceDetailModalOverlay').classList.add('show')
 
-  const approved = checkins.filter(c => c.status === 'אושר').length
-  const pct = checkins.length > 0 ? Math.round((approved / checkins.length) * 100) : 0
-  document.getElementById('attendanceDetailPct').textContent = checkins.length > 0 ? pct + '%' : '—'
+  // שולפים ישירות מהמסד את כל רשומות הנוכחות של העובד — כך תמיד מוצגות
+  // גם שעת היציאה וגם משמרות שעדיין ממתינות לאישור, בלי להישען על מטמון חלקי.
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('school_id', currentSchoolId)
+    .eq('student_id', studentId)
+    .order('check_in_at', { ascending: false })
 
-  const statusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ נדחה', 'הושלם': '⏳ ממתין לאישור' }
+  if (error) {
+    showToast('שגיאה בטעינת נתוני העובד: ' + error.message, 'error')
+    document.getElementById('attendanceDetailPct').textContent = '—'
+    document.getElementById('attendanceDetailEmpty').classList.remove('hidden')
+    return
+  }
+
+  const checkins = data || []
+
+  // אחוז נוכחות = כמה משמרות שהסתיימו (יש להן צ'ק-אאוט) אושרו, מתוך כלל
+  // המשמרות שהסתיימו. משמרת שעדיין פתוחה (בלי יציאה) לא נספרת בחישוב.
+  const completed = checkins.filter(c => c.check_out_at)
+  const approved = completed.filter(c => c.status === 'אושר').length
+  const pct = completed.length > 0 ? Math.round((approved / completed.length) * 100) : null
+  document.getElementById('attendanceDetailPct').textContent = pct !== null ? pct + '%' : '—'
+
+  const statusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ נדחה', 'הושלם': '⏳ ממתין לאישור', 'ממתינה': '🟢 במשמרת כרגע' }
 
   const tbody = document.getElementById('attendanceDetailBody')
   document.getElementById('attendanceDetailEmpty').classList.toggle('hidden', checkins.length > 0)
   tbody.innerHTML = checkins.map(c => `
     <tr>
-      <td style="padding:6px 4px;font-size:0.83rem">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
+      <td style="padding:6px 4px;font-size:0.83rem">${fmtDate(c.check_in_at)}</td>
       <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_in_at)}</td>
       <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_out_at)}</td>
       <td style="padding:6px 4px;font-size:0.83rem">${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
     </tr>
   `).join('')
-
-  document.getElementById('attendanceDetailModalOverlay').classList.add('show')
 }
 
 function closeAttendanceDetailModal() {
