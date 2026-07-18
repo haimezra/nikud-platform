@@ -233,7 +233,15 @@ tr.clickable{cursor:pointer}
   .stat-num{font-size:1.3rem}
   .panel-head{padding:14px 16px}
   th,td{padding:10px 12px;font-size:0.8rem}
-  .panel table th:nth-child(3),.panel table td:nth-child(3){display:none}
+
+  /* --- תיקון מובייל: טבלאות נגללות אופקית במקום להסתיר עמודות --- */
+  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה, מה שהעלים את כפתור הפעולה */
+  /* בטבלת "המשימות שלי". עכשיו הטבלאות נגללות הצידה וכל הכפתורים נשארים נגישים. */
+  .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #studentsPanel table,#checkinApprovalPanel table,#tasksPanel table{min-width:560px}
+  /* טבלת "המשימות שלי" צרה (3 עמודות) — לא צריך רוחב מינימלי, הכפתור תמיד נראה */
+  #myTasksPanel table{min-width:0}
+
   .modal{padding:20px}
   .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
 
@@ -244,6 +252,7 @@ tr.clickable{cursor:pointer}
   #attendanceTable th:nth-child(5), #attendanceTable td:nth-child(5),
   #attendanceTable th:nth-child(6), #attendanceTable td:nth-child(6),
   #attendanceTable th:nth-child(7), #attendanceTable td:nth-child(7){display:none}
+  #attendanceTable{min-width:0}
   #attendanceTable td:first-child{white-space:normal;padding-left:8px}
   .mobile-attn-hint{display:block}
 }
@@ -595,8 +604,6 @@ async function openAttendanceDetailModal(studentId) {
   document.getElementById('attendanceDetailEmpty').classList.add('hidden')
   document.getElementById('attendanceDetailModalOverlay').classList.add('show')
 
-  // שולפים ישירות מהמסד את כל רשומות הנוכחות של העובד — כך תמיד מוצגות
-  // גם שעת היציאה וגם משמרות שעדיין ממתינות לאישור, בלי להישען על מטמון חלקי.
   const { data, error } = await supabaseClient
     .from('checkins')
     .select('*')
@@ -613,8 +620,6 @@ async function openAttendanceDetailModal(studentId) {
 
   const checkins = data || []
 
-  // אחוז נוכחות = כמה משמרות שהסתיימו (יש להן צ'ק-אאוט) אושרו, מתוך כלל
-  // המשמרות שהסתיימו. משמרת שעדיין פתוחה (בלי יציאה) לא נספרת בחישוב.
   const completed = checkins.filter(c => c.check_out_at)
   const approved = completed.filter(c => c.status === 'אושר').length
   const pct = completed.length > 0 ? Math.round((approved / completed.length) * 100) : null
@@ -769,7 +774,6 @@ async function exportStudentAttendanceToExcel(studentId) {
 
   const checkins = data || []
 
-  // אם אין לעובד אף רשומת נוכחות — לא מורידים קובץ ריק, אלא מודיעים למשתמש
   if (checkins.length === 0) {
     showToast(`ל${student.name || 'עובד זה'} אין עדיין רשומות נוכחות לייצוא`, 'error')
     return
@@ -1098,7 +1102,6 @@ async function exportToExcel() {
   if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
   const checkinRows = checkins || []
 
-  // אם אין בכלל נתונים לייצוא (לא נוכחות, לא עובדים, לא משימות) — לא מורידים קובץ ריק
   if (checkinRows.length === 0 && allStudents.length === 0 && allTasks.length === 0) {
     showToast('אין עדיין נתונים לייצוא', 'error')
     return
@@ -1140,12 +1143,10 @@ async function exportToExcel() {
   })
 
   const wb = XLSX.utils.book_new()
-  // כל גיליון נוצר רק אם יש בו לפחות שורה אחת — כדי שלא ייווצר קובץ עם גיליונות ריקים
   if (attendanceSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
   if (studentsSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
   if (tasksSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tasksSheet), 'משימות')
 
-  // גיבוי: אם משום מה אף גיליון לא נוצר — לא מנסים לכתוב קובץ ריק (זה גם היה זורק שגיאה)
   if (wb.SheetNames.length === 0) {
     showToast('אין עדיין נתונים לייצוא', 'error')
     return
