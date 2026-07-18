@@ -96,13 +96,13 @@ nav{
   padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--hl);
 }
 .store-item:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh-1),var(--hl)}
-.item-icon{font-size:1.7rem;margin-bottom:6px}
+.item-icon{width:36px;height:36px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.85rem;font-weight:700;color:var(--violet);background:rgba(155,123,255,0.14);border:1px solid rgba(155,123,255,0.28)}
 .item-name{font-size:0.8rem;font-weight:600;color:var(--ink)}
 .item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px;font-weight:600}
 
 .earn-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
 .earn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--line-2);border-radius:var(--r-sm)}
-.earn-icon{font-size:1.3rem}
+.earn-badge{width:30px;height:30px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.74rem;font-weight:700;color:var(--brand);background:rgba(92,140,255,0.12);border:1px solid rgba(92,140,255,0.25)}
 .earn-text{font-size:0.85rem;color:var(--ink-2)}
 .earn-text b{color:var(--ink);font-weight:700}
 .earn-text span{color:var(--ink-3);display:block;font-size:0.78rem;margin-top:1px}
@@ -257,25 +257,25 @@ nav{
     </div>
 
     <div class="card">
-      <h3>🎁 חנות פרסים – יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
+      <h3>יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
       <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
 
-      <h3 style="margin-top:22px">💡 איך צוברים נקודות</h3>
+      <h3 style="margin-top:22px">איך צוברים נקודות</h3>
       <div class="earn-list">
         <div class="earn-item">
-          <div class="earn-icon">📍</div>
+          <div class="earn-badge">01</div>
           <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
         </div>
         <div class="earn-item">
-          <div class="earn-icon">✅</div>
+          <div class="earn-badge">02</div>
           <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
         </div>
         <div class="earn-item">
-          <div class="earn-icon">🔥</div>
+          <div class="earn-badge">03</div>
           <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
         </div>
         <div class="earn-item">
-          <div class="earn-icon">🛡️</div>
+          <div class="earn-badge">04</div>
           <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
         </div>
       </div>
@@ -384,7 +384,7 @@ function renderTasks() {
   card.classList.remove('hidden')
 
   document.getElementById('tasksList').innerHTML = myTasks.map(t => {
-    const icon = t.status === 'approved' ? '✅' : t.status === 'rejected' ? '✗' : t.status === 'submitted' ? '📩' : '📋'
+    const icon = t.status === 'approved' ? '<span style="color:var(--green);opacity:0.65;font-size:1.1rem">✓</span>' : t.status === 'rejected' ? '✗' : t.status === 'submitted' ? '📩' : '📋'
     const action = t.status === 'pending'
       ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">סמן כבוצע</button>`
       : `<span class="task-status-tag ${t.status}">${taskStatusLabel(t.status)}${t.status === 'approved' ? ' +' + t.points : ''}</span>`
@@ -607,7 +607,7 @@ async function loadStore() {
 
   document.getElementById('storeGrid').innerHTML = data.map(item => `
     <div class="store-item" onclick="buyItem('${item.id}', '${item.name}', ${item.points_cost})">
-      <div class="item-icon">${item.icon}</div>
+      <div class="item-icon">${(item.name || '').trim().slice(0,2)}</div>
       <div class="item-name">${item.name}</div>
       <div class="item-pts">${item.points_cost} נקודות</div>
     </div>
