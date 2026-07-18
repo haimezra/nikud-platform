@@ -32,7 +32,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
-  -webkit-font-smoothing:antialiased;font-size:13.5px;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;font-size:13.5px;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 a{color:var(--brand);text-decoration:none}
@@ -141,9 +141,8 @@ tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 }
 .add-btn:hover{background:var(--brand-2)}
 
-.table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3);white-space:nowrap}
+th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
 td{padding:13px 22px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(16,19,28,0.015)}
@@ -224,27 +223,9 @@ tr.clickable{cursor:pointer}
   .stat-num{font-size:1.3rem}
   .panel-head{padding:14px 16px}
   th,td{padding:10px 12px;font-size:0.8rem}
+  .panel table th:nth-child(3),.panel table td:nth-child(3){display:none}
   .modal{padding:20px}
   .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
-
-  /* טבלאות הפאנלים הופכות לכרטיסיות מוערמות במובייל - בלי גלילה לצדדים */
-  .panel .table-scroll{overflow-x:visible}
-  .panel table thead{display:none}
-  .panel table,.panel table tbody,.panel table tr,.panel table td{display:block;width:100%}
-  .panel table tr{
-    border:1px solid var(--line-2);border-radius:var(--r-sm);
-    padding:4px 14px;margin-bottom:12px;background:var(--paper-2);
-  }
-  .panel table tr:last-child{margin-bottom:0}
-  .panel table td{
-    display:flex;justify-content:space-between;align-items:center;gap:14px;
-    padding:9px 0;border-bottom:1px solid var(--line-2);white-space:normal;text-align:left;
-  }
-  .panel table td:last-child{border-bottom:none}
-  .panel table td::before{
-    content:attr(data-label);font-weight:700;color:var(--ink-3);
-    font-size:0.71rem;text-transform:uppercase;letter-spacing:0.3px;flex:none;text-align:right;
-  }
 }
 </style>
 <!-- Vercel Web Analytics -->
@@ -311,12 +292,10 @@ tr.clickable{cursor:pointer}
             <h3>רשימת עובדים</h3>
             <input class="search-input" id="studentSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderStudentsTable()">
           </div>
-          <div class="table-scroll">
           <table>
             <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
             <tbody id="studentsBody"></tbody>
           </table>
-          </div>
           <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
         </div>
 
@@ -328,24 +307,20 @@ tr.clickable{cursor:pointer}
             </div>
           </div>
           <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-          <div class="table-scroll">
           <table>
             <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
             <tbody id="checkinApprovalBody"></tbody>
           </table>
-          </div>
           <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
         </div>
 
         <div class="panel hidden" id="attendancePanel">
           <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
           <p style="color:var(--ink-3);font-size:0.82rem;margin:10px 22px 0">👆 לחצו על שם עובד כדי לפתוח כרטיסייה עם כל הכניסות, היציאות, התאריכים ואחוז הנוכחות שלו.</p>
-          <div class="table-scroll">
           <table>
             <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
             <tbody id="attendanceBody"></tbody>
           </table>
-          </div>
           <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
         </div>
 
@@ -354,12 +329,10 @@ tr.clickable{cursor:pointer}
             <h3>משימות לעובדים</h3>
             <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
           </div>
-          <div class="table-scroll">
           <table>
             <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
             <tbody id="tasksBody"></tbody>
           </table>
-          </div>
           <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
         </div>
 
@@ -367,12 +340,10 @@ tr.clickable{cursor:pointer}
           <div class="panel-head">
             <h3>משימות שקיבלתי מבעל העסק</h3>
           </div>
-          <div class="table-scroll">
           <table>
             <thead><tr><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
             <tbody id="myTasksBody"></tbody>
           </table>
-          </div>
           <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
         </div>
       </div>
@@ -540,11 +511,11 @@ function hoursLeftLabel(checkoutIso) {
 // ---- עובדים ----
 function renderStudentRow(user) {
   return `<tr class="clickable" onclick="openStudentModal('${user.id}')">
-      <td data-label="שם">${escapeHtml(user.name || '—')}</td>
-      <td data-label="צוות/מחלקה">${escapeHtml(user.class_name || '—')}</td>
-      <td data-label="אימייל">${escapeHtml(user.email || '—')}</td>
-      <td data-label="טלפון">${escapeHtml(user.phone || '—')}</td>
-      <td data-label="נקודות" class="points-tag">${user.points ?? 0}</td>
+      <td>${escapeHtml(user.name || '—')}</td>
+      <td>${escapeHtml(user.class_name || '—')}</td>
+      <td>${escapeHtml(user.email || '—')}</td>
+      <td>${escapeHtml(user.phone || '—')}</td>
+      <td class="points-tag">${user.points ?? 0}</td>
     </tr>`
 }
 
@@ -723,14 +694,14 @@ async function renderAttendanceReport() {
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
-      <td data-label="שם">${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
-      <td data-label="צוות/מחלקה">${escapeHtml(r.student.class_name || '—')}</td>
-      <td data-label="כניסה אחרונה">${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
-      <td data-label="יציאה אחרונה">${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
-      <td data-label="משמרות שנערכו">${r.totalLessons}</td>
-      <td data-label="אושרה נוכחות">${r.attended}</td>
-      <td data-label="אחוז נוכחות">${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
-      <td data-label="התראה" onclick="event.stopPropagation()">${alertCell}</td>
+      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
+      <td>${escapeHtml(r.student.class_name || '—')}</td>
+      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
+      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
+      <td>${r.totalLessons}</td>
+      <td>${r.attended}</td>
+      <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
+      <td onclick="event.stopPropagation()">${alertCell}</td>
     </tr>`
   }).join('')
 }
@@ -869,11 +840,11 @@ function renderTasks() {
       ? `<span style="color:var(--ink-3);font-size:0.76rem">ממתין לביצוע</span>`
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr>
-      <td data-label="עובד">${escapeHtml(student ? student.name : '—')}</td>
-      <td data-label="משימה">${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td data-label="נקודות" class="points-tag">${t.points}</td>
-      <td data-label="סטטוס"><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
-      <td data-label="פעולות">${actions}</td>
+      <td>${escapeHtml(student ? student.name : '—')}</td>
+      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
+      <td class="points-tag">${t.points}</td>
+      <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
+      <td>${actions}</td>
     </tr>`
   }).join('')
 }
@@ -914,10 +885,10 @@ function renderMyTasks() {
       ? `<button class="task-act-btn task-act-approve" onclick="markMyTaskDone('${t.id}')">סמן כבוצע</button>`
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr>
-      <td data-label="משימה">${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td data-label="נקודות" class="points-tag">${t.points}</td>
-      <td data-label="סטטוס"><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
-      <td data-label="פעולות">${action}</td>
+      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
+      <td class="points-tag">${t.points}</td>
+      <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
+      <td>${action}</td>
     </tr>`
   }).join('')
 }
@@ -965,12 +936,12 @@ function renderCheckinApprovals() {
 
   tbody.innerHTML = pendingCheckinApprovals.map(c => `
     <tr>
-      <td data-label="עובד">${escapeHtml(c.users?.name || '—')}</td>
-      <td data-label="צוות/משמרת">${escapeHtml(c.users?.class_name || '—')}</td>
-      <td data-label="שעת כניסה">${fmtTime(c.check_in_at)}</td>
-      <td data-label="שעת יציאה">${fmtTime(c.check_out_at)}</td>
-      <td data-label="זמן לאישור">${hoursLeftLabel(c.check_out_at)}</td>
-      <td data-label="פעולות">
+      <td>${escapeHtml(c.users?.name || '—')}</td>
+      <td>${escapeHtml(c.users?.class_name || '—')}</td>
+      <td>${fmtTime(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_out_at)}</td>
+      <td>${hoursLeftLabel(c.check_out_at)}</td>
+      <td>
         <button class="task-act-btn task-act-approve" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
         <button class="task-act-btn task-act-reject" onclick="rejectCheckinRow('${c.id}')">✗ דחה</button>
       </td>
