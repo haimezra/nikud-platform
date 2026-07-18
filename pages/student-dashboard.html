@@ -18,174 +18,221 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --paper:#0A0C12;--paper-2:#12151E;--ink:#F3F5FB;--ink-2:#B9BFD4;--ink-3:#7D84A0;
-  --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#F0BB55;--gold-soft:#F7D48C;
-  --green:#2FD59B;--red:#FF6E6E;
-  --line:rgba(255,255,255,0.10);--line-2:rgba(255,255,255,0.06);
-  --glass:rgba(255,255,255,0.055);--glass-2:rgba(255,255,255,0.035);--glass-border:rgba(255,255,255,0.12);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.08);
-  --sh-1:0 1px 2px rgba(0,0,0,0.35),0 3px 14px rgba(0,0,0,0.35);
-  --sh-2:0 4px 18px rgba(0,0,0,0.45),0 20px 50px rgba(0,0,0,0.5);
-  --sh-brand:0 14px 34px rgba(92,140,255,0.35);
-  --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
+  --paper:#0A0B10;--paper-2:#0D0F16;--paper-3:#11141C;--ink:#F3F5FA;--ink-2:#A6ACC0;--ink-3:#6E7488;
+  --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#E0AB4E;--gold-soft:#EFC784;
+  --green:#2FBF8F;--red:#EF5F58;
+  --line:rgba(255,255,255,0.08);--line-2:rgba(255,255,255,0.05);
+  --glass:rgba(255,255,255,0.035);--glass-2:rgba(255,255,255,0.025);--glass-border:rgba(255,255,255,0.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.04);
+  --sh-1:0 1px 2px rgba(0,0,0,0.35),0 2px 8px rgba(0,0,0,0.3);
+  --sh-2:0 8px 24px rgba(0,0,0,0.5),0 24px 60px rgba(0,0,0,0.55);
+  --sh-brand:0 8px 20px rgba(92,140,255,0.22);
+  --r:12px;--r-lg:16px;--r-sm:9px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
 body{
   background:var(--paper);color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;
-  -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased;font-size:13.5px;
   background-image:
-    radial-gradient(ellipse 60% 50% at 88% -8%, rgba(92,140,255,0.20) 0%, transparent 62%),
-    radial-gradient(ellipse 50% 42% at 0% 4%, rgba(155,123,255,0.16) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 60% at 50% 110%, rgba(255,255,255,0.03) 0%, transparent 70%);
+    linear-gradient(180deg, rgba(92,140,255,0.05) 0%, transparent 12%),
+    radial-gradient(ellipse 40% 30% at 96% -6%, rgba(92,140,255,0.06) 0%, transparent 60%);
   background-attachment:fixed;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-2)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
 
-nav{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
-  background:var(--glass);backdrop-filter:blur(24px) saturate(1.5);
-  border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
-  position:sticky;top:16px;z-index:50;
+.hidden{display:none !important}
+
+/* ---------- Shell / Sidebar ---------- */
+.app-shell{display:flex;min-height:100vh;align-items:stretch}
+.sidebar{
+  width:224px;flex-shrink:0;background:var(--paper-2);
+  border-left:1px solid var(--line);
+  padding:18px 14px;display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
 }
-.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--brand);letter-spacing:-0.4px}
-.nav-right{display:flex;align-items:center;gap:14px}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
+.sidebar-brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--violet));display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-weight:800;color:#fff;font-size:0.95rem;flex-shrink:0;box-shadow:var(--sh-brand)}
+.sidebar-brand .txt .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-0.3px}
+.sidebar-brand .txt .sub{font-size:0.72rem;color:var(--ink-3);margin-top:1px}
+
+.sidebar-section-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--ink-3);font-weight:700;padding:0 10px;margin:12px 0 6px}
+.sidebar-nav{display:flex;flex-direction:column;gap:1px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+  color:var(--ink-2);text-decoration:none;font-size:0.83rem;font-weight:500;
+  cursor:pointer;transition:background 0.15s, color 0.15s;border:1px solid transparent;
+}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;flex-shrink:0}
+.nav-item:hover{background:var(--glass);color:var(--ink)}
+.nav-item.active{background:rgba(92,140,255,0.10);color:var(--brand);border-color:rgba(92,140,255,0.16);font-weight:700}
+
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-2)}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px 8px 12px}
+.sidebar-user .av{width:28px;height:28px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.76rem;color:var(--ink-2);flex-shrink:0}
+.sidebar-user .info{min-width:0}
+.sidebar-user .info .n{font-size:0.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .info .r{font-size:0.7rem;color:var(--ink-3)}
 .logout-btn{
-  background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
-  padding:8px 18px;border-radius:var(--pill);cursor:pointer;
-  font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:500;transition:all 0.2s;
+  width:100%;background:transparent;border:1px solid var(--line);color:var(--ink-3);
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:600;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(239,95,88,0.06)}
 
-.dashboard{padding:24px 20px 60px;max-width:1080px;margin:0 auto}
-.dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:14px}
-.welcome h2{font-size:1.5rem;font-weight:800;letter-spacing:-0.6px}
-.welcome p{color:var(--ink-3);font-size:0.9rem;margin-top:4px}
-.points-badge{
-  background:linear-gradient(135deg,var(--brand),var(--violet));
-  border-radius:var(--r);padding:14px 30px;text-align:center;
-  box-shadow:var(--sh-brand),var(--hl);
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;padding:20px 30px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.topbar h1{font-size:1.22rem;font-weight:700;letter-spacing:-0.3px}
+.topbar .date-sub{font-size:0.78rem;color:var(--ink-3);margin-top:3px;font-weight:500}
+.pts-chip{
+  display:flex;align-items:center;gap:10px;
+  background:var(--paper-3);border:1px solid var(--glass-border);
+  border-radius:var(--r-sm);padding:8px 16px 8px 12px;box-shadow:var(--sh-1);
 }
-.pts-num{font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;color:#fff;letter-spacing:-1px}
-.pts-label{font-size:0.76rem;color:rgba(255,255,255,0.82);font-weight:500}
+.pts-chip::before{content:"";width:7px;height:7px;border-radius:2px;background:linear-gradient(135deg,var(--brand),var(--violet));flex-shrink:0}
+.pts-chip .pts-num{font-family:'Rubik',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink)}
+.pts-chip .pts-label{font-size:0.68rem;color:var(--ink-3);font-weight:600}
 
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
-.attn-track{height:8px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;margin-top:8px}
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:18px;background:var(--line-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--sh-1)}
+.stat-tile{
+  background:var(--paper-2);
+  padding:15px 17px;position:relative;
+}
+.stat-tile .label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--ink-3);font-weight:700;margin-bottom:9px}
+.stat-tile .value{font-family:'Rubik',sans-serif;font-size:1.42rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
+.stat-tile .value.small{font-size:1.1rem}
+.stat-tile .foot{font-size:0.72rem;color:var(--ink-3);margin-top:7px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.attn-track{height:5px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;margin-top:7px}
 .attn-fill{height:100%;border-radius:var(--pill);background:var(--green);transition:width 0.4s}
 .card{
-  background:var(--glass);backdrop-filter:blur(18px);
-  border:1px solid var(--glass-border);border-radius:var(--r);
-  padding:22px;box-shadow:var(--sh-1),var(--hl);
+  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r);
+  padding:17px 19px;box-shadow:var(--sh-1);
 }
-.card h3{font-size:0.78rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px}
+.card h3{font-size:0.7rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
 
-.activity-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);font-size:0.88rem;color:var(--ink-2)}
+.activity-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
 .activity-item:last-child{border-bottom:none}
-.activity-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif}
+.activity-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif;font-size:0.83rem}
 
-.lb-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.lb-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2)}
 .lb-item:last-child{border-bottom:none}
-.lb-rank{font-size:0.8rem;color:var(--ink-3);width:20px;font-weight:700}
-.lb-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:700;color:#fff;box-shadow:var(--hl)}
-.lb-name{flex:1;font-size:0.88rem;color:var(--ink-2)}
-.lb-pts{font-weight:700;color:var(--ink);font-size:0.88rem;font-family:'Rubik',sans-serif}
+.lb-rank{font-size:0.75rem;color:var(--ink-3);width:16px;font-weight:700;font-family:'Rubik',sans-serif}
+.lb-avatar{width:25px;height:25px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;box-shadow:var(--hl)}
+.lb-name{flex:1;font-size:0.83rem;color:var(--ink-2)}
+.lb-pts{font-weight:700;color:var(--ink);font-size:0.83rem;font-family:'Rubik',sans-serif}
 
-.store-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.store-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .store-item{
-  background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);
-  padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--hl);
+  background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:13px 12px;text-align:center;cursor:pointer;transition:all 0.15s;
 }
-.store-item:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh-1),var(--hl)}
-.item-icon{width:38px;height:38px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(92,140,255,0.12);border:1px solid rgba(92,140,255,0.25);transition:transform 0.15s ease,background 0.15s ease}
-.item-icon svg{width:18px;height:18px;stroke:var(--brand);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.store-item:hover .item-icon{transform:translateY(-2px)}
-.store-item:active .item-icon{transform:scale(0.9);background:rgba(155,123,255,0.24)}
-.item-name{font-size:0.8rem;font-weight:600;color:var(--ink)}
-.item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px;font-weight:600}
+.store-item:hover{border-color:rgba(224,171,78,0.5);transform:translateY(-1px);box-shadow:var(--sh-1)}
+.item-icon{width:30px;height:30px;margin:0 auto 8px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(92,140,255,0.08);border:1px solid rgba(92,140,255,0.18);transition:transform 0.15s ease,background 0.15s ease}
+.item-icon svg{width:15px;height:15px;stroke:var(--brand);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.store-item:active .item-icon{transform:scale(0.9);background:rgba(155,123,255,0.2)}
+.item-name{font-size:0.76rem;font-weight:600;color:var(--ink)}
+.item-pts{font-size:0.7rem;color:var(--gold);margin-top:3px;font-weight:600}
 
-.earn-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.earn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--line-2);border-radius:var(--r-sm)}
-.earn-badge{width:30px;height:30px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.74rem;font-weight:700;color:var(--brand);background:rgba(92,140,255,0.12);border:1px solid rgba(92,140,255,0.25)}
-.earn-text{font-size:0.85rem;color:var(--ink-2)}
+.earn-list{display:flex;flex-direction:column;gap:1px;margin-top:12px;border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden}
+.earn-item{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--paper-3)}
+.earn-badge{width:24px;height:24px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.66rem;font-weight:700;color:var(--brand);background:rgba(92,140,255,0.08);border:1px solid rgba(92,140,255,0.18)}
+.earn-text{font-size:0.81rem;color:var(--ink-2)}
 .earn-text b{color:var(--ink);font-weight:700}
-.earn-text span{color:var(--ink-3);display:block;font-size:0.78rem;margin-top:1px}
+.earn-text span{color:var(--ink-3);display:block;font-size:0.74rem;margin-top:1px}
 
 .expired-screen{max-width:440px;margin:80px auto;text-align:center;padding:0 20px}
 .expired-screen .icon{font-size:3rem;margin-bottom:16px}
 .expired-screen h2{font-size:1.3rem;margin-bottom:10px;font-weight:800}
 .expired-screen p{color:var(--ink-2);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
 .expired-screen a{
-  display:inline-block;padding:14px 30px;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
-  text-decoration:none;border-radius:var(--pill);font-weight:700;font-size:0.95rem;
+  display:inline-block;padding:13px 28px;
+  background:var(--brand);color:#fff;
+  text-decoration:none;border-radius:var(--r-sm);font-weight:700;font-size:0.9rem;
   box-shadow:var(--sh-brand);
 }
 
 .demo-banner{
-  background:rgba(240,187,85,0.10);border:1px solid rgba(240,187,85,0.28);
-  border-radius:var(--r-sm);padding:12px 18px;margin-bottom:18px;
-  font-size:0.85rem;color:var(--gold-soft);display:flex;align-items:center;gap:10px;
+  background:rgba(224,171,78,0.06);border:1px solid rgba(224,171,78,0.2);
+  border-radius:var(--r-sm);padding:10px 15px;margin-bottom:16px;
+  font-size:0.8rem;color:var(--gold-soft);display:flex;align-items:center;gap:9px;
 }
 
-.empty-state{text-align:center;padding:30px 16px;color:var(--ink-3);font-size:0.88rem}
+.empty-state{text-align:center;padding:22px 16px;color:var(--ink-3);font-size:0.82rem}
 
 .checkin-btn{
-  width:100%;padding:14px;border:none;border-radius:var(--r-sm);cursor:pointer;
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;
-  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.95rem;
-  box-shadow:var(--sh-brand);transition:transform 0.2s, background 0.4s;
+  width:100%;padding:11px;border:none;border-radius:var(--r-sm);cursor:pointer;
+  background:var(--brand);color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.87rem;
+  box-shadow:var(--sh-brand);transition:transform 0.2s, background 0.2s;
 }
-.checkin-btn:hover:not(:disabled){transform:translateY(-1px)}
+.checkin-btn:hover:not(:disabled){background:var(--brand-2)}
 .checkin-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
 
-/* כפתור במצב "במשמרת" (אחרי צ'ק-אין, לפני צ'ק-אאוט) - אדום חלש ומהבהב לאט */
 .checkin-btn.active-shift{
-  background:linear-gradient(135deg,#E8807E,#D65A5A);
-  box-shadow:0 14px 34px rgba(255,110,110,0.28);
+  background:var(--red);
+  box-shadow:0 8px 20px rgba(239,95,88,0.2);
   animation:activeShiftPulse 2.4s ease-in-out infinite;
 }
 @keyframes activeShiftPulse{
   0%,100%{opacity:1}
-  50%{opacity:0.55}
+  50%{opacity:0.65}
 }
 
-.checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
+.checkin-status{display:flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:700;padding:4px 0}
 .checkin-status.pending{color:var(--gold-soft)}
 .checkin-status.approved{color:var(--green)}
 .checkin-status.rejected{color:var(--red)}
 
 .toast{
-  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:var(--green);color:#081410;padding:13px 26px;border-radius:var(--pill);
-  font-weight:700;font-size:0.9rem;z-index:999;box-shadow:var(--sh-2);
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--paper-3);border:1px solid var(--glass-border);color:var(--ink);padding:12px 22px;border-radius:var(--r-sm);
+  font-weight:600;font-size:0.85rem;z-index:999;box-shadow:var(--sh-2);
   transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-.loading{text-align:center;padding:100px 20px;color:var(--ink-3);font-size:0.95rem}
+.loading{text-align:center;padding:100px 20px;color:var(--ink-3);font-size:0.9rem}
 
 .task-item{
-  display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-2);
+  display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);
 }
 .task-item:last-child{border-bottom:none}
-.task-icon{font-size:1.3rem}
-.task-body{flex:1}
-.task-title{font-weight:700;font-size:0.9rem;color:var(--ink)}
-.task-desc{font-size:0.78rem;color:var(--ink-3);margin-top:2px}
-.task-status-tag{font-size:0.74rem;font-weight:700;padding:3px 10px;border-radius:var(--pill);white-space:nowrap}
-.task-status-tag.pending{background:rgba(125,132,160,0.16);color:var(--ink-3)}
-.task-status-tag.submitted{background:rgba(240,187,85,0.16);color:var(--gold-soft)}
-.task-status-tag.approved{background:rgba(47,213,155,0.16);color:var(--green)}
-.task-status-tag.rejected{background:rgba(255,110,110,0.16);color:var(--red)}
+.task-icon{font-size:1.1rem;width:18px;text-align:center;flex-shrink:0}
+.task-body{flex:1;min-width:0}
+.task-title{font-weight:700;font-size:0.84rem;color:var(--ink)}
+.task-desc{font-size:0.74rem;color:var(--ink-3);margin-top:2px}
+.task-status-tag{font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:var(--pill);white-space:nowrap}
+.task-status-tag.pending{background:rgba(110,116,136,0.14);color:var(--ink-3)}
+.task-status-tag.submitted{background:rgba(224,171,78,0.14);color:var(--gold-soft)}
+.task-status-tag.approved{background:rgba(47,191,143,0.14);color:var(--green)}
+.task-status-tag.rejected{background:rgba(239,95,88,0.14);color:var(--red)}
 .task-done-btn{
-  background:var(--brand);color:#fff;border:none;padding:7px 14px;border-radius:var(--r-sm);
-  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;white-space:nowrap;
+  background:var(--brand);color:#fff;border:none;padding:6px 12px;border-radius:var(--r-sm);
+  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.73rem;font-weight:700;white-space:nowrap;
 }
 
-@media(max-width:700px){
-  .dashboard{padding:18px 4px 40px}
+@media(max-width:900px){
+  .app-shell{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto;flex-direction:row;align-items:center;padding:12px 14px;border-left:none;border-bottom:1px solid var(--line);overflow-x:auto}
+  .sidebar-brand{border-bottom:none;padding:0 12px 0 0;margin-bottom:0}
+  .sidebar-section-label{display:none}
+  .sidebar-nav{flex-direction:row}
+  .nav-item{white-space:nowrap}
+  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;display:flex;align-items:center}
+  .sidebar-user{padding:0 10px}
+  .logout-btn{width:auto;padding:8px 14px}
+  .main{padding:16px 12px 40px}
+  .stat-strip{grid-template-columns:1fr 1fr}
   .grid-2{grid-template-columns:1fr}
-  nav{margin:12px 12px 0;padding:11px 18px}
+  .store-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 <!-- Vercel Web Analytics -->
@@ -196,14 +243,6 @@ nav{
 
 </head>
 <body>
-
-<nav>
-  <div class="logo">nikud</div>
-  <div class="nav-right">
-    <span id="userName" style="font-size:0.88rem;color:var(--ink-3)"></span>
-    <button class="logout-btn" onclick="logout()">יציאה</button>
-  </div>
-</nav>
 
 <div class="toast" id="toast"></div>
 
@@ -217,72 +256,120 @@ nav{
 </div>
 
 <div id="dashboard" style="display:none">
-  <div class="dashboard">
-    <div class="dashboard-header">
-      <div class="welcome">
-        <h2 id="welcomeText">שלום</h2>
-        <p id="classInfo"></p>
-      </div>
-      <div class="points-badge">
-        <div class="pts-num" id="pointsDisplay">0</div>
-        <div class="pts-label">נקודות</div>
-      </div>
-    </div>
-
-    <div class="demo-banner hidden" id="demoBanner" style="display:none">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>
-      <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של החברה.</span>
-    </div>
-
-    <div class="card hidden" id="checkinCard" style="margin-bottom:16px"></div>
-
-    <div class="card hidden" id="tasksCard" style="margin-bottom:16px">
-      <h3>המשימות שלי</h3>
-      <div id="tasksList"></div>
-    </div>
-
-    <div class="card" id="attendanceCard" style="margin-bottom:16px">
-      <h3>אחוז נוכחות</h3>
-      <div id="attendanceContent" style="margin-top:10px">
-        <div class="empty-state">אין עדיין מספיק נתונים להצגת אחוז נוכחות</div>
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3>פעילות אחרונה</h3>
-        <div id="activityList"><div class="empty-state">אין עדיין פעילות. המשמרת הראשונה שלך תופיע כאן!</div></div>
-      </div>
-      <div class="card">
-        <h3>ליגת הצוות</h3>
-        <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="text-transform:none;font-size:0.95rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
-      <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
-
-      <h3 style="margin-top:22px">איך צוברים נקודות</h3>
-      <div class="earn-list">
-        <div class="earn-item">
-          <div class="earn-badge">01</div>
-          <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
-        </div>
-        <div class="earn-item">
-          <div class="earn-badge">02</div>
-          <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
-        </div>
-        <div class="earn-item">
-          <div class="earn-badge">03</div>
-          <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
-        </div>
-        <div class="earn-item">
-          <div class="earn-badge">04</div>
-          <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="mark">נ</div>
+        <div class="txt">
+          <div class="name">nikud</div>
+          <div class="sub">ניהול צוות</div>
         </div>
       </div>
-    </div>
+
+      <div class="sidebar-section-label">תפריט</div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="#overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>לוח בקרה</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="av" id="userAvatar">·</div>
+          <div class="info">
+            <div class="n" id="userName">—</div>
+            <div class="r">עובד/ת</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg>
+          יציאה
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar" id="overview">
+        <div>
+          <h1 id="welcomeText">שלום</h1>
+          <div class="date-sub" id="classInfo"></div>
+        </div>
+        <div class="pts-chip">
+          <div>
+            <div class="pts-num" id="pointsDisplay">0</div>
+            <div class="pts-label">נקודות</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-banner hidden" id="demoBanner" style="display:none">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>
+        <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של החברה.</span>
+      </div>
+
+      <div class="card hidden" id="checkinCard" style="margin-bottom:14px"></div>
+
+      <div class="card hidden" id="tasksCard" style="margin-bottom:14px">
+        <h3>המשימות שלי</h3>
+        <div id="tasksList"></div>
+      </div>
+
+      <div class="card" id="store" style="margin-bottom:14px">
+        <h3 style="text-transform:none;font-size:0.9rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
+        <div class="store-grid" id="storeGrid" style="margin-top:12px"></div>
+
+        <h3 style="margin-top:20px">איך צוברים נקודות</h3>
+        <div class="earn-list">
+          <div class="earn-item">
+            <div class="earn-badge">01</div>
+            <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">02</div>
+            <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">03</div>
+            <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">04</div>
+            <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-tile">
+          <div class="label">יתרת נקודות</div>
+          <div class="value" id="statPoints">0</div>
+        </div>
+        <div class="stat-tile" id="attendanceCard">
+          <div class="label">אחוז נוכחות</div>
+          <div id="attendanceContent">
+            <div class="value small" style="color:var(--ink-3)">—</div>
+          </div>
+        </div>
+        <div class="stat-tile">
+          <div class="label">משימות פתוחות</div>
+          <div class="value" id="statOpenTasks">0</div>
+          <div class="foot">ממתינות לביצוע / אישור</div>
+        </div>
+        <div class="stat-tile">
+          <div class="label">דירוג בצוות</div>
+          <div class="value" id="statRank">—</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>פעילות אחרונה</h3>
+          <div id="activityList"><div class="empty-state">אין עדיין פעילות. המשמרת הראשונה שלך תופיע כאן!</div></div>
+        </div>
+        <div class="card">
+          <h3>ליגת הצוות</h3>
+          <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
 
@@ -296,6 +383,13 @@ let myCheckin = null
 let checkinPollTimer = null
 let isDemoAccount = false
 let myTasks = []
+
+function setPointsDisplays() {
+  document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+  document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+  const sp = document.getElementById('statPoints')
+  if (sp) sp.textContent = currentPoints.toLocaleString()
+}
 
 async function init() {
   try {
@@ -329,10 +423,10 @@ async function init() {
   document.getElementById('demoBanner').style.display = isDemoAccount ? 'flex' : 'none'
 
   document.getElementById('userName').textContent = profile.name
+  document.getElementById('userAvatar').textContent = profile.name ? profile.name[0] : '·'
   document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]}`
   document.getElementById('classInfo').textContent = `צוות ${profile.class_name || ''}`
-  document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
-  document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+  setPointsDisplays()
 
   await loadActivity(profile.id)
   await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
@@ -368,11 +462,14 @@ async function loadTasks() {
   if (newlyApproved.length > 0) {
     const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
     currentPoints = profile?.points ?? currentPoints
-    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
-    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    setPointsDisplays()
     await loadActivity(currentUser.id)
     showToast(`המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
   }
+
+  const openCount = myTasks.filter(t => t.status === 'pending' || t.status === 'submitted').length
+  const statOpen = document.getElementById('statOpenTasks')
+  if (statOpen) statOpen.textContent = openCount
 
   renderTasks()
 }
@@ -443,8 +540,7 @@ async function refreshMyCheckin() {
   if (myCheckin && myCheckin.status !== previousStatus && (myCheckin.status === 'אושר' || myCheckin.status === 'נדחה')) {
     const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
     currentPoints = profile?.points ?? currentPoints
-    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
-    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    setPointsDisplays()
     await loadActivity(currentUser.id)
     if (myCheckin.status === 'אושר') showToast('המנהל/ת אישר/ה את הצ\'ק-אין שלך!')
     else showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
@@ -464,7 +560,7 @@ function renderCheckinCard() {
     card.innerHTML = `
       <h3>נוכחות פעילה</h3>
       <div class="checkin-status pending">נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
-      <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
+      <p style="color:var(--ink-3);font-size:0.82rem;margin:6px 0 12px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
       <button class="checkin-btn active-shift" onclick="doCheckout()">צ'ק-אאוט - סיימתי</button>
     `
     return
@@ -480,7 +576,7 @@ function renderCheckinCard() {
   }
 
   const lastResult = myCheckin && myCheckin.status === 'אושר'
-    ? `<div class="checkin-status approved" style="font-size:0.8rem">הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
+    ? `<div class="checkin-status approved" style="font-size:0.78rem">הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
     : myCheckin && myCheckin.status === 'נדחה'
     ? `<div class="checkin-status rejected">הצ'ק-אין הקודם לא אושר הפעם</div>`
     : ''
@@ -488,7 +584,7 @@ function renderCheckinCard() {
   // אין משמרת פעילה: הכפתור הרגיל בצבע כחול
   card.innerHTML = `
     <h3>צ'ק-אין</h3>
-    <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
+    <p style="color:var(--ink-3);font-size:0.82rem;margin:6px 0 12px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
     <button class="checkin-btn" onclick="doCheckin()">צ'ק-אין</button>
     ${lastResult}
   `
@@ -536,8 +632,8 @@ async function loadActivity(employeeId) {
 
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
-      <div style="width:7px;height:7px;border-radius:50%;background:var(--brand);flex-shrink:0"></div>
-      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'נוכחות במשמרת')}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0"></div>
+      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'נוכחות במשמרת')}<br><span style="font-size:0.73rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
       <div class="activity-pts">+${log.points}</div>
     </div>
   `).join('')
@@ -554,7 +650,7 @@ async function loadAttendanceStats(employeeId, companyId, teamName) {
   const content = document.getElementById('attendanceContent')
 
   if (totalShifts === 0) {
-    content.innerHTML = '<div class="empty-state">אין עדיין משמרות שנערכו בצוות שלך</div>'
+    content.innerHTML = '<div class="value small" style="color:var(--ink-3)">—</div><div class="foot">אין עדיין משמרות</div>'
     return
   }
 
@@ -570,13 +666,9 @@ async function loadAttendanceStats(employeeId, companyId, teamName) {
   const barColor = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--red)'
 
   content.innerHTML = `
-    <div style="display:flex;align-items:center;gap:16px">
-      <div style="font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;color:${barColor}">${pct}%</div>
-      <div style="flex:1">
-        <div class="attn-track"><div class="attn-fill" style="width:${pct}%;background:${barColor}"></div></div>
-        <div style="font-size:0.78rem;color:var(--ink-3);margin-top:6px">נוכחת/ה ב-${attended} מתוך ${totalShifts} משמרות שנערכו בצוות</div>
-      </div>
-    </div>
+    <div class="value" style="color:${barColor}">${pct}%</div>
+    <div class="attn-track"><div class="attn-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    <div class="foot">${attended}/${totalShifts} משמרות</div>
   `
 }
 
@@ -592,7 +684,11 @@ async function loadLeaderboard(companyId, teamName, currentUserId) {
 
   if (!data || data.length === 0) return
 
-  const colors = ['#5C8CFF,#9B7BFF', '#2FD59B,#22A6D6', '#F0BB55,#F7D48C', '#FF6E6E,#FF9E9E']
+  const myRank = data.findIndex(s => s.id === currentUserId)
+  const statRank = document.getElementById('statRank')
+  if (statRank) statRank.textContent = myRank >= 0 ? `#${myRank + 1}` : '—'
+
+  const colors = ['#5C8CFF,#9B7BFF', '#33C48D,#22A6D6', '#E8B04C,#F0C67A', '#F0665E,#FF9E9E']
   document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
     <div class="lb-item">
       <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
@@ -633,8 +729,7 @@ async function buyItem(itemId, name, cost) {
     if (error) throw error
 
     currentPoints -= cost
-    document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
-    document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+    setPointsDisplays()
     showToast(`${name} נרכש בהצלחה!`)
   } catch (err) {
     showToast('שגיאה ברכישה, נסה שוב', true)
@@ -652,7 +747,7 @@ function showToast(msg, isError) {
   const t = document.getElementById('toast')
   t.textContent = msg
   t.style.background = isError ? 'var(--red)' : 'var(--green)'
-  t.style.color = isError ? '#fff' : '#081410'
+  t.style.color = isError ? '#fff' : '#08140F'
   t.classList.add('show')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
