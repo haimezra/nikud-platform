@@ -56,8 +56,8 @@ a:hover{color:var(--brand-2)}
   position:sticky;top:0;height:100vh;overflow-y:auto;
 }
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
-.sidebar-brand .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--violet));display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-weight:800;color:#fff;font-size:0.95rem;flex-shrink:0;box-shadow:var(--sh-brand)}
-.sidebar-brand .txt .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1rem;letter-spacing:-0.3px}
+.sidebar-brand .txt .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.3px;background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
+@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .sidebar-brand .txt .sub{font-size:0.72rem;color:var(--ink-3);margin-top:1px}
 
 .sidebar-section-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--ink-3);font-weight:700;padding:0 10px;margin:12px 0 6px}
@@ -259,9 +259,8 @@ a:hover{color:var(--brand-2)}
   <div class="app-shell">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="mark">נ</div>
         <div class="txt">
-          <div class="name">nikud</div>
+          <div class="name">ניקוד</div>
           <div class="sub">ניהול צוות</div>
         </div>
       </div>
@@ -276,7 +275,6 @@ a:hover{color:var(--brand-2)}
           <div class="av" id="userAvatar">·</div>
           <div class="info">
             <div class="n" id="userName">—</div>
-            <div class="r">עובד/ת</div>
           </div>
         </div>
         <button class="logout-btn" onclick="logout()">
