@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#5C8CFF">
+<meta name="theme-color" content="#0B0D14">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19,131 +19,145 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --paper:#F4F6FA;--paper-2:#FFFFFF;--paper-3:#EEF1F7;--ink:#10131C;--ink-2:#4B5268;--ink-3:#868C9E;
-  --brand:#2451D6;--brand-2:#1A3CA6;--brand-soft:rgba(36,81,214,0.08);
-  --gold:#B4790C;--green:#0E8F63;--red:#C43D38;
-  --line:rgba(16,19,28,0.10);--line-2:rgba(16,19,28,0.06);
-  --sidebar-bg:#12162A;--sidebar-ink:#AEB4CC;--sidebar-ink-2:#6E7594;--sidebar-active:#1F2745;
-  --sh-1:0 1px 2px rgba(16,19,28,0.04),0 2px 8px rgba(16,19,28,0.05);
-  --sh-2:0 8px 24px rgba(16,19,28,0.10),0 24px 60px rgba(16,19,28,0.12);
-  --sh-brand:0 6px 16px rgba(36,81,214,0.24);
-  --r:14px;--r-lg:18px;--r-sm:10px;--pill:999px;
+  --paper:#0A0B10;--paper-2:#0D0F16;--paper-3:#11141C;--ink:#F3F5FA;--ink-2:#A6ACC0;--ink-3:#6E7488;
+  --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#E0AB4E;--gold-soft:#EFC784;
+  --green:#2FBF8F;--red:#EF5F58;
+  --brand-rgb:92,140,255;--green-rgb:47,191,143;--red-rgb:239,95,88;--gold-rgb:224,171,78;
+  --line:rgba(255,255,255,0.08);--line-2:rgba(255,255,255,0.05);
+  --glass:rgba(255,255,255,0.035);--glass-2:rgba(255,255,255,0.025);--glass-border:rgba(255,255,255,0.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.04);
+  --sh-1:0 1px 2px rgba(0,0,0,0.35),0 2px 8px rgba(0,0,0,0.3);
+  --sh-2:0 8px 24px rgba(0,0,0,0.5),0 24px 60px rgba(0,0,0,0.55);
+  --sh-brand:0 8px 20px rgba(92,140,255,0.22);
+  --r:12px;--r-lg:16px;--r-sm:9px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
 body{
-  color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
-  -webkit-font-smoothing:antialiased;font-size:13.5px;
+  background:var(--paper);color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;
+  -webkit-font-smoothing:antialiased;font-size:14px;
+  background-image:
+    linear-gradient(180deg, rgba(92,140,255,0.05) 0%, transparent 12%),
+    radial-gradient(ellipse 40% 30% at 96% -6%, rgba(92,140,255,0.06) 0%, transparent 60%);
+  background-attachment:fixed;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 a{color:var(--brand);text-decoration:none}
 a:hover{color:var(--brand-2)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
+.hidden{display:none !important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--brand);outline-offset:2px;border-radius:6px;
+}
 
-.app-shell{display:flex;min-height:100vh}
-
+/* ---------- Shell / Sidebar ---------- */
+.app-shell{display:flex;min-height:100vh;align-items:stretch}
 .sidebar{
-  width:96px;flex:none;background:var(--sidebar-bg);color:var(--sidebar-ink);
-  display:flex;flex-direction:column;align-items:center;padding:20px 8px;position:sticky;top:0;height:100vh;
+  width:238px;flex-shrink:0;background:var(--paper-2);
+  border-left:1px solid var(--line);
+  padding:18px 14px;display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
 }
-.sidebar-logo{
-  font-family:'Rubik',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.3px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;
-}
-.sidebar-logo .logo-main{
-  background:linear-gradient(110deg,#9AA0B4 20%,#EEF0F6 40%,#9AA0B4 60%);background-size:200% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite;
-}
-.sidebar-logo .logo-sub{font-size:0.6rem;font-weight:600;letter-spacing:1px;color:var(--sidebar-ink-2);text-transform:uppercase}
-.sidebar-logo .logo-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:2px;animation:dotBlink 1.1s ease-in-out infinite}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
+.sidebar-brand .txt .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.3px;background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
 @keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sidebar-brand .txt .sub{font-size:0.72rem;color:var(--ink-3);margin-top:1px;display:flex;align-items:center;gap:5px}
+.sidebar-brand .txt .sub .dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:dotBlink 1.4s ease-in-out infinite}
 @keyframes dotBlink{0%,49%{opacity:1;box-shadow:0 0 5px 1px var(--green)}50%,100%{opacity:0.15;box-shadow:0 0 0 0 transparent}}
-.sidebar-foot{flex:1;display:flex;align-items:flex-end}
 
-.main{flex:1;min-width:0;display:flex;flex-direction:column}
-
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-  padding:18px 30px;background:var(--paper-2);border-bottom:1px solid var(--glass-border,var(--line));
-  position:sticky;top:0;z-index:100;
+.sidebar-section-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--ink-3);font-weight:700;padding:0 10px;margin:12px 0 6px}
+.sidebar-nav{display:flex;flex-direction:column;gap:1px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+  color:var(--ink-2);text-decoration:none;font-size:0.85rem;font-weight:500;
+  cursor:pointer;transition:background 0.15s, color 0.15s;border:1px solid transparent;position:relative;
 }
-.page-title{font-family:'Rubik',sans-serif;font-size:1.22rem;font-weight:700;letter-spacing:-0.3px;margin-bottom:2px}
-.page-sub{color:var(--ink-3);font-size:0.82rem}
-.topbar-right{display:flex;align-items:center;gap:10px}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;flex-shrink:0}
+.nav-item:hover{background:var(--glass);color:var(--ink)}
+.nav-item.active{background:rgba(92,140,255,0.10);color:var(--brand);border-color:rgba(92,140,255,0.16);font-weight:700}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;padding:1px 7px;font-size:0.68rem;font-weight:700;line-height:1.5}
+.nav-item.has-alert .nav-badge{animation:badgePulse 1.8s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.45}}
+
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-2);display:flex;flex-direction:column;gap:8px}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px 8px 4px}
+.sidebar-user .av{width:28px;height:28px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.76rem;color:var(--ink-2);flex-shrink:0}
+.sidebar-user .info{min-width:0}
+.sidebar-user .info .n{font-size:0.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .info .r{font-size:0.7rem;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .school-pill{
-  background:var(--paper-3);border:1px solid var(--line);border-radius:var(--pill);
-  padding:7px 15px;font-size:0.78rem;color:var(--ink-3);
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:8px 11px;font-size:0.74rem;color:var(--ink-3);
 }
-.school-pill strong{color:var(--ink)}
+.school-pill strong{color:var(--ink);display:block;font-size:0.82rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-export-btn{
+  width:100%;background:var(--glass);border:1px solid var(--glass-border);color:var(--ink-2);
+  padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.sidebar-export-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(92,140,255,0.08)}
 .logout-btn{
-  background:transparent;border:1px solid rgba(255,255,255,0.14);color:var(--sidebar-ink);
-  padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.72rem;font-weight:600;transition:all 0.2s;width:100%;
+  width:100%;background:transparent;border:1px solid var(--line);color:var(--ink-3);
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:600;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.logout-btn:hover{border-color:var(--red);color:#fff;background:rgba(196,61,56,0.16)}
+.logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(239,95,88,0.06)}
 
-.wrap{width:100%;margin:0;padding:22px 30px 60px}
-.tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px;width:fit-content;flex-wrap:wrap}
-.tabs .tab{
-  padding:9px 18px;border:none;background:none;color:var(--ink-3);
-  border-radius:7px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;
-  transition:all 0.2s;
-}
-.tabs .tab.active{background:var(--brand);color:#fff}
-.tabs .tab.tab-alert{animation:tabRedBlink 1.8s ease-in-out infinite}
-@keyframes tabRedBlink{
-  0%,100%{background:none;color:var(--ink-3)}
-  50%{background:rgba(196,61,56,0.16);color:var(--red)}
-}
-.tabs .tab.tab-alert.active{animation:tabRedBlinkActive 1.8s ease-in-out infinite}
-@keyframes tabRedBlinkActive{
-  0%,100%{background:var(--brand);color:#fff}
-  50%{background:var(--red);color:#fff}
-}
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;padding:24px 30px 60px}
+.view-header{margin-bottom:20px}
+.view-header h1{font-size:1.22rem;font-weight:700;letter-spacing:-0.3px}
+.view-header .sub{font-size:0.8rem;color:var(--ink-3);margin-top:4px;font-weight:500}
+.view-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
 .stat-card{
-  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r);
   padding:18px 20px;box-shadow:var(--sh-1);
 }
 .stat-num{font-family:'Rubik',sans-serif;font-size:1.7rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
-.stat-label{color:var(--ink-3);font-size:0.76rem;margin-top:8px}
+.stat-label{color:var(--ink-3);font-size:0.78rem;margin-top:9px}
 .stat-card.accent .stat-num{color:var(--brand)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
-.stat-card.danger{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;border-color:rgba(196,61,56,0.3);background:rgba(196,61,56,0.04)}
+.stat-card.danger{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;border-color:rgba(239,95,88,0.3);background:rgba(239,95,88,0.06)}
 .stat-card.danger:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
 .stat-card.danger .stat-num{color:var(--red)}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .copy-code-btn{
-  margin-top:8px;background:rgba(180,121,12,0.08);border:1px solid rgba(180,121,12,0.28);
-  color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.73rem;font-weight:700;
-  cursor:pointer;font-family:'Heebo',sans-serif;
+  background:rgba(224,171,78,0.1);border:1px solid rgba(224,171,78,0.28);
+  color:var(--gold-soft);padding:5px 12px;border-radius:8px;font-size:0.73rem;font-weight:700;
+  cursor:pointer;font-family:'Heebo',sans-serif;white-space:nowrap;
 }
 .export-btn{
-  background:var(--paper-2);border:1px solid var(--line);color:var(--ink-2);padding:8px 15px;
+  background:var(--paper-3);border:1px solid var(--glass-border);color:var(--ink-2);padding:8px 15px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;
   transition:all 0.2s;
 }
 .export-btn:hover{border-color:var(--brand);color:var(--brand)}
 .bulk-btn{
-  background:var(--green);border:none;color:#fff;padding:8px 15px;
+  background:var(--green);border:none;color:#08140F;padding:8px 15px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
-  box-shadow:0 6px 14px rgba(14,143,99,0.24);transition:all 0.2s;
+  box-shadow:0 6px 14px rgba(47,191,143,0.24);transition:all 0.2s;
 }
-.bulk-btn:hover{background:#0b7a54}
+.bulk-btn:hover{filter:brightness(1.08)}
 .bulk-btn:disabled{opacity:0.4;cursor:not-allowed}
 .search-input{
-  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 13px;color:var(--ink);
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:8px 13px;color:var(--ink);
   font-family:'Heebo',sans-serif;font-size:0.82rem;outline:none;min-width:200px;
 }
 .search-input:focus{border-color:var(--brand)}
 
-.panel{
-  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
-  overflow:hidden;margin-bottom:22px;box-shadow:var(--sh-1);
+.card,.panel{
+  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r);
+  overflow:hidden;margin-bottom:16px;box-shadow:var(--sh-1);
 }
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
 .panel-head h3{font-size:0.92rem;font-weight:700;color:var(--ink)}
 .panel-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.panel-note{color:var(--ink-3);font-size:0.82rem;margin:12px 22px 14px}
 .add-btn{
   background:var(--brand);border:none;color:#fff;padding:8px 15px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
@@ -151,13 +165,14 @@ tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 }
 .add-btn:hover{background:var(--brand-2)}
 
+.table-scroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
+th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3);white-space:nowrap}
 td{padding:13px 22px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(16,19,28,0.015)}
+tr:hover td{background:rgba(255,255,255,0.015)}
 .role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
-.points-tag{color:var(--gold);font-weight:700}
+.points-tag{color:var(--gold);font-weight:700;white-space:nowrap}
 
 .history-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
 .history-item:last-child{border-bottom:none}
@@ -168,96 +183,86 @@ tr.clickable{cursor:pointer}
 
 .empty-state{padding:36px;text-align:center;color:var(--ink-3);font-size:0.85rem}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,19,28,0.4);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
+.preview-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem}
+.preview-item:last-child{border-bottom:none}
+.preview-item .pi-name{color:var(--ink);font-weight:600}
+.preview-item .pi-sub{color:var(--ink-3);font-size:0.74rem;margin-top:1px}
+.preview-item .pi-tag{margin-right:auto;font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:var(--pill);white-space:nowrap}
+.quick-actions{display:flex;flex-direction:column;gap:8px}
+.quick-actions button{
+  display:flex;align-items:center;gap:8px;background:var(--paper-3);border:1px solid var(--glass-border);
+  color:var(--ink-2);padding:10px 13px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
+  font-size:0.83rem;font-weight:600;transition:all 0.15s;text-align:right;
+}
+.quick-actions button:hover{border-color:var(--brand);color:var(--brand);background:rgba(92,140,255,0.06)}
+.quick-actions button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;flex-shrink:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
+.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
 .modal h3{font-size:1.02rem;margin-bottom:18px;color:var(--ink)}
 .field{margin-bottom:13px}
 .field label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:6px}
 .field input,.field select,.field textarea{
-  width:100%;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);
+  width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);
   font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;
 }
 .field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
+.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
 .modal-actions{display:flex;gap:10px;margin-top:18px}
 .modal-actions button{flex:1;padding:10px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
-.btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--line)}
+.btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--glass-border)}
 .btn-confirm{background:var(--brand);color:#fff}
 
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);
-  padding:11px 20px;font-size:0.82rem;display:none;z-index:500;box-shadow:var(--sh-2);color:#fff;
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:11px 20px;font-size:0.85rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);font-weight:600;
 }
 .toast.show{display:block}
-.toast.error{background:var(--red)}
-.toast.success{background:var(--green)}
+.toast.error{background:var(--red);color:#fff;border-color:transparent}
+.toast.success{background:var(--green);color:#08140F;border-color:transparent}
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
-.hidden{display:none !important}
 
 .task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
-.task-status-badge.pending{background:rgba(134,140,158,0.14);color:var(--ink-3)}
-.task-status-badge.submitted{background:rgba(180,121,12,0.13);color:var(--gold)}
-.task-status-badge.approved{background:rgba(14,143,99,0.13);color:var(--green)}
-.task-status-badge.rejected{background:rgba(196,61,56,0.13);color:var(--red)}
+.task-status-badge.pending{background:rgba(110,116,136,0.18);color:var(--ink-3)}
+.task-status-badge.submitted{background:rgba(224,171,78,0.16);color:var(--gold-soft)}
+.task-status-badge.approved{background:rgba(47,191,143,0.16);color:var(--green)}
+.task-status-badge.rejected{background:rgba(239,95,88,0.16);color:var(--red)}
 .task-actions{display:flex;gap:6px}
-.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700}
-.task-act-approve{background:rgba(14,143,99,0.13);color:var(--green)}
-.task-act-reject{background:rgba(196,61,56,0.13);color:var(--red)}
+.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700;white-space:nowrap}
+.task-act-approve{background:rgba(47,191,143,0.16);color:var(--green)}
+.task-act-reject{background:rgba(239,95,88,0.16);color:var(--red)}
 
-@media(max-width:860px){
+@media(max-width:900px){
   .app-shell{flex-direction:column}
-  .sidebar{
-    width:100%;height:auto;position:sticky;top:0;z-index:200;
-    flex-direction:row;align-items:center;justify-content:space-between;padding:10px 16px;gap:10px;
-  }
-  .sidebar-logo{flex-direction:row;align-items:baseline;gap:6px}
-  .sidebar-foot{flex:none}
-  .logout-btn{width:auto;padding:7px 12px;font-size:0.76rem}
+  .sidebar{position:static;width:100%;height:auto;flex-direction:row;align-items:center;padding:12px 14px;border-left:none;border-bottom:1px solid var(--line);overflow-x:auto}
+  .sidebar-brand{border-bottom:none;padding:0 12px 0 0;margin-bottom:0}
+  .sidebar-section-label{display:none}
+  .sidebar-nav{flex-direction:row}
+  .nav-item{white-space:nowrap}
+  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;flex-direction:row;align-items:center;gap:8px}
+  .sidebar-user{padding:0 6px}
+  .school-pill{display:none}
+  .sidebar-export-btn{width:auto;padding:8px 12px;white-space:nowrap}
+  .logout-btn{width:auto;padding:8px 14px;white-space:nowrap}
+  .main{padding:16px 14px 40px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
 }
 @media(max-width:640px){
-  .topbar{padding:12px 14px;gap:8px}
-  .page-title{font-size:1.05rem}
-  .page-sub{font-size:0.76rem}
-  .topbar-right{gap:6px;flex-wrap:wrap}
-  .school-pill{padding:6px 11px;font-size:0.72rem}
-  .export-btn{padding:7px 11px;font-size:0.74rem}
-  .wrap{padding:16px 10px 40px}
-  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
-  .tabs .tab{flex:none;padding:8px 12px;font-size:0.78rem;white-space:nowrap}
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .view-header h1{font-size:1.05rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
   .stat-card{padding:14px 14px}
   .stat-num{font-size:1.3rem}
   .panel-head{padding:14px 16px}
   th,td{padding:10px 12px;font-size:0.8rem}
-
-  /* --- תיקון מובייל: הטבלאות מתאימות למסך בלי גלילה הצידה --- */
-  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה, מה שהעלים את כפתור הפעולה */
-  /* בטבלת "המשימות שלי". עכשיו לא מסתירים עמודות שרירותית, וכפתורי הפעולה תמיד נשארים. */
-  /* בטבלת הצ'ק-אין הממתינים: מסתירים במובייל "צוות/משמרת" (עמ' 2) ו"זמן לאישור" (עמ' 5) */
-  /* כדי שיישאר מקום לשם, לשעות ולכפתורי האישור/דחייה */
-  #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
-  #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
-
   .modal{padding:20px}
   .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
-
-  /* דוח נוכחות במובייל: מציגים רק שם + התראה בטבלה, שאר הפרטים (אחוז, כניסה, יציאה, ימים, אישור) נפתחים בלחיצה בכרטיסיית הפרטים */
-  #attendanceTable th:nth-child(2), #attendanceTable td:nth-child(2),
-  #attendanceTable th:nth-child(3), #attendanceTable td:nth-child(3),
-  #attendanceTable th:nth-child(4), #attendanceTable td:nth-child(4),
-  #attendanceTable th:nth-child(5), #attendanceTable td:nth-child(5),
-  #attendanceTable th:nth-child(6), #attendanceTable td:nth-child(6),
-  #attendanceTable th:nth-child(7), #attendanceTable td:nth-child(7){display:none}
-  #attendanceTable{min-width:0}
-  #attendanceTable td:first-child{white-space:normal;padding-left:8px}
-  .mobile-attn-hint{display:block}
 }
-.mobile-attn-hint{display:none;font-size:0.74rem;color:var(--ink-3);margin-top:4px}
-.mobile-attn-hint .hint-pct{font-weight:700;font-family:'Rubik',sans-serif}
 </style>
 <!-- Vercel Web Analytics -->
 <script>
@@ -270,35 +275,76 @@ tr.clickable{cursor:pointer}
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="sidebar-logo"><span class="logo-main">NIKUD</span><span class="logo-sub">system</span><span class="logo-dot"></span></div>
-    <div class="sidebar-foot">
-      <button class="logout-btn" onclick="handleLogout()">יציאה</button>
+    <div class="sidebar-brand">
+      <div class="txt">
+        <div class="name">NIKUD</div>
+        <div class="sub"><span class="dot"></span>מסך ניהול</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-label">תפריט</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" id="navOverview" href="#" onclick="setTab('overview', this);return false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        לוח בקרה
+      </a>
+      <a class="nav-item" id="navStudents" href="#" onclick="setTab('students', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22.5 21v-2a4 4 0 0 0-3-3.87"/><path d="M15.5 3.13a4 4 0 0 1 0 7.75"/></svg>
+        עובדים
+      </a>
+      <a class="nav-item" id="navCheckinApproval" href="#" onclick="setTab('checkinApproval', this);return false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        צ'ק-אין ממתינים
+        <span class="nav-badge hidden" id="checkinApprovalBadge">0</span>
+      </a>
+      <a class="nav-item" id="navTasks" href="#" onclick="setTab('tasks', this);return false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M7 12l2.5 2.5L16 9"/></svg>
+        משימות
+      </a>
+      <a class="nav-item" id="navMyTasks" href="#" onclick="setTab('myTasks', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        המשימות שלי
+        <span class="nav-badge hidden" id="myTasksBadge">0</span>
+      </a>
+      <a class="nav-item" id="navAttendance" href="#" onclick="setTab('attendance', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+        דוח נוכחות
+        <span class="nav-badge hidden" id="atRiskBadge">0</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="av" id="teacherAvatar">·</div>
+        <div class="info">
+          <div class="n" id="teacherName">מנהל/ת</div>
+          <div class="r">מנהל/ת צוות</div>
+        </div>
+      </div>
+      <div class="school-pill">עסק<strong id="schoolNameLabel">טוען...</strong></div>
+      <button class="sidebar-export-btn" onclick="exportToExcel()">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        ייצוא לאקסל
+      </button>
+      <button class="logout-btn" onclick="handleLogout()">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg>
+        יציאה
+      </button>
     </div>
   </aside>
 
-  <div class="main">
-    <div class="topbar">
-      <div>
-        <div class="page-title">דשבורד מנהל צוות</div>
-        <div class="page-sub">שלום <span id="teacherName">מנהל/ת</span>, הנה מצב הצוות שלך</div>
-      </div>
-      <div class="topbar-right">
-        <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
-        <button class="export-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
-      </div>
-    </div>
+  <main class="main">
+    <div class="loading" id="loadingState">טוען נתונים...</div>
 
-    <div class="wrap" id="app">
-      <div class="loading" id="loadingState">טוען נתונים...</div>
+    <div id="dashboardContent" class="hidden">
 
-      <div id="dashboardContent" class="hidden">
-        <div class="tabs">
-          <button class="tab active" onclick="setTab('students', this)">עובדים</button>
-          <button class="tab" id="myTasksTab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-          <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-          <button class="tab" onclick="setTab('tasks', this)">משימות</button>
-          <button class="tab" id="attendanceTab" onclick="setTab('attendance', this)">דוח נוכחות <span id="atRiskBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+      <!-- ===== לוח בקרה (סקירה כללית) ===== -->
+      <div id="overviewPanel">
+        <div class="view-header">
+          <h1>לוח בקרה</h1>
+          <div class="sub">שלום <span id="teacherNameInline">מנהל/ת</span>, הנה מצב הצוות שלך</div>
         </div>
+
         <div class="stats-grid">
           <div class="stat-card green">
             <div class="stat-num" id="statStudents">0</div>
@@ -312,76 +358,155 @@ tr.clickable{cursor:pointer}
             <div class="stat-num" id="statPendingCheckins">0</div>
             <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
           </div>
-          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[4])">
+          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.getElementById('navAttendance'))">
             <div class="stat-num" id="statAtRisk">0</div>
             <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
           </div>
         </div>
 
-        <div class="panel" id="studentsPanel">
+        <div class="grid-3">
+          <div class="card" style="margin-bottom:0">
+            <div class="panel-head">
+              <h3>ממתין לטיפול שלך</h3>
+            </div>
+            <div style="padding:6px 22px 16px" id="overviewPendingList">
+              <div class="empty-state">אין כרגע פעולות הממתינות לטיפול 🎉</div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:0">
+            <div class="panel-head"><h3>פעולות מהירות</h3></div>
+            <div style="padding:6px 22px 18px" class="quick-actions">
+              <button onclick="setTab('checkinApproval', document.getElementById('navCheckinApproval'))">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                אישור צ'ק-אין ממתינים
+              </button>
+              <button onclick="openTaskModal()">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                יצירת משימה חדשה
+              </button>
+              <button onclick="setTab('attendance', document.getElementById('navAttendance'))">
+                <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+                צפייה בדוח נוכחות
+              </button>
+              <button onclick="exportToExcel()">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                ייצוא כל הנתונים לאקסל
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== עובדים ===== -->
+      <div class="hidden" id="studentsPanel">
+        <div class="view-header view-header-row">
+          <div>
+            <h1>עובדים</h1>
+            <div class="sub">כל העובדים בצוות שלך, הנקודות שצברו ופרטי הקשר</div>
+          </div>
+        </div>
+        <div class="panel">
           <div class="panel-head">
             <h3>רשימת עובדים</h3>
             <input class="search-input" id="studentSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderStudentsTable()">
           </div>
-          <table>
-            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
-            <tbody id="studentsBody"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
+              <tbody id="studentsBody"></tbody>
+            </table>
+          </div>
           <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
         </div>
+      </div>
 
-        <div class="panel hidden" id="checkinApprovalPanel">
+      <!-- ===== צ'ק-אין ממתינים ===== -->
+      <div class="hidden" id="checkinApprovalPanel">
+        <div class="view-header">
+          <h1>צ'ק-אין ממתינים לאישור</h1>
+          <div class="sub">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד.</div>
+        </div>
+        <div class="panel">
           <div class="panel-head">
-            <h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3>
+            <h3>ממתינים לאישור</h3>
             <div class="panel-head-actions">
               <button class="bulk-btn" id="approveAllBtn" onclick="approveAllCheckins()">✓ אשר הכל</button>
             </div>
           </div>
-          <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-          <table id="checkinApprovalTable">
-            <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
-            <tbody id="checkinApprovalBody"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table id="checkinApprovalTable">
+              <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+              <tbody id="checkinApprovalBody"></tbody>
+            </table>
+          </div>
           <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
         </div>
+      </div>
 
-        <div class="panel hidden" id="attendancePanel">
+      <!-- ===== דוח נוכחות ===== -->
+      <div class="hidden" id="attendancePanel">
+        <div class="view-header">
+          <h1>דוח נוכחות</h1>
+          <div class="sub">👆 לחצו על שם עובד כדי לפתוח כרטיסייה עם כל הכניסות, היציאות והתאריכים שלו</div>
+        </div>
+        <div class="panel">
           <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
-          <p style="color:var(--ink-3);font-size:0.82rem;margin:10px 22px 0">👆 לחצו על שם עובד כדי לפתוח כרטיסייה עם כל הכניסות, היציאות, התאריכים ואחוז הנוכחות שלו.</p>
-          <table id="attendanceTable">
-            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th><th>ייצוא</th></tr></thead>
-            <tbody id="attendanceBody"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table id="attendanceTable">
+              <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th><th>ייצוא</th></tr></thead>
+              <tbody id="attendanceBody"></tbody>
+            </table>
+          </div>
           <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
         </div>
+      </div>
 
-        <div class="panel hidden" id="tasksPanel">
+      <!-- ===== משימות ===== -->
+      <div class="hidden" id="tasksPanel">
+        <div class="view-header view-header-row">
+          <div>
+            <h1>משימות לעובדים</h1>
+            <div class="sub">הקצו משימות לעובדים ואשרו את הביצוע שלהן</div>
+          </div>
+        </div>
+        <div class="panel">
           <div class="panel-head">
-            <h3>משימות לעובדים</h3>
+            <h3>כל המשימות</h3>
             <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
           </div>
-          <table>
-            <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-            <tbody id="tasksBody"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+              <tbody id="tasksBody"></tbody>
+            </table>
+          </div>
           <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
         </div>
+      </div>
 
-        <div class="panel hidden" id="myTasksPanel">
+      <!-- ===== המשימות שלי ===== -->
+      <div class="hidden" id="myTasksPanel">
+        <div class="view-header">
+          <h1>המשימות שלי</h1>
+          <div class="sub">משימות שקיבלת מבעל/ת העסק</div>
+        </div>
+        <div class="panel">
           <div class="panel-head">
             <h3>משימות שקיבלתי מבעל העסק</h3>
           </div>
-          <table>
-            <thead><tr><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-            <tbody id="myTasksBody"></tbody>
-          </table>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+              <tbody id="myTasksBody"></tbody>
+            </table>
+          </div>
           <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
         </div>
       </div>
 
       <div class="empty-state hidden" id="errorState"></div>
     </div>
-  </div>
+  </main>
 </div>
 
 <div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
@@ -470,6 +595,7 @@ let allTasks = []
 let attendanceCheckinsPerStudent = {}
 let pendingCheckinApprovals = []
 let currentAttendanceDetailStudentId = null
+let lastAtRiskRows = []
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -484,8 +610,9 @@ async function handleLogout() {
 }
 
 function setTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  btn.classList.add('active')
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+  document.getElementById('overviewPanel').classList.toggle('hidden', tab !== 'overview')
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('checkinApprovalPanel').classList.toggle('hidden', tab !== 'checkinApproval')
   document.getElementById('attendancePanel').classList.toggle('hidden', tab !== 'attendance')
@@ -493,12 +620,13 @@ function setTab(tab, btn) {
   document.getElementById('myTasksPanel').classList.toggle('hidden', tab !== 'myTasks')
   if (tab === 'checkinApproval') loadCheckinApprovals()
   if (tab === 'attendance') {
-    const at = document.getElementById('attendanceTab')
-    if (at) at.classList.remove('tab-alert')
+    const at = document.getElementById('navAttendance')
+    if (at) at.classList.remove('has-alert')
     renderAttendanceReport()
   }
   if (tab === 'myTasks') loadMyTasks()
   if (tab === 'tasks') loadTasks()
+  if (tab === 'overview') renderOverviewSummary()
 }
 
 function escapeHtml(str) {
@@ -539,6 +667,37 @@ function hoursLeftLabel(checkoutIso) {
   const h = Math.floor(msLeft / 3600000)
   const m = Math.floor((msLeft % 3600000) / 60000)
   return `${h}ש ${m}ד נותרו`
+}
+
+// ---- סקירה כללית (לוח בקרה) ----
+function renderOverviewSummary() {
+  const items = []
+
+  pendingCheckinApprovals.slice(0, 4).forEach(c => {
+    items.push(`<div class="preview-item">
+      <div>
+        <div class="pi-name">${escapeHtml(c.users?.name || '—')}</div>
+        <div class="pi-sub">צ'ק-אין ממתין לאישור · ${fmtTime(c.check_in_at)}–${fmtTime(c.check_out_at)}</div>
+      </div>
+      <span class="pi-tag" style="background:rgba(224,171,78,0.16);color:var(--gold-soft)">ממתין</span>
+    </div>`)
+  })
+
+  lastAtRiskRows.slice(0, 4).forEach(r => {
+    items.push(`<div class="preview-item">
+      <div>
+        <div class="pi-name">⚠️ ${escapeHtml(r.student.name || '—')}</div>
+        <div class="pi-sub">${r.pct}% נוכחות${r.decliningTrend ? ' · מגמת ירידה' : ''}</div>
+      </div>
+      <span class="pi-tag" style="background:rgba(239,95,88,0.16);color:var(--red)">בסיכון</span>
+    </div>`)
+  })
+
+  const list = document.getElementById('overviewPendingList')
+  if (!list) return
+  list.innerHTML = items.length > 0
+    ? items.join('')
+    : '<div class="empty-state">אין כרגע פעולות הממתינות לטיפול 🎉</div>'
 }
 
 // ---- עובדים ----
@@ -706,6 +865,7 @@ async function renderAttendanceReport() {
   .sort((a, b) => a.pct - b.pct)
 
   const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD || r.decliningTrend)
+  lastAtRiskRows = atRiskRows
   const atRiskCard = document.getElementById('atRiskCard')
   document.getElementById('statAtRisk').textContent = atRiskRows.length
   atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
@@ -715,18 +875,19 @@ async function renderAttendanceReport() {
     atRiskBadge.textContent = atRiskRows.length
     atRiskBadge.classList.toggle('hidden', atRiskRows.length === 0)
   }
-  const attendanceTab = document.getElementById('attendanceTab')
-  if (attendanceTab) {
-    const viewing = attendanceTab.classList.contains('active')
-    attendanceTab.classList.toggle('tab-alert', atRiskRows.length > 0 && !viewing)
+  const navAttendance = document.getElementById('navAttendance')
+  if (navAttendance) {
+    const viewing = navAttendance.classList.contains('active')
+    navAttendance.classList.toggle('has-alert', atRiskRows.length > 0 && !viewing)
   }
+  renderOverviewSummary()
 
   document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
   document.getElementById('attendanceBody').innerHTML = rows.map(r => {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--red)'
     const atRisk = r.pct < AT_RISK_THRESHOLD
     const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.66rem;background:rgba(201,138,30,0.12);color:var(--gold);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.66rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
       : ''
     const phone = r.student.parent_phone || ''
     const alertCell = (atRisk || r.decliningTrend)
@@ -735,9 +896,7 @@ async function renderAttendanceReport() {
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
-      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}
-        <div class="mobile-attn-hint"><span class="hint-pct" style="color:${barColor}">${r.pct}%</span> נוכחות · ${escapeHtml(r.student.class_name || '—')} · לחצו לפרטי כניסה/יציאה 👆</div>
-      </td>
+      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
       <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
@@ -979,7 +1138,7 @@ async function loadMyTasks() {
   const badge = document.getElementById('myTasksBadge')
   badge.textContent = pendingCount
   badge.classList.toggle('hidden', pendingCount === 0)
-  document.getElementById('myTasksTab').classList.toggle('tab-alert', pendingCount > 0)
+  document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
   renderMyTasks()
 }
 
@@ -1011,7 +1170,7 @@ async function markMyTaskDone(taskId) {
     const badge = document.getElementById('myTasksBadge')
     badge.textContent = pendingCount
     badge.classList.toggle('hidden', pendingCount === 0)
-    document.getElementById('myTasksTab').classList.toggle('tab-alert', pendingCount > 0)
+    document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
     renderMyTasks()
     showToast('סומן כבוצע! ממתין לאישור בעל/ת העסק ✅', 'success')
   } catch (err) {
@@ -1036,7 +1195,9 @@ async function loadCheckinApprovals() {
   document.getElementById('checkinApprovalBadge').textContent = count
   document.getElementById('statPendingCheckins').textContent = count
   document.getElementById('approveAllBtn').disabled = count === 0
+  document.getElementById('navCheckinApproval').classList.toggle('has-alert', count > 0)
   renderCheckinApprovals()
+  renderOverviewSummary()
 }
 
 function renderCheckinApprovals() {
@@ -1200,7 +1361,10 @@ async function loadDashboard() {
   }
 
   currentSchoolId = profile.school_id
-  document.getElementById('teacherName').textContent = profile.name || 'מנהל/ת'
+  const displayName = profile.name || 'מנהל/ת'
+  document.getElementById('teacherName').textContent = displayName
+  document.getElementById('teacherNameInline').textContent = displayName
+  document.getElementById('teacherAvatar').textContent = displayName ? displayName[0] : '·'
 
   const { data: school } = await supabaseClient
     .from('schools').select('*').eq('id', currentSchoolId).single()
