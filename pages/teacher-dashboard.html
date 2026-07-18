@@ -297,7 +297,7 @@ tr.clickable{cursor:pointer}
           <button class="tab" id="myTasksTab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
           <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
           <button class="tab" onclick="setTab('tasks', this)">משימות</button>
-          <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
+          <button class="tab" id="attendanceTab" onclick="setTab('attendance', this)">דוח נוכחות <span id="atRiskBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
         </div>
         <div class="stats-grid">
           <div class="stat-card green">
@@ -492,7 +492,11 @@ function setTab(tab, btn) {
   document.getElementById('tasksPanel').classList.toggle('hidden', tab !== 'tasks')
   document.getElementById('myTasksPanel').classList.toggle('hidden', tab !== 'myTasks')
   if (tab === 'checkinApproval') loadCheckinApprovals()
-  if (tab === 'attendance') renderAttendanceReport()
+  if (tab === 'attendance') {
+    const at = document.getElementById('attendanceTab')
+    if (at) at.classList.remove('tab-alert')
+    renderAttendanceReport()
+  }
   if (tab === 'myTasks') loadMyTasks()
   if (tab === 'tasks') loadTasks()
 }
@@ -705,6 +709,17 @@ async function renderAttendanceReport() {
   const atRiskCard = document.getElementById('atRiskCard')
   document.getElementById('statAtRisk').textContent = atRiskRows.length
   atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
+
+  const atRiskBadge = document.getElementById('atRiskBadge')
+  if (atRiskBadge) {
+    atRiskBadge.textContent = atRiskRows.length
+    atRiskBadge.classList.toggle('hidden', atRiskRows.length === 0)
+  }
+  const attendanceTab = document.getElementById('attendanceTab')
+  if (attendanceTab) {
+    const viewing = attendanceTab.classList.contains('active')
+    attendanceTab.classList.toggle('tab-alert', atRiskRows.length > 0 && !viewing)
+  }
 
   document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
   document.getElementById('attendanceBody').innerHTML = rows.map(r => {
