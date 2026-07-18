@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2E5BFF">
+<meta name="theme-color" content="#5C8CFF">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19,168 +19,168 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
-  --brand:#2E5BFF;--brand-2:#1636BE;--violet:#6C43F0;--gold:#E7A93A;--gold-soft:#F5C869;
-  --green:#0AA478;--red:#E25555;
-  --line:rgba(8,14,40,0.08);--line-2:rgba(8,14,40,0.05);
-  --glass:rgba(255,255,255,0.72);--glass-2:rgba(255,255,255,0.55);--glass-border:rgba(8,14,40,0.08);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.85);
-  --sh-1:0 1px 2px rgba(8,14,40,0.04),0 3px 10px rgba(8,14,40,0.05);
-  --sh-2:0 4px 14px rgba(8,14,40,0.06),0 18px 44px rgba(8,14,40,0.08);
-  --sh-brand:0 12px 30px rgba(46,91,255,0.30);
-  --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
+  --paper:#F6F7FB;--paper-2:#FFFFFF;--paper-3:#F0F2F8;--ink:#12151F;--ink-2:#565D75;--ink-3:#8A90A6;
+  --brand:#4C7CF0;--brand-2:#3660D6;--violet:#8C6BEE;--gold:#C98A1E;--gold-soft:#E0AB4E;
+  --green:#1FA97C;--red:#DB4F49;
+  --line:rgba(18,21,31,0.09);--line-2:rgba(18,21,31,0.06);
+  --glass:#FFFFFF;--glass-2:#FAFBFD;--glass-border:rgba(18,21,31,0.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.6);
+  --sh-1:0 1px 2px rgba(18,21,31,0.04),0 2px 8px rgba(18,21,31,0.05);
+  --sh-2:0 8px 24px rgba(18,21,31,0.08),0 24px 60px rgba(18,21,31,0.1);
+  --sh-brand:0 8px 20px rgba(76,124,240,0.22);
+  --r:12px;--r-lg:16px;--r-sm:9px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
-  -webkit-font-smoothing:antialiased;
-  background-image:
-    radial-gradient(ellipse 50% 40% at 92% -6%, rgba(46,91,255,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 42% 36% at 0% 8%, rgba(108,67,240,0.09) 0%, transparent 58%);
-  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;font-size:13.5px;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-2)}
 
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
-  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
-  border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
+  padding:11px 22px;margin:16px 20px 0;border-radius:var(--r-sm);
+  background:var(--paper-2);border:1px solid var(--glass-border);box-shadow:var(--sh-1);
   position:sticky;top:16px;z-index:100;
 }
-.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--brand);letter-spacing:-0.4px}
-.topbar-right{display:flex;align-items:center;gap:14px}
+.logo{font-family:'Rubik',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:-0.2px;
+  background:linear-gradient(110deg,#6b7290 20%,#1a1d29 40%,#6b7290 60%);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
+@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.topbar-right{display:flex;align-items:center;gap:12px}
 .school-pill{
-  background:var(--glass-2);border:1px solid var(--line);border-radius:var(--pill);
-  padding:8px 18px;font-size:0.85rem;color:var(--ink-3);
+  background:var(--paper-3);border:1px solid var(--line);border-radius:var(--pill);
+  padding:7px 16px;font-size:0.8rem;color:var(--ink-3);
 }
 .school-pill strong{color:var(--ink)}
 .logout-btn{
-  background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
-  padding:8px 18px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.85rem;font-weight:500;transition:all 0.2s;
+  background:transparent;border:1px solid var(--line);color:var(--ink-3);
+  padding:7px 16px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;
+  font-size:0.8rem;font-weight:600;transition:all 0.2s;
 }
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(219,79,73,0.06)}
 
-.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
-.page-title{font-family:'Rubik',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.6px;margin-bottom:4px}
-.page-sub{color:var(--ink-3);font-size:0.92rem;margin-bottom:26px}
+.wrap{max-width:1100px;margin:0 auto;padding:26px 20px 60px}
+.page-title{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-0.4px;margin-bottom:4px}
+.page-sub{color:var(--ink-3);font-size:0.85rem;margin-bottom:22px}
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin-bottom:24px;background:var(--line-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--sh-1)}
 .stat-card{
-  background:var(--glass);backdrop-filter:blur(14px);
-  border:1px solid var(--glass-border);border-radius:var(--r);
-  padding:20px;box-shadow:var(--sh-1),var(--hl);
+  background:var(--paper-2);
+  padding:16px 18px;
 }
-.stat-num{font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;line-height:1;letter-spacing:-1px}
-.stat-label{color:var(--ink-3);font-size:0.82rem;margin-top:6px}
+.stat-num{font-family:'Rubik',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
+.stat-label{color:var(--ink-3);font-size:0.76rem;margin-top:7px}
 .stat-card.accent .stat-num{color:var(--brand)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
-.stat-card.danger{border-color:rgba(226,85,85,0.35);background:rgba(226,85,85,0.06);cursor:pointer;transition:transform 0.2s}
-.stat-card.danger:hover{transform:translateY(-2px)}
+.stat-card.danger{cursor:pointer;transition:background 0.2s;background:rgba(219,79,73,0.05)}
+.stat-card.danger:hover{background:rgba(219,79,73,0.08)}
 .stat-card.danger .stat-num{color:var(--red)}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .copy-code-btn{
-  margin-top:8px;background:rgba(231,169,58,0.12);border:1px solid rgba(231,169,58,0.35);
-  color:#9A6B10;padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
+  margin-top:8px;background:rgba(201,138,30,0.08);border:1px solid rgba(201,138,30,0.28);
+  color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.73rem;font-weight:700;
   cursor:pointer;font-family:'Heebo',sans-serif;
 }
 .bulk-btn{
-  background:linear-gradient(135deg,var(--green),#0C8F66);border:none;color:#fff;padding:9px 16px;
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
-  box-shadow:0 12px 30px rgba(10,164,120,0.28);transition:all 0.2s;
+  background:var(--green);border:none;color:#fff;padding:8px 15px;
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
+  box-shadow:0 8px 18px rgba(31,169,124,0.22);transition:all 0.2s;
 }
-.bulk-btn:hover{transform:translateY(-1px)}
-.bulk-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.bulk-btn:hover{background:#188e69}
+.bulk-btn:disabled{opacity:0.4;cursor:not-allowed}
 .search-input{
-  background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 14px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.85rem;outline:none;min-width:200px;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:9px;padding:8px 13px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.82rem;outline:none;min-width:200px;
 }
+.search-input:focus{border-color:var(--brand)}
 
-.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content;flex-wrap:wrap}
+.tabs{display:flex;gap:2px;margin-bottom:18px;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px;width:fit-content;flex-wrap:wrap}
 .tab{
-  padding:9px 18px;border:none;background:none;color:var(--ink-3);
-  border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
+  padding:8px 16px;border:none;background:none;color:var(--ink-3);
+  border-radius:7px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;
   transition:all 0.2s;
 }
 .tab.active{background:var(--brand);color:#fff}
 
 .panel{
-  background:var(--glass);backdrop-filter:blur(14px);
+  background:var(--paper-2);
   border:1px solid var(--glass-border);border-radius:var(--r);
-  overflow:hidden;margin-bottom:24px;box-shadow:var(--sh-1),var(--hl);
+  overflow:hidden;margin-bottom:22px;box-shadow:var(--sh-1);
 }
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
-.panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
+.panel-head h3{font-size:0.92rem;font-weight:700;color:var(--ink)}
 .panel-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .add-btn{
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;padding:9px 16px;
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
+  background:var(--brand);border:none;color:#fff;padding:8px 15px;
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
   box-shadow:var(--sh-brand);transition:all 0.2s;
 }
-.add-btn:hover{transform:translateY(-1px)}
+.add-btn:hover{background:var(--brand-2)}
 
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line-2)}
-td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+th{text-align:right;padding:11px 20px;font-size:0.72rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2)}
+td{padding:13px 20px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(8,14,40,0.015)}
-.role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
-.points-tag{color:#9A6B10;font-weight:700}
+tr:hover td{background:rgba(18,21,31,0.015)}
+.role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
+.points-tag{color:var(--gold);font-weight:700}
 
-.history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.85rem;color:var(--ink-2)}
+.history-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
 .history-item:last-child{border-bottom:none}
 .history-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif}
 tr.clickable{cursor:pointer}
-.attn-bar-track{height:6px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;width:70px;display:inline-block;margin-left:8px;vertical-align:middle}
+.attn-bar-track{height:5px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;width:64px;display:inline-block;margin-left:8px;vertical-align:middle}
 .attn-bar-fill{height:100%;border-radius:var(--pill)}
 
-.empty-state{padding:40px;text-align:center;color:var(--ink-3);font-size:0.9rem}
+.empty-state{padding:36px;text-align:center;color:var(--ink-3);font-size:0.85rem}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,14,40,0.42);backdrop-filter:blur(7px);align-items:center;justify-content:center;z-index:400;padding:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(18,21,31,0.32);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:rgba(255,255,255,0.96);backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:28px;width:100%;max-width:400px;box-shadow:var(--sh-2),var(--hl)}
-.modal h3{font-size:1.1rem;margin-bottom:20px;color:var(--ink)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:0.82rem;color:var(--ink-3);margin-bottom:6px}
+.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
+.modal h3{font-size:1.02rem;margin-bottom:18px;color:var(--ink)}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:6px}
 .field input,.field select,.field textarea{
-  width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;
+  width:100%;background:var(--paper-2);border:1px solid var(--line);border-radius:9px;padding:10px 13px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;
 }
 .field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:#F4F5F7;border:1px solid var(--line);border-radius:10px;padding:11px 14px;color:var(--ink-3);font-size:0.9rem}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700}
-.btn-cancel{background:var(--glass-2);color:var(--ink-3);border:1px solid var(--line)}
+.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--line);border-radius:9px;padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
+.modal-actions{display:flex;gap:10px;margin-top:18px}
+.modal-actions button{flex:1;padding:10px;border-radius:9px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
+.btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--line)}
 .btn-confirm{background:var(--brand);color:#fff}
 
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:12px 20px;font-size:0.85rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);
+  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:11px 20px;font-size:0.82rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);
 }
 .toast.show{display:block}
-.toast.error{border-color:rgba(226,85,85,0.4);color:var(--red)}
-.toast.success{border-color:rgba(10,164,120,0.4);color:var(--green)}
+.toast.error{border-color:rgba(219,79,73,0.35);color:var(--red)}
+.toast.success{border-color:rgba(31,169,124,0.35);color:var(--green)}
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
 .hidden{display:none !important}
 
-.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
-.task-status-badge.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
-.task-status-badge.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
-.task-status-badge.approved{background:rgba(10,164,120,0.12);color:var(--green)}
-.task-status-badge.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
+.task-status-badge.pending{background:rgba(138,144,166,0.12);color:var(--ink-3)}
+.task-status-badge.submitted{background:rgba(201,138,30,0.12);color:var(--gold)}
+.task-status-badge.approved{background:rgba(31,169,124,0.12);color:var(--green)}
+.task-status-badge.rejected{background:rgba(219,79,73,0.12);color:var(--red)}
 .task-actions{display:flex;gap:6px}
-.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700}
-.task-act-approve{background:rgba(10,164,120,0.12);color:var(--green)}
-.task-act-reject{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700}
+.task-act-approve{background:rgba(31,169,124,0.12);color:var(--green)}
+.task-act-reject{background:rgba(219,79,73,0.12);color:var(--red)}
 
 @media(max-width:640px){
-  .topbar{margin:12px 12px 0;padding:11px 18px}
-  .wrap{padding:20px 4px 40px}
+  .topbar{margin:12px 12px 0;padding:10px 16px}
+  .wrap{padding:18px 4px 40px}
   th:nth-child(3),td:nth-child(3){display:none}
 }
 </style>
@@ -194,7 +194,7 @@ tr.clickable{cursor:pointer}
 <body>
 
 <div class="topbar">
-  <div class="logo">nikud</div>
+  <div class="logo">NIKUD</div>
   <div class="topbar-right">
     <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
     <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
@@ -255,7 +255,7 @@ tr.clickable{cursor:pointer}
           <button class="bulk-btn" id="approveAllBtn" onclick="approveAllCheckins()">✓ אשר הכל</button>
         </div>
       </div>
-      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
+      <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 20px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
       <table>
         <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
         <tbody id="checkinApprovalBody"></tbody>
@@ -303,16 +303,16 @@ tr.clickable{cursor:pointer}
   <div class="modal" style="max-width:480px">
     <h3 id="studentModalName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalPoints" style="font-size:1.5rem">0</div>
+      <div class="stat-card gold" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+        <div class="stat-num" id="studentModalPoints" style="font-size:1.4rem">0</div>
         <div class="stat-label">נקודות כרגע</div>
       </div>
-      <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalClass" style="font-size:1.5rem">—</div>
+      <div class="stat-card" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+        <div class="stat-num" id="studentModalClass" style="font-size:1.4rem">—</div>
         <div class="stat-label">צוות/מחלקה</div>
       </div>
     </div>
-    <h3 style="font-size:0.9rem;margin-bottom:10px">היסטוריית פעילות</h3>
+    <h3 style="font-size:0.88rem;margin-bottom:10px">היסטוריית פעילות</h3>
     <div id="studentModalHistory" style="max-height:320px;overflow-y:auto"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeStudentModal()">סגור</button>
@@ -324,19 +324,19 @@ tr.clickable{cursor:pointer}
   <div class="modal" style="max-width:520px">
     <h3 id="attendanceDetailName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.5rem">—</div>
+      <div class="stat-card" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.4rem">—</div>
         <div class="stat-label">צוות/מחלקה</div>
       </div>
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.5rem">—</div>
+      <div class="stat-card gold" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.4rem">—</div>
         <div class="stat-label">אחוז נוכחות</div>
       </div>
     </div>
-    <h3 style="font-size:0.9rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
+    <h3 style="font-size:0.88rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
     <div id="attendanceDetailHistory" style="max-height:380px;overflow-y:auto">
       <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
+        <thead><tr><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
         <tbody id="attendanceDetailBody"></tbody>
       </table>
       <div class="empty-state hidden" id="attendanceDetailEmpty" style="padding:20px 0">אין עדיין רשומות נוכחות לעובד זה.</div>
@@ -473,7 +473,7 @@ function openStudentModal(studentId) {
         const subject = l.reason === 'task' ? (l.note || 'משימה שאושרה') : (l.reason === 'personal_bonus' ? 'בונוס אישי' : 'נוכחות במשמרת')
         return `<div class="history-item">
           <div>${label}</div>
-          <div>${escapeHtml(subject)}<br><span style="font-size:0.74rem;color:var(--ink-3)">${new Date(l.created_at).toLocaleDateString('he-IL')}</span></div>
+          <div>${escapeHtml(subject)}<br><span style="font-size:0.72rem;color:var(--ink-3)">${new Date(l.created_at).toLocaleDateString('he-IL')}</span></div>
           <div class="history-pts">+${l.points}</div>
         </div>`
       }).join('')
@@ -506,10 +506,10 @@ function openAttendanceDetailModal(studentId) {
   document.getElementById('attendanceDetailEmpty').classList.toggle('hidden', checkins.length > 0)
   tbody.innerHTML = checkins.map(c => `
     <tr>
-      <td style="padding:6px 4px;font-size:0.85rem">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
-      <td style="padding:6px 4px;font-size:0.85rem">${fmtTime(c.check_in_at)}</td>
-      <td style="padding:6px 4px;font-size:0.85rem">${fmtTime(c.check_out_at)}</td>
-      <td style="padding:6px 4px;font-size:0.85rem">${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
+      <td style="padding:6px 4px;font-size:0.83rem">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
+      <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_in_at)}</td>
+      <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_out_at)}</td>
+      <td style="padding:6px 4px;font-size:0.83rem">${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
     </tr>
   `).join('')
 
@@ -592,14 +592,14 @@ async function renderAttendanceReport() {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--red)'
     const atRisk = r.pct < AT_RISK_THRESHOLD
     const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(231,169,58,0.15);color:#9A6B10;padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.66rem;background:rgba(201,138,30,0.12);color:var(--gold);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
       : ''
     const phone = r.student.parent_phone || ''
     const alertCell = (atRisk || r.decliningTrend)
       ? phone
         ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
-      : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
+      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
@@ -684,8 +684,6 @@ async function approveTask(taskId) {
     const student = allStudents.find(s => s.id === task.student_id)
     const pointsBefore = student ? (student.points || 0) : 0
 
-    // טריגר במסד הנתונים מזכה אוטומטית בנקודות ברגע שהסטטוס עובר ל'approved',
-    // עד למכסה של 3 נקודות ממשימות לכל עובד ביום (מכסה חוצת-משימות).
     const { error: taskErr } = await supabaseClient.from('tasks')
       .update({ status: 'approved' })
       .eq('id', taskId)
@@ -694,7 +692,6 @@ async function approveTask(taskId) {
     task.status = 'approved'
     renderTasks()
 
-    // בודקים כמה נקודות באמת הועברו (יכול להיות פחות מ-task.points אם המכסה היומית נוצלה)
     let pointsAwarded = task.points
     const { data: freshStudent } = await supabaseClient
       .from('users').select('points').eq('id', task.student_id).single()
@@ -747,11 +744,11 @@ function renderTasks() {
            <button class="task-act-btn task-act-reject" onclick="rejectTask('${t.id}')">✗ דחה</button>
          </div>`
       : t.status === 'pending'
-      ? `<span style="color:var(--ink-3);font-size:0.78rem">ממתין לביצוע</span>`
-      : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
+      ? `<span style="color:var(--ink-3);font-size:0.76rem">ממתין לביצוע</span>`
+      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr>
       <td>${escapeHtml(student ? student.name : '—')}</td>
-      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.76rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
+      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
       <td class="points-tag">${t.points}</td>
       <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
       <td>${actions}</td>
@@ -793,9 +790,9 @@ function renderMyTasks() {
   document.getElementById('myTasksBody').innerHTML = myTasks.map(t => {
     const action = t.status === 'pending'
       ? `<button class="task-act-btn task-act-approve" onclick="markMyTaskDone('${t.id}')">סמן כבוצע</button>`
-      : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
+      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr>
-      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.76rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
+      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
       <td class="points-tag">${t.points}</td>
       <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
       <td>${action}</td>
@@ -876,7 +873,6 @@ async function rejectCheckinRow(id) {
   await renderAttendanceReport()
 }
 
-// תוסף למנהל צוות: אישור מרוכז של כל הצ'ק-אינים הממתינים בלחיצה אחת
 async function approveAllCheckins() {
   if (pendingCheckinApprovals.length === 0) return
   if (!confirm(`לאשר את כל ${pendingCheckinApprovals.length} דיווחי הנוכחות הממתינים? כל אחד יזכה 3 נקודות.`)) return
