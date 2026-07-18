@@ -41,25 +41,22 @@ a:hover{color:var(--brand-2)}
 .app-shell{display:flex;min-height:100vh}
 
 .sidebar{
-  width:232px;flex:none;background:var(--sidebar-bg);color:var(--sidebar-ink);
-  display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;
+  width:96px;flex:none;background:var(--sidebar-bg);color:var(--sidebar-ink);
+  display:flex;flex-direction:column;align-items:center;padding:20px 8px;position:sticky;top:0;height:100vh;
 }
 .sidebar-logo{
-  font-family:'Rubik',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:#fff;
-  padding:6px 10px 22px;display:flex;align-items:center;gap:8px;
+  font-family:'Rubik',sans-serif;font-size:0.72rem;font-weight:800;letter-spacing:0.3px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;
 }
-.sidebar-logo::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--brand);display:inline-block}
-.sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
-.sidebar-nav .tab{
-  display:flex;align-items:center;gap:10px;text-align:right;justify-content:flex-start;
-  padding:10px 12px;border:none;background:none;color:var(--sidebar-ink);
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;
-  transition:background 0.15s,color 0.15s;width:100%;
+.sidebar-logo .logo-main{
+  background:linear-gradient(110deg,#9AA0B4 20%,#EEF0F6 40%,#9AA0B4 60%);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite;
 }
-.sidebar-nav .tab:hover{background:rgba(255,255,255,0.05);color:#fff}
-.sidebar-nav .tab.active{background:var(--sidebar-active);color:#fff}
-.sidebar-nav .tab .tab-ico{font-size:0.95rem;width:18px;text-align:center;flex:none}
-.sidebar-foot{border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;margin-top:10px}
+.sidebar-logo .logo-sub{font-size:0.6rem;font-weight:600;letter-spacing:1px;color:var(--sidebar-ink-2);text-transform:uppercase}
+.sidebar-logo .logo-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:2px;animation:dotBlink 1.1s ease-in-out infinite}
+@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes dotBlink{0%,49%{opacity:1;box-shadow:0 0 5px 1px var(--green)}50%,100%{opacity:0.15;box-shadow:0 0 0 0 transparent}}
+.sidebar-foot{flex:1;display:flex;align-items:flex-end}
 
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
 
@@ -78,12 +75,19 @@ a:hover{color:var(--brand-2)}
 .school-pill strong{color:var(--ink)}
 .logout-btn{
   background:transparent;border:1px solid rgba(255,255,255,0.14);color:var(--sidebar-ink);
-  padding:8px 14px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.8rem;font-weight:600;transition:all 0.2s;width:100%;
+  padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
+  font-size:0.72rem;font-weight:600;transition:all 0.2s;width:100%;
 }
 .logout-btn:hover{border-color:var(--red);color:#fff;background:rgba(196,61,56,0.16)}
 
-.wrap{max-width:1180px;width:100%;margin:0 auto;padding:26px 30px 60px}
+.wrap{width:100%;margin:0;padding:22px 30px 60px}
+.tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px;width:fit-content;flex-wrap:wrap}
+.tabs .tab{
+  padding:9px 18px;border:none;background:none;color:var(--ink-3);
+  border-radius:7px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;
+  transition:all 0.2s;
+}
+.tabs .tab.active{background:var(--brand);color:#fff}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{
@@ -198,14 +202,11 @@ tr.clickable{cursor:pointer}
   .app-shell{flex-direction:column}
   .sidebar{
     width:100%;height:auto;position:sticky;top:0;z-index:200;
-    flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 12px;gap:8px 10px;
+    flex-direction:row;align-items:center;justify-content:space-between;padding:10px 16px;gap:10px;
   }
-  .sidebar-logo{padding:0;flex:none;order:1}
-  .sidebar-foot{border-top:none;margin-top:0;padding-top:0;flex:none;width:auto;order:2;margin-right:auto}
+  .sidebar-logo{flex-direction:row;align-items:baseline;gap:6px}
+  .sidebar-foot{flex:none}
   .logout-btn{width:auto;padding:7px 12px;font-size:0.76rem}
-  .sidebar-nav{flex-direction:row;flex:1 1 100%;flex-wrap:wrap;gap:4px;min-width:0;order:3}
-  .sidebar-nav .tab{flex:none;padding:7px 10px;font-size:0.72rem;white-space:nowrap;gap:5px}
-  .sidebar-nav .tab span[id$="Badge"]{margin-right:4px}
 }
 @media(max-width:640px){
   .topbar{padding:12px 14px;gap:8px}
@@ -215,6 +216,8 @@ tr.clickable{cursor:pointer}
   .school-pill{padding:6px 11px;font-size:0.72rem}
   .export-btn{padding:7px 11px;font-size:0.74rem}
   .wrap{padding:16px 10px 40px}
+  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
+  .tabs .tab{flex:none;padding:8px 12px;font-size:0.78rem;white-space:nowrap}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
   .stat-card{padding:14px 14px}
   .stat-num{font-size:1.3rem}
@@ -235,14 +238,7 @@ tr.clickable{cursor:pointer}
 
 <div class="app-shell">
   <aside class="sidebar">
-    <div class="sidebar-logo">NIKUD</div>
-    <nav class="sidebar-nav">
-      <button class="tab active" onclick="setTab('students', this)"><span class="tab-ico">👥</span>עובדים</button>
-      <button class="tab" onclick="setTab('checkinApproval', this)"><span class="tab-ico">🕒</span>צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-right:auto"></span></button>
-      <button class="tab" onclick="setTab('attendance', this)"><span class="tab-ico">📋</span>דוח נוכחות</button>
-      <button class="tab" onclick="setTab('tasks', this)"><span class="tab-ico">✅</span>משימות</button>
-      <button class="tab" onclick="setTab('myTasks', this)"><span class="tab-ico">📥</span>המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-right:auto"></span></button>
-    </nav>
+    <div class="sidebar-logo"><span class="logo-main">NIKUD</span><span class="logo-sub">system</span><span class="logo-dot"></span></div>
     <div class="sidebar-foot">
       <button class="logout-btn" onclick="handleLogout()">יציאה</button>
     </div>
@@ -264,6 +260,13 @@ tr.clickable{cursor:pointer}
       <div class="loading" id="loadingState">טוען נתונים...</div>
 
       <div id="dashboardContent" class="hidden">
+        <div class="tabs">
+          <button class="tab active" onclick="setTab('students', this)">עובדים</button>
+          <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+          <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
+          <button class="tab" onclick="setTab('tasks', this)">משימות</button>
+          <button class="tab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+        </div>
         <div class="stats-grid">
           <div class="stat-card green">
             <div class="stat-num" id="statStudents">0</div>
