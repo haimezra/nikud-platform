@@ -316,10 +316,19 @@ tr.clickable{cursor:pointer}
         <div class="panel hidden" id="attendancePanel">
           <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
           <table>
-            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
+            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
             <tbody id="attendanceBody"></tbody>
           </table>
           <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
+        </div>
+
+        <div class="panel hidden" id="attendancePanel2">
+          <div class="panel-head"><h3>יומן נוכחות מלא - כל הכניסות והיציאות לפי יום</h3></div>
+          <table>
+            <thead><tr><th>עובד</th><th>צוות/מחלקה</th><th>יום</th><th>שעת כניסה</th><th>שעת יציאה</th><th>משך משמרת</th><th>סטטוס</th></tr></thead>
+            <tbody id="attendanceLogBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="attendanceLogEmpty">אין עדיין רשומות נוכחות.</div>
         </div>
 
         <div class="panel hidden" id="tasksPanel">
@@ -458,6 +467,7 @@ function setTab(tab, btn) {
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('checkinApprovalPanel').classList.toggle('hidden', tab !== 'checkinApproval')
   document.getElementById('attendancePanel').classList.toggle('hidden', tab !== 'attendance')
+  document.getElementById('attendancePanel2').classList.toggle('hidden', tab !== 'attendance')
   document.getElementById('tasksPanel').classList.toggle('hidden', tab !== 'tasks')
   document.getElementById('myTasksPanel').classList.toggle('hidden', tab !== 'myTasks')
   if (tab === 'checkinApproval') loadCheckinApprovals()
@@ -475,6 +485,26 @@ function escapeHtml(str) {
 function fmtTime(iso) {
   if (!iso) return '—'
   return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—'
+  return new Date(iso).toLocaleDateString('he-IL')
+}
+
+function fmtDateTime(iso) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  return `${d.toLocaleDateString('he-IL')} · ${d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+function durationLabel(inIso, outIso) {
+  if (!inIso || !outIso) return '—'
+  const ms = new Date(outIso) - new Date(inIso)
+  if (ms <= 0) return '—'
+  const h = Math.floor(ms / 3600000)
+  const m = Math.round((ms % 3600000) / 60000)
+  return `${h}ש ${m}ד`
 }
 
 function hoursLeftLabel(checkoutIso) {
@@ -655,12 +685,33 @@ async function renderAttendanceReport() {
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
-      <td>${fmtTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
-      <td>${fmtTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
+      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
+      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
       <td>${r.totalLessons}</td>
       <td>${r.attended}</td>
       <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
       <td onclick="event.stopPropagation()">${alertCell}</td>
+    </tr>`
+  }).join('')
+
+  renderAttendanceLog(allCheckins)
+}
+
+function renderAttendanceLog(allCheckins) {
+  const statusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ לא אושר', 'הושלם': '⏳ ממתין לאישור', 'ממתינה': '🟢 במשמרת כרגע' }
+  const sorted = [...allCheckins].sort((a, b) => new Date(b.check_in_at) - new Date(a.check_in_at))
+
+  document.getElementById('attendanceLogEmpty').classList.toggle('hidden', sorted.length > 0)
+  document.getElementById('attendanceLogBody').innerHTML = sorted.map(c => {
+    const student = allStudents.find(s => s.id === c.student_id)
+    return `<tr>
+      <td>${escapeHtml(student ? student.name : '—')}</td>
+      <td>${escapeHtml(student ? (student.class_name || '—') : '—')}</td>
+      <td>${fmtDate(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_in_at)}</td>
+      <td>${fmtTime(c.check_out_at)}</td>
+      <td>${durationLabel(c.check_in_at, c.check_out_at)}</td>
+      <td>${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
     </tr>`
   }).join('')
 }
