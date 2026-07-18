@@ -226,7 +226,19 @@ tr.clickable{cursor:pointer}
   .panel table th:nth-child(3),.panel table td:nth-child(3){display:none}
   .modal{padding:20px}
   .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
+
+  /* דוח נוכחות במובייל: מציגים רק שם + התראה בטבלה, שאר הפרטים (אחוז, כניסה, יציאה, ימים, אישור) נפתחים בלחיצה בכרטיסיית הפרטים */
+  #attendanceTable th:nth-child(2), #attendanceTable td:nth-child(2),
+  #attendanceTable th:nth-child(3), #attendanceTable td:nth-child(3),
+  #attendanceTable th:nth-child(4), #attendanceTable td:nth-child(4),
+  #attendanceTable th:nth-child(5), #attendanceTable td:nth-child(5),
+  #attendanceTable th:nth-child(6), #attendanceTable td:nth-child(6),
+  #attendanceTable th:nth-child(7), #attendanceTable td:nth-child(7){display:none}
+  #attendanceTable td:first-child{white-space:normal;padding-left:8px}
+  .mobile-attn-hint{display:block}
 }
+.mobile-attn-hint{display:none;font-size:0.74rem;color:var(--ink-3);margin-top:4px}
+.mobile-attn-hint .hint-pct{font-weight:700;font-family:'Rubik',sans-serif}
 </style>
 <!-- Vercel Web Analytics -->
 <script>
@@ -317,8 +329,8 @@ tr.clickable{cursor:pointer}
         <div class="panel hidden" id="attendancePanel">
           <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
           <p style="color:var(--ink-3);font-size:0.82rem;margin:10px 22px 0">👆 לחצו על שם עובד כדי לפתוח כרטיסייה עם כל הכניסות, היציאות, התאריכים ואחוז הנוכחות שלו.</p>
-          <table>
-            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
+          <table id="attendanceTable">
+            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th><th>ייצוא</th></tr></thead>
             <tbody id="attendanceBody"></tbody>
           </table>
           <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
@@ -396,6 +408,7 @@ tr.clickable{cursor:pointer}
       <div class="empty-state hidden" id="attendanceDetailEmpty" style="padding:20px 0">אין עדיין רשומות נוכחות לעובד זה.</div>
     </div>
     <div class="modal-actions">
+      <button class="export-btn" onclick="exportStudentAttendanceToExcel(currentAttendanceDetailStudentId)">📊 ייצוא לאקסל</button>
       <button class="btn-cancel" onclick="closeAttendanceDetailModal()">סגור</button>
     </div>
   </div>
@@ -441,6 +454,7 @@ let allPointLogs = []
 let allTasks = []
 let attendanceCheckinsPerStudent = {}
 let pendingCheckinApprovals = []
+let currentAttendanceDetailStudentId = null
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -563,6 +577,7 @@ async function openAttendanceDetailModal(studentId) {
   const student = allStudents.find(s => s.id === studentId)
   if (!student) return
 
+  currentAttendanceDetailStudentId = studentId
   document.getElementById('attendanceDetailName').textContent = student.name || 'עובד/ת'
   document.getElementById('attendanceDetailClass').textContent = student.class_name || '—'
   document.getElementById('attendanceDetailPct').textContent = '…'
@@ -694,7 +709,9 @@ async function renderAttendanceReport() {
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
-      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
+      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}
+        <div class="mobile-attn-hint"><span class="hint-pct" style="color:${barColor}">${r.pct}%</span> נוכחות · ${escapeHtml(r.student.class_name || '—')} · לחצו לפרטי כניסה/יציאה 👆</div>
+      </td>
       <td>${escapeHtml(r.student.class_name || '—')}</td>
       <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
       <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
@@ -702,6 +719,7 @@ async function renderAttendanceReport() {
       <td>${r.attended}</td>
       <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
       <td onclick="event.stopPropagation()">${alertCell}</td>
+      <td onclick="event.stopPropagation()"><button class="copy-code-btn" onclick="exportStudentAttendanceToExcel('${r.student.id}')" title="ייצוא דוח נוכחות של ${escapeHtml(r.student.name||'').replace(/"/g,'')} לאקסל">📊 אקסל</button></td>
     </tr>`
   }).join('')
 }
@@ -721,6 +739,58 @@ async function promptParentPhone(studentId, studentName) {
   if (student) student.parent_phone = phone
   showToast('הטלפון נשמר', 'success')
   await renderAttendanceReport()
+}
+
+// ---- ייצוא דוח נוכחות של עובד בודד לאקסל ----
+async function exportStudentAttendanceToExcel(studentId) {
+  const student = allStudents.find(s => s.id === studentId)
+  if (!student) { showToast('העובד לא נמצא', 'error'); return }
+
+  showToast('מכין קובץ אקסל...', 'success')
+
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('school_id', currentSchoolId)
+    .eq('student_id', studentId)
+    .order('check_in_at', { ascending: false })
+
+  if (error) { showToast('שגיאה בטעינת נתוני העובד: ' + error.message, 'error'); return }
+
+  const checkins = data || []
+  const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
+
+  const completed = checkins.filter(c => c.check_out_at)
+  const approved = completed.filter(c => c.status === 'אושר').length
+  const pct = completed.length > 0 ? Math.round((approved / completed.length) * 100) : null
+
+  const attendanceSheet = checkins.map(c => {
+    const checkInDate = c.check_in_at ? new Date(c.check_in_at) : null
+    return {
+      'תאריך': checkInDate ? checkInDate.toLocaleDateString('he-IL') : '—',
+      'שעת כניסה (צ\'ק-אין)': checkInDate ? checkInDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
+      'שעת יציאה (צ\'ק-אאוט)': c.check_out_at ? new Date(c.check_out_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
+      'סטטוס': statusLabel[c.status] || c.status,
+      'נקודות': c.points ?? 0
+    }
+  })
+
+  const summarySheet = [{
+    'שם': student.name || '—',
+    'צוות/מחלקה': student.class_name || '—',
+    'סה"כ משמרות שהסתיימו': completed.length,
+    'משמרות שאושרו': approved,
+    'אחוז נוכחות': pct !== null ? pct + '%' : '—'
+  }]
+
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summarySheet), 'סיכום')
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות מפורטת')
+
+  const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
+  const safeName = (student.name || 'עובד').replace(/[\\/:*?"<>|]/g, '')
+  XLSX.writeFile(wb, `נוכחות-${safeName}-${dateStr}.xlsx`)
+  showToast('הקובץ הורד בהצלחה ✅', 'success')
 }
 
 // ---- משימות ----
