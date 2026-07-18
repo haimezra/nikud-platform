@@ -181,12 +181,13 @@ tr.clickable{cursor:pointer}
   .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
   .tab{flex:none;white-space:nowrap;padding:8px 13px;font-size:0.82rem}
   .panel-head{padding:14px 16px}
-  /* --- תיקון מובייל: טבלאות נגללות אופקית במקום להסתיר עמודות --- */
-  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה, מה שהעלים לפעמים */
-  /* עמודת פעולות (אישור/דחייה). עכשיו הטבלאות נגללות הצידה וכל הכפתורים נשארים. */
-  .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .panel table{min-width:560px}
-  th,td{padding:11px 14px;font-size:0.84rem}
+  /* --- תיקון מובייל: הטבלאות מתאימות למסך בלי גלילה הצידה --- */
+  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה. הוסר כדי שכפתורי הפעולה יישארו. */
+  th,td{padding:10px 8px;font-size:0.8rem}
+  /* בטבלת הצ'ק-אין הממתינים: מסתירים במובייל "צוות/משמרת" (עמ' 2) ו"זמן לאישור" (עמ' 5) */
+  /* כדי שיישאר מקום לשם, לשעות ולכפתורי האישור/דחייה */
+  #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
+  #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
 }
 </style>
 <!-- Vercel Web Analytics -->
@@ -268,7 +269,7 @@ tr.clickable{cursor:pointer}
     <div class="panel hidden" id="checkinApprovalPanel">
       <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
       <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-      <table>
+      <table id="checkinApprovalTable">
         <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
         <tbody id="checkinApprovalBody"></tbody>
       </table>
