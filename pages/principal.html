@@ -169,9 +169,24 @@ tr.clickable{cursor:pointer}
 .task-act-reject{background:rgba(226,85,85,0.12);color:var(--red)}
 
 @media(max-width:640px){
-  .topbar{margin:12px 12px 0;padding:11px 18px}
-  .wrap{padding:20px 4px 40px}
-  th:nth-child(3),td:nth-child(3){display:none}
+  .topbar{margin:12px 12px 0;padding:11px 18px;flex-wrap:wrap;gap:8px}
+  .logo{font-size:1.15rem}
+  .topbar-right{gap:8px;flex-wrap:wrap}
+  .school-pill{padding:6px 12px;font-size:0.76rem}
+  .wrap{padding:20px 10px 40px}
+  .page-title{font-size:1.3rem}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:15px}
+  .stat-num{font-size:1.5rem}
+  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
+  .tab{flex:none;white-space:nowrap;padding:8px 13px;font-size:0.82rem}
+  .panel-head{padding:14px 16px}
+  /* --- תיקון מובייל: טבלאות נגללות אופקית במקום להסתיר עמודות --- */
+  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה, מה שהעלים לפעמים */
+  /* עמודת פעולות (אישור/דחייה). עכשיו הטבלאות נגללות הצידה וכל הכפתורים נשארים. */
+  .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .panel table{min-width:560px}
+  th,td{padding:11px 14px;font-size:0.84rem}
 }
 </style>
 <!-- Vercel Web Analytics -->
@@ -374,12 +389,12 @@ const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 let currentUser = null
-let currentSchoolId = null   // מזהה העסק (שם השדה במסד נשאר school_id)
+let currentSchoolId = null
 let currentInviteCode = null
 let currentSchoolPlan = 'trial'
-let allStudents = []   // עובדים (role במסד: 'student')
-let allTeachers = []   // מנהלי צוותים (role במסד: 'teacher')
-let allLessons = []    // משמרות (הטבלה במסד נשארת lessons)
+let allStudents = []
+let allTeachers = []
+let allLessons = []
 let allPointLogs = []
 let allTasks = []
 let attendanceCheckinsPerStudent = {}
@@ -508,8 +523,6 @@ async function renderAttendanceReport() {
   const recentStart = now - TREND_WINDOW_DAYS * 86400000
   const previousStart = now - 2 * TREND_WINDOW_DAYS * 86400000
 
-  // שולף את נתוני הנוכחות האמיתיים (כניסה/יציאה בפועל) מטבלת checkins,
-  // במקום המנגנון הישן של lessons/point_logs שלא היה מקושר לצ'ק-אין בפועל.
   const { data: checkins, error: checkinsErr } = await supabaseClient
     .from('checkins')
     .select('*')
@@ -523,8 +536,6 @@ async function renderAttendanceReport() {
   }
 
   const allCheckins = checkins || []
-
-  // "משמרת שנערכה" = צ'ק-אין שהושלם (יש לו גם שעת יציאה), בכל סטטוס אישור
   const completedCheckins = allCheckins.filter(c => c.check_out_at)
 
   const checkinsPerStudent = {}
@@ -685,8 +696,6 @@ async function createTask() {
   if (!title) { showToast('נא למלא כותרת למשימה', 'error'); return }
 
   try {
-    // student_id הוא שם השדה במסד, אך כאן הוא מכיל את מזהה המנהל (role: 'teacher')
-    // points קבוע ל-0: מנהלי צוותים לא מקבלים נקודות ממנהל העסק, רק העובדים מקבלים נקודות.
     const { data, error } = await supabaseClient.from('tasks').insert({
       school_id: currentSchoolId,
       created_by: currentUser.id,
@@ -711,7 +720,6 @@ async function approveTask(taskId) {
   if (!confirm(`לאשר את המשימה "${task.title}"? (משימות מנהלים אינן מזכות בנקודות)`)) return
 
   try {
-    // מנהלי צוותים לא מקבלים נקודות ממנהל העסק - רק מסמנים את המשימה כמאושרת.
     const { error: taskErr } = await supabaseClient.from('tasks')
       .update({ status: 'approved' })
       .eq('id', taskId)
@@ -748,7 +756,6 @@ async function rejectTask(taskId) {
 function renderTasks() {
   document.getElementById('tasksEmpty').classList.toggle('hidden', allTasks.length > 0)
   document.getElementById('tasksBody').innerHTML = allTasks.map(t => {
-    // student_id בטבלת tasks מכיל את מזהה המנהל (role: 'teacher'), לא עובד רגיל
     const student = allTeachers.find(s => s.id === t.student_id)
     const actions = t.status === 'submitted'
       ? `<div class="task-actions">
@@ -915,7 +922,6 @@ async function loadDashboard() {
 
   const studentIds = students.map(s => s.id)
   if (studentIds.length > 0) {
-    // Fetch by student_id (not just lesson_id) so task-based awards (lesson_id null) show up too
     const { data: logs } = await supabaseClient
       .from('point_logs').select('*').in('student_id', studentIds)
     allPointLogs = logs || []
@@ -975,9 +981,14 @@ async function exportToExcel() {
   }))
 
   const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(teachersSheet), 'מנהלי צוותים')
+  if (attendanceSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
+  if (studentsSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
+  if (teachersSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(teachersSheet), 'מנהלי צוותים')
+
+  if (wb.SheetNames.length === 0) {
+    showToast('אין עדיין נתונים לייצוא', 'error')
+    return
+  }
 
   const businessName = document.getElementById('schoolNameLabel').textContent || 'עסק'
   const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
