@@ -294,10 +294,10 @@ tr.clickable{cursor:pointer}
       <div id="dashboardContent" class="hidden">
         <div class="tabs">
           <button class="tab active" onclick="setTab('students', this)">עובדים</button>
-          <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-          <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
-          <button class="tab" onclick="setTab('tasks', this)">משימות</button>
           <button class="tab" id="myTasksTab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+          <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+          <button class="tab" onclick="setTab('tasks', this)">משימות</button>
+          <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
         </div>
         <div class="stats-grid">
           <div class="stat-card green">
@@ -312,7 +312,7 @@ tr.clickable{cursor:pointer}
             <div class="stat-num" id="statPendingCheckins">0</div>
             <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
           </div>
-          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
+          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[4])">
             <div class="stat-num" id="statAtRisk">0</div>
             <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
           </div>
