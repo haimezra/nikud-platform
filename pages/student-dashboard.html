@@ -219,7 +219,7 @@ nav{
   <div class="dashboard">
     <div class="dashboard-header">
       <div class="welcome">
-        <h2 id="welcomeText">שלום 👋</h2>
+        <h2 id="welcomeText">שלום</h2>
         <p id="classInfo"></p>
       </div>
       <div class="points-badge">
@@ -229,19 +229,19 @@ nav{
     </div>
 
     <div class="demo-banner hidden" id="demoBanner" style="display:none">
-      <span>🎬</span>
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>
       <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של החברה.</span>
     </div>
 
     <div class="card hidden" id="checkinCard" style="margin-bottom:16px"></div>
 
     <div class="card hidden" id="tasksCard" style="margin-bottom:16px">
-      <h3>📋 המשימות שלי</h3>
+      <h3>המשימות שלי</h3>
       <div id="tasksList"></div>
     </div>
 
     <div class="card" id="attendanceCard" style="margin-bottom:16px">
-      <h3>📈 אחוז נוכחות</h3>
+      <h3>אחוז נוכחות</h3>
       <div id="attendanceContent" style="margin-top:10px">
         <div class="empty-state">אין עדיין מספיק נתונים להצגת אחוז נוכחות</div>
       </div>
@@ -249,17 +249,17 @@ nav{
 
     <div class="grid-2">
       <div class="card">
-        <h3>⚡ פעילות אחרונה</h3>
+        <h3>פעילות אחרונה</h3>
         <div id="activityList"><div class="empty-state">אין עדיין פעילות. המשמרת הראשונה שלך תופיע כאן!</div></div>
       </div>
       <div class="card">
-        <h3>🏆 ליגת הצוות</h3>
+        <h3>ליגת הצוות</h3>
         <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
       </div>
     </div>
 
     <div class="card">
-      <h3>יתרה: <span style="color:var(--gold)" id="storeBalance">0</span> נקודות</h3>
+      <h3 style="text-transform:none;font-size:0.95rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
       <div class="store-grid" id="storeGrid" style="margin-top:14px"></div>
 
       <h3 style="margin-top:22px">איך צוברים נקודות</h3>
@@ -301,7 +301,7 @@ async function init() {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
   } catch(e) {
     document.getElementById('loadingScreen').innerHTML =
-      '⚠️ המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
+      'המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
     return
   }
 
@@ -328,7 +328,7 @@ async function init() {
   document.getElementById('demoBanner').style.display = isDemoAccount ? 'flex' : 'none'
 
   document.getElementById('userName').textContent = profile.name
-  document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]} 👋`
+  document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]}`
   document.getElementById('classInfo').textContent = `צוות ${profile.class_name || ''}`
   document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
   document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
@@ -370,7 +370,7 @@ async function loadTasks() {
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
     document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
     await loadActivity(currentUser.id)
-    showToast(`🎉 המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
+    showToast(`המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
   }
 
   renderTasks()
@@ -386,7 +386,7 @@ function renderTasks() {
   card.classList.remove('hidden')
 
   document.getElementById('tasksList').innerHTML = myTasks.map(t => {
-    const icon = t.status === 'approved' ? '<span style="color:var(--green);opacity:0.65;font-size:1.1rem">✓</span>' : t.status === 'rejected' ? '✗' : t.status === 'submitted' ? '📩' : '📋'
+    const icon = t.status === 'approved' ? '<span style="color:var(--green);opacity:0.65;font-size:1.1rem">✓</span>' : t.status === 'rejected' ? '<span style="color:var(--red);opacity:0.7;font-size:1rem">✕</span>' : t.status === 'submitted' ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--gold-soft);display:inline-block"></span>' : '<span style="width:8px;height:8px;border-radius:50%;background:var(--ink-3);display:inline-block"></span>'
     const action = t.status === 'pending'
       ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">סמן כבוצע</button>`
       : `<span class="task-status-tag ${t.status}">${taskStatusLabel(t.status)}${t.status === 'approved' ? ' +' + t.points : ''}</span>`
@@ -412,7 +412,7 @@ async function markTaskDone(taskId) {
     const task = myTasks.find(t => t.id === taskId)
     if (task) task.status = 'submitted'
     renderTasks()
-    showToast('סומן כבוצע! ממתין לאישור המנהל/ת ✅')
+    showToast('סומן כבוצע! ממתין לאישור המנהל/ת')
   } catch (err) {
     showToast('שגיאה בסימון המשימה', true)
   }
@@ -445,7 +445,7 @@ async function refreshMyCheckin() {
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
     document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
     await loadActivity(currentUser.id)
-    if (myCheckin.status === 'אושר') showToast('🎉 המנהל/ת אישר/ה את הצ\'ק-אין שלך!')
+    if (myCheckin.status === 'אושר') showToast('המנהל/ת אישר/ה את הצ\'ק-אין שלך!')
     else showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
   }
 }
@@ -461,34 +461,34 @@ function renderCheckinCard() {
   if (myCheckin && myCheckin.status === 'ממתינה') {
     // במשמרת פעילה: הכפתור הופך לאדום חלש ומהבהב לאט עד לצ'ק-אאוט
     card.innerHTML = `
-      <h3>📍 נוכחות פעילה</h3>
-      <div class="checkin-status pending">📥 נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
+      <h3>נוכחות פעילה</h3>
+      <div class="checkin-status pending">נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
       <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
-      <button class="checkin-btn active-shift" onclick="doCheckout()">🏁 צ'ק-אאוט - סיימתי</button>
+      <button class="checkin-btn active-shift" onclick="doCheckout()">צ'ק-אאוט - סיימתי</button>
     `
     return
   }
 
   if (myCheckin && myCheckin.status === 'הושלם') {
     card.innerHTML = `
-      <h3>📍 נוכחות</h3>
-      <div class="checkin-status pending">📥 נכנסת ${formatTime(myCheckin.check_in_at)} · 📤 יצאת ${formatTime(myCheckin.check_out_at)}</div>
-      <div class="checkin-status pending">⏳ ממתין/ה לאישור המנהל/ה (עד 8 שעות)...</div>
+      <h3>נוכחות</h3>
+      <div class="checkin-status pending">נכנסת ${formatTime(myCheckin.check_in_at)} · יצאת ${formatTime(myCheckin.check_out_at)}</div>
+      <div class="checkin-status pending">ממתין/ה לאישור המנהל/ה (עד 8 שעות)...</div>
     `
     return
   }
 
   const lastResult = myCheckin && myCheckin.status === 'אושר'
-    ? `<div class="checkin-status approved" style="font-size:0.8rem">✓ הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
+    ? `<div class="checkin-status approved" style="font-size:0.8rem">הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
     : myCheckin && myCheckin.status === 'נדחה'
-    ? `<div class="checkin-status rejected">✗ הצ'ק-אין הקודם לא אושר הפעם</div>`
+    ? `<div class="checkin-status rejected">הצ'ק-אין הקודם לא אושר הפעם</div>`
     : ''
 
   // אין משמרת פעילה: הכפתור הרגיל בצבע כחול
   card.innerHTML = `
-    <h3>📍 צ'ק-אין</h3>
+    <h3>צ'ק-אין</h3>
     <p style="color:var(--ink-3);font-size:0.85rem;margin:8px 0 14px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
-    <button class="checkin-btn" onclick="doCheckin()">✅ צ'ק-אין</button>
+    <button class="checkin-btn" onclick="doCheckin()">צ'ק-אין</button>
     ${lastResult}
   `
 }
@@ -504,7 +504,7 @@ async function doCheckin() {
 
   myCheckin = data
   renderCheckinCard()
-  showToast('נרשם צ\'ק-אין! בהצלחה 💪')
+  showToast('נרשם צ\'ק-אין! בהצלחה')
 }
 
 async function doCheckout() {
@@ -520,7 +520,7 @@ async function doCheckout() {
 
   myCheckin = data
   renderCheckinCard()
-  showToast('הצ\'ק-אאוט נשלח לאישור המנהל/ה ✅')
+  showToast('הצ\'ק-אאוט נשלח לאישור המנהל/ה')
 }
 
 async function loadActivity(employeeId) {
@@ -533,10 +533,9 @@ async function loadActivity(employeeId) {
 
   if (!data || data.length === 0) return
 
-  const icons = { attendance: '📍', bonus: '⭐', task: '✅', streak: '🔥', personal_bonus: '🎁', approved: '📍', checkin_approved: '📍', task_completed: '✅' }
   document.getElementById('activityList').innerHTML = data.map(log => `
     <div class="activity-item">
-      <div>${icons[log.reason] || '📌'}</div>
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--brand);flex-shrink:0"></div>
       <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'נוכחות במשמרת')}<br><span style="font-size:0.76rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
       <div class="activity-pts">+${log.points}</div>
     </div>
@@ -617,8 +616,8 @@ async function loadStore() {
 }
 
 async function buyItem(itemId, name, cost) {
-  if (isDemoAccount) { showToast('🎬 חשבון דמו - מימוש פרסים יופעל לאחר אישור הרשמה רשמי', true); return }
-  if (currentPoints < cost) { showToast('❌ אין מספיק נקודות!', true); return }
+  if (isDemoAccount) { showToast('חשבון דמו - מימוש פרסים יופעל לאחר אישור הרשמה רשמי', true); return }
+  if (currentPoints < cost) { showToast('אין מספיק נקודות!', true); return }
 
   try {
     const { error } = await supabaseClient.from('purchases').insert({
@@ -629,7 +628,7 @@ async function buyItem(itemId, name, cost) {
     currentPoints -= cost
     document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
     document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
-    showToast(`🎁 ${name} נרכש בהצלחה!`)
+    showToast(`${name} נרכש בהצלחה!`)
   } catch (err) {
     showToast('שגיאה ברכישה, נסה שוב', true)
   }
