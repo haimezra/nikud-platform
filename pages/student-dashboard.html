@@ -267,7 +267,8 @@ a:hover{color:var(--brand-2)}
 
       <div class="sidebar-section-label">תפריט</div>
       <nav class="sidebar-nav">
-        <a class="nav-item active" href="#overview"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>לוח בקרה</a>
+        <a class="nav-item active" id="navOverview" href="#" onclick="showView('overview');return false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>לוח בקרה</a>
+        <a class="nav-item" id="navAttendance" href="#" onclick="showView('attendance');return false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>נוכחות שלי</a>
       </nav>
 
       <div class="sidebar-footer">
@@ -285,7 +286,8 @@ a:hover{color:var(--brand-2)}
     </aside>
 
     <main class="main">
-      <div class="topbar" id="overview">
+    <div id="overviewView">
+      <div class="topbar">
         <div>
           <h1 id="welcomeText">שלום</h1>
           <div class="date-sub" id="classInfo"></div>
@@ -367,6 +369,33 @@ a:hover{color:var(--brand-2)}
           <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
         </div>
       </div>
+    </div>
+
+    <div id="attendanceView" class="hidden">
+      <div class="topbar">
+        <div>
+          <h1>נוכחות שלי</h1>
+          <div class="date-sub">כל הצ'ק-אין / צ'ק-אאוט שלך, כולל שעות ותאריך</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <h3>היסטוריית נוכחות</h3>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px">
+          <thead>
+            <tr>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">תאריך</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">שעת כניסה</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">שעת יציאה</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">סטטוס</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">נקודות</th>
+            </tr>
+          </thead>
+          <tbody id="myAttendanceBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="myAttendanceEmpty" style="padding:20px 0">עדיין אין לך היסטוריית נוכחות. תעשה/י צ'ק-אין כדי להתחיל!</div>
+      </div>
+    </div>
     </main>
   </div>
 </div>
@@ -381,6 +410,43 @@ let myCheckin = null
 let checkinPollTimer = null
 let isDemoAccount = false
 let myTasks = []
+
+let myAttendanceLoaded = false
+
+function showView(view) {
+  document.getElementById('overviewView').classList.toggle('hidden', view !== 'overview')
+  document.getElementById('attendanceView').classList.toggle('hidden', view !== 'attendance')
+  document.getElementById('navOverview').classList.toggle('active', view === 'overview')
+  document.getElementById('navAttendance').classList.toggle('active', view === 'attendance')
+  if (view === 'attendance' && !myAttendanceLoaded) {
+    myAttendanceLoaded = true
+    loadMyAttendanceHistory()
+  }
+}
+
+const myAttendanceStatusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ לא אושר', 'הושלם': '⏳ ממתין לאישור', 'ממתינה': '🟡 במשמרת פעילה' }
+
+async function loadMyAttendanceHistory() {
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('student_id', currentUser.id)
+    .order('check_in_at', { ascending: false })
+
+  if (error) { showToast('שגיאה בטעינת היסטוריית נוכחות', true); return }
+
+  const rows = data || []
+  document.getElementById('myAttendanceEmpty').classList.toggle('hidden', rows.length > 0)
+  document.getElementById('myAttendanceBody').innerHTML = rows.map(c => `
+    <tr>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${formatTime(c.check_in_at) || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${formatTime(c.check_out_at) || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${myAttendanceStatusLabel[c.status] || c.status || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${c.status === 'אושר' ? (c.points ?? 0) : '—'}</td>
+    </tr>
+  `).join('')
+}
 
 function setPointsDisplays() {
   document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
