@@ -198,15 +198,14 @@ tr.clickable{cursor:pointer}
   .app-shell{flex-direction:column}
   .sidebar{
     width:100%;height:auto;position:sticky;top:0;z-index:200;
-    flex-direction:row;align-items:center;padding:10px 12px;gap:10px;
+    flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 12px;gap:8px 10px;
   }
-  .sidebar-logo{padding:0;flex:none}
-  .sidebar-nav{flex-direction:row;flex:1;overflow-x:auto;gap:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .sidebar-nav::-webkit-scrollbar{display:none}
-  .sidebar-nav .tab{flex:none;padding:8px 12px;font-size:0.78rem;white-space:nowrap}
+  .sidebar-logo{padding:0;flex:none;order:1}
+  .sidebar-foot{border-top:none;margin-top:0;padding-top:0;flex:none;width:auto;order:2;margin-right:auto}
+  .logout-btn{width:auto;padding:7px 12px;font-size:0.76rem}
+  .sidebar-nav{flex-direction:row;flex:1 1 100%;flex-wrap:wrap;gap:4px;min-width:0;order:3}
+  .sidebar-nav .tab{flex:none;padding:7px 10px;font-size:0.72rem;white-space:nowrap;gap:5px}
   .sidebar-nav .tab span[id$="Badge"]{margin-right:4px}
-  .sidebar-foot{border-top:none;margin-top:0;padding-top:0;flex:none;width:auto}
-  .logout-btn{width:auto;padding:8px 12px;font-size:0.78rem}
 }
 @media(max-width:640px){
   .topbar{padding:12px 14px;gap:8px}
