@@ -631,6 +631,7 @@ let allPointLogs = []
 let allTasks = []
 let attendanceCheckinsPerStudent = {}
 let pendingCheckinApprovals = []
+let recentCheckinEvents = []
 let currentAttendanceDetailStudentId = null
 let lastAtRiskRows = []
 let lastAttendanceRows = []
@@ -708,18 +709,56 @@ function hoursLeftLabel(checkoutIso) {
 }
 
 // ---- סקירה כללית (לוח בקרה) ----
+const ACTIVITY_STATUS_STYLE = {
+  waiting: { label: 'ממתין', bg: 'rgba(224,171,78,0.16)', color: 'var(--gold-soft)' },
+  done: { label: 'בוצע', bg: 'rgba(47,191,143,0.16)', color: 'var(--green)' },
+  rejected: { label: 'נדחה', bg: 'rgba(239,95,88,0.16)', color: 'var(--red)' }
+}
+const CHECKIN_ACTIVITY_STATE = { 'הושלם': 'waiting', 'אושר': 'done', 'נדחה': 'rejected' }
+const TASK_ACTIVITY_STATE = { submitted: 'waiting', approved: 'done', rejected: 'rejected' }
+
 function renderOverviewSummary() {
   const items = []
+  const activity = []
 
-  pendingCheckinApprovals.slice(0, 4).forEach(c => {
-    items.push(`<div class="preview-item">
-      <div>
-        <div class="pi-name">${escapeHtml(c.users?.name || '—')}</div>
-        <div class="pi-sub">צ'ק-אין ממתין לאישור · ${fmtTime(c.check_in_at)}–${fmtTime(c.check_out_at)}</div>
-      </div>
-      <span class="pi-tag" style="background:rgba(224,171,78,0.16);color:var(--gold-soft)">ממתין</span>
-    </div>`)
+  // עדכוני צ'ק-אין (נשארים ברשימה גם אחרי אישור/דחייה, רק הסטטוס משתנה)
+  recentCheckinEvents.forEach(c => {
+    const state = CHECKIN_ACTIVITY_STATE[c.status]
+    if (!state) return
+    const st = ACTIVITY_STATUS_STYLE[state]
+    activity.push({
+      time: new Date(c.check_out_at || c.check_in_at).getTime(),
+      html: `<div class="preview-item">
+        <div>
+          <div class="pi-name">${escapeHtml(c.users?.name || '—')}</div>
+          <div class="pi-sub">צ'ק-אין · ${fmtTime(c.check_in_at)}–${fmtTime(c.check_out_at)}</div>
+        </div>
+        <span class="pi-tag" style="background:${st.bg};color:${st.color}">${st.label}</span>
+      </div>`
+    })
   })
+
+  // עדכוני משימות (נשארים ברשימה גם אחרי אישור/דחייה, רק הסטטוס משתנה)
+  allTasks.forEach(t => {
+    const state = TASK_ACTIVITY_STATE[t.status]
+    if (!state) return
+    const st = ACTIVITY_STATUS_STYLE[state]
+    const student = allStudents.find(s => s.id === t.student_id)
+    activity.push({
+      time: new Date(t.submitted_at || t.created_at).getTime(),
+      html: `<div class="preview-item">
+        <div>
+          <div class="pi-name">${escapeHtml(student ? student.name : '—')}</div>
+          <div class="pi-sub">משימה: ${escapeHtml(t.title)}</div>
+        </div>
+        <span class="pi-tag" style="background:${st.bg};color:${st.color}">${st.label}</span>
+      </div>`
+    })
+  })
+
+  // תמיד 10 העדכונים האחרונים, ממוינים מהחדש לישן
+  activity.sort((a, b) => b.time - a.time)
+  activity.slice(0, 10).forEach(a => items.push(a.html))
 
   lastAtRiskRows.slice(0, 4).forEach(r => {
     items.push(`<div class="preview-item">
@@ -736,6 +775,18 @@ function renderOverviewSummary() {
   list.innerHTML = items.length > 0
     ? items.join('')
     : '<div class="empty-state">אין כרגע פעולות הממתינות לטיפול</div>'
+}
+
+async function loadRecentActivity() {
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('*, users:student_id(name, class_name)')
+    .eq('school_id', currentSchoolId)
+    .not('check_out_at', 'is', null)
+    .order('check_out_at', { ascending: false })
+    .limit(15)
+  if (!error) recentCheckinEvents = data || []
+  renderOverviewSummary()
 }
 
 // ---- עובדים ----
@@ -1332,6 +1383,7 @@ async function approveCheckinRow(id) {
   await loadCheckinApprovals()
   await renderAttendanceReport()
   await refreshStudentsAndStats()
+  await loadRecentActivity()
 }
 
 async function rejectCheckinRow(id) {
@@ -1340,6 +1392,7 @@ async function rejectCheckinRow(id) {
   showToast('הצ\'ק-אין נדחה', 'success')
   await loadCheckinApprovals()
   await renderAttendanceReport()
+  await loadRecentActivity()
 }
 
 async function approveAllCheckins() {
@@ -1354,6 +1407,7 @@ async function approveAllCheckins() {
   await loadCheckinApprovals()
   await renderAttendanceReport()
   await refreshStudentsAndStats()
+  await loadRecentActivity()
 }
 
 async function refreshStudentsAndStats() {
@@ -1500,7 +1554,9 @@ async function loadDashboard() {
   await loadTasks()
   await loadMyTasks()
   await loadCheckinApprovals()
+  await loadRecentActivity()
   setInterval(loadCheckinApprovals, 30000)
+  setInterval(loadRecentActivity, 30000)
 
   document.getElementById('loadingState').classList.add('hidden')
   document.getElementById('dashboardContent').classList.remove('hidden')
