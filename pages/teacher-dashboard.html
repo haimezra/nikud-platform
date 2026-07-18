@@ -88,6 +88,16 @@ a:hover{color:var(--brand-2)}
   transition:all 0.2s;
 }
 .tabs .tab.active{background:var(--brand);color:#fff}
+.tabs .tab.tab-alert{animation:tabRedBlink 1.8s ease-in-out infinite}
+@keyframes tabRedBlink{
+  0%,100%{background:none;color:var(--ink-3)}
+  50%{background:rgba(196,61,56,0.16);color:var(--red)}
+}
+.tabs .tab.tab-alert.active{animation:tabRedBlinkActive 1.8s ease-in-out infinite}
+@keyframes tabRedBlinkActive{
+  0%,100%{background:var(--brand);color:#fff}
+  50%{background:var(--red);color:#fff}
+}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{
@@ -278,7 +288,7 @@ tr.clickable{cursor:pointer}
           <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
           <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
           <button class="tab" onclick="setTab('tasks', this)">משימות</button>
-          <button class="tab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
+          <button class="tab" id="myTasksTab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
         </div>
         <div class="stats-grid">
           <div class="stat-card green">
@@ -353,7 +363,7 @@ tr.clickable{cursor:pointer}
             <h3>משימות שקיבלתי מבעל העסק</h3>
           </div>
           <table>
-            <thead><tr><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+            <thead><tr><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
             <tbody id="myTasksBody"></tbody>
           </table>
           <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
@@ -945,6 +955,7 @@ async function loadMyTasks() {
   const badge = document.getElementById('myTasksBadge')
   badge.textContent = pendingCount
   badge.classList.toggle('hidden', pendingCount === 0)
+  document.getElementById('myTasksTab').classList.toggle('tab-alert', pendingCount > 0)
   renderMyTasks()
 }
 
@@ -956,7 +967,6 @@ function renderMyTasks() {
       : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
     return `<tr>
       <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td class="points-tag">${t.points}</td>
       <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
       <td>${action}</td>
     </tr>`
@@ -973,6 +983,11 @@ async function markMyTaskDone(taskId) {
 
     const task = myTasks.find(t => t.id === taskId)
     if (task) task.status = 'submitted'
+    const pendingCount = myTasks.filter(t => t.status === 'pending').length
+    const badge = document.getElementById('myTasksBadge')
+    badge.textContent = pendingCount
+    badge.classList.toggle('hidden', pendingCount === 0)
+    document.getElementById('myTasksTab').classList.toggle('tab-alert', pendingCount > 0)
     renderMyTasks()
     showToast('סומן כבוצע! ממתין לאישור בעל/ת העסק ✅', 'success')
   } catch (err) {
