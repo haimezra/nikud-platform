@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2E5BFF">
+<meta name="theme-color" content="#0B0D14">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,15 +18,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
-  --brand:#2E5BFF;--brand-2:#1636BE;--violet:#6C43F0;--gold:#E7A93A;--gold-soft:#F5C869;
-  --green:#0AA478;--red:#E25555;
-  --line:rgba(8,14,40,0.08);--line-2:rgba(8,14,40,0.05);
-  --glass:rgba(255,255,255,0.72);--glass-2:rgba(255,255,255,0.55);--glass-border:rgba(8,14,40,0.08);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.85);
-  --sh-1:0 1px 2px rgba(8,14,40,0.04),0 3px 10px rgba(8,14,40,0.05);
-  --sh-2:0 4px 14px rgba(8,14,40,0.06),0 18px 44px rgba(8,14,40,0.08);
-  --sh-brand:0 12px 30px rgba(46,91,255,0.30);
+  --paper:#0A0C12;--paper-2:#12151E;--ink:#F3F5FB;--ink-2:#B9BFD4;--ink-3:#7D84A0;
+  --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#F0BB55;--gold-soft:#F7D48C;
+  --green:#2FD59B;--red:#FF6E6E;
+  --line:rgba(255,255,255,0.10);--line-2:rgba(255,255,255,0.06);
+  --glass:rgba(255,255,255,0.055);--glass-2:rgba(255,255,255,0.035);--glass-border:rgba(255,255,255,0.12);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.08);
+  --sh-1:0 1px 2px rgba(0,0,0,0.35),0 3px 14px rgba(0,0,0,0.35);
+  --sh-2:0 4px 18px rgba(0,0,0,0.45),0 20px 50px rgba(0,0,0,0.5);
+  --sh-brand:0 14px 34px rgba(92,140,255,0.35);
   --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -34,8 +34,9 @@ body{
   background:var(--paper);color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;
   -webkit-font-smoothing:antialiased;
   background-image:
-    radial-gradient(ellipse 50% 40% at 90% -6%, rgba(46,91,255,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 42% 36% at 2% 6%, rgba(108,67,240,0.09) 0%, transparent 58%);
+    radial-gradient(ellipse 60% 50% at 88% -8%, rgba(92,140,255,0.20) 0%, transparent 62%),
+    radial-gradient(ellipse 50% 42% at 0% 4%, rgba(155,123,255,0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 60% at 50% 110%, rgba(255,255,255,0.03) 0%, transparent 70%);
   background-attachment:fixed;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
@@ -43,7 +44,7 @@ h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 nav{
   display:flex;justify-content:space-between;align-items:center;
   padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
-  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
+  background:var(--glass);backdrop-filter:blur(24px) saturate(1.5);
   border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
   position:sticky;top:16px;z-index:50;
 }
@@ -72,7 +73,7 @@ nav{
 .attn-track{height:8px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;margin-top:8px}
 .attn-fill{height:100%;border-radius:var(--pill);background:var(--green);transition:width 0.4s}
 .card{
-  background:var(--glass);backdrop-filter:blur(14px);
+  background:var(--glass);backdrop-filter:blur(18px);
   border:1px solid var(--glass-border);border-radius:var(--r);
   padding:22px;box-shadow:var(--sh-1),var(--hl);
 }
@@ -118,9 +119,9 @@ nav{
 }
 
 .demo-banner{
-  background:rgba(231,169,58,0.10);border:1px solid rgba(231,169,58,0.3);
+  background:rgba(240,187,85,0.10);border:1px solid rgba(240,187,85,0.28);
   border-radius:var(--r-sm);padding:12px 18px;margin-bottom:18px;
-  font-size:0.85rem;color:#9A6B10;display:flex;align-items:center;gap:10px;
+  font-size:0.85rem;color:var(--gold-soft);display:flex;align-items:center;gap:10px;
 }
 
 .empty-state{text-align:center;padding:30px 16px;color:var(--ink-3);font-size:0.88rem}
@@ -136,8 +137,8 @@ nav{
 
 /* כפתור במצב "במשמרת" (אחרי צ'ק-אין, לפני צ'ק-אאוט) - אדום חלש ומהבהב לאט */
 .checkin-btn.active-shift{
-  background:linear-gradient(135deg,#E88A8A,#D96666);
-  box-shadow:0 12px 30px rgba(226,85,85,0.28);
+  background:linear-gradient(135deg,#E8807E,#D65A5A);
+  box-shadow:0 14px 34px rgba(255,110,110,0.28);
   animation:activeShiftPulse 2.4s ease-in-out infinite;
 }
 @keyframes activeShiftPulse{
@@ -146,13 +147,13 @@ nav{
 }
 
 .checkin-status{display:flex;align-items:center;gap:10px;font-size:0.9rem;font-weight:700;padding:6px 0}
-.checkin-status.pending{color:#B57C10}
+.checkin-status.pending{color:var(--gold-soft)}
 .checkin-status.approved{color:var(--green)}
 .checkin-status.rejected{color:var(--red)}
 
 .toast{
   position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:var(--green);color:#fff;padding:13px 26px;border-radius:var(--pill);
+  background:var(--green);color:#081410;padding:13px 26px;border-radius:var(--pill);
   font-weight:700;font-size:0.9rem;z-index:999;box-shadow:var(--sh-2);
   transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
@@ -169,10 +170,10 @@ nav{
 .task-title{font-weight:700;font-size:0.9rem;color:var(--ink)}
 .task-desc{font-size:0.78rem;color:var(--ink-3);margin-top:2px}
 .task-status-tag{font-size:0.74rem;font-weight:700;padding:3px 10px;border-radius:var(--pill);white-space:nowrap}
-.task-status-tag.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
-.task-status-tag.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
-.task-status-tag.approved{background:rgba(10,164,120,0.12);color:var(--green)}
-.task-status-tag.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-status-tag.pending{background:rgba(125,132,160,0.16);color:var(--ink-3)}
+.task-status-tag.submitted{background:rgba(240,187,85,0.16);color:var(--gold-soft)}
+.task-status-tag.approved{background:rgba(47,213,155,0.16);color:var(--green)}
+.task-status-tag.rejected{background:rgba(255,110,110,0.16);color:var(--red)}
 .task-done-btn{
   background:var(--brand);color:#fff;border:none;padding:7px 14px;border-radius:var(--r-sm);
   cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;white-space:nowrap;
@@ -589,7 +590,7 @@ async function loadLeaderboard(companyId, teamName, currentUserId) {
 
   if (!data || data.length === 0) return
 
-  const colors = ['#2E5BFF,#6C43F0', '#0AA478,#0891B2', '#E7A93A,#F5C869', '#E25555,#FF8A8A']
+  const colors = ['#5C8CFF,#9B7BFF', '#2FD59B,#22A6D6', '#F0BB55,#F7D48C', '#FF6E6E,#FF9E9E']
   document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
     <div class="lb-item">
       <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
@@ -643,7 +644,7 @@ function showToast(msg, isError) {
   const t = document.getElementById('toast')
   t.textContent = msg
   t.style.background = isError ? 'var(--red)' : 'var(--green)'
-  t.style.color = '#fff'
+  t.style.color = isError ? '#fff' : '#081410'
   t.classList.add('show')
   clearTimeout(toastTimer)
   toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
