@@ -125,6 +125,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .stat-card.danger{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;border-color:rgba(239,95,88,0.3);background:rgba(239,95,88,0.06)}
 .stat-card.danger:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
 .stat-card.danger .stat-num{color:var(--red)}
+.stat-card.clickable-stat{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s}
+.stat-card.clickable-stat:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
+@keyframes weakRedPulse{
+  0%,100%{box-shadow:var(--sh-1);border-color:var(--glass-border)}
+  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.22),var(--sh-1);border-color:rgba(239,95,88,0.45)}
+}
+.stat-card.blink-alert{animation:weakRedPulse 1.8s ease-in-out infinite}
+.mini-stats-row{display:flex;gap:18px;flex-wrap:wrap;margin:-6px 2px 18px;font-size:0.78rem;color:var(--ink-3)}
+.mini-stats-row strong{color:var(--ink);font-weight:700;font-family:'Rubik',sans-serif}
+.section-count-line{font-size:0.78rem;color:var(--ink-3);margin-bottom:10px}
+.section-count-line strong{color:var(--ink);font-weight:700}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .copy-code-btn{
   background:rgba(224,171,78,0.1);border:1px solid rgba(224,171,78,0.28);
@@ -346,15 +357,15 @@ tr.clickable{cursor:pointer}
         </div>
 
         <div class="stats-grid">
-          <div class="stat-card green">
-            <div class="stat-num" id="statStudents">0</div>
-            <div class="stat-label">עובדים</div>
+          <div class="stat-card green clickable-stat" id="myTasksStatCard" onclick="setTab('myTasks', document.getElementById('navMyTasks'))">
+            <div class="stat-num" id="statMyTasks">0</div>
+            <div class="stat-label">המשימות שלי</div>
           </div>
-          <div class="stat-card gold">
-            <div class="stat-num" id="statPoints">0</div>
-            <div class="stat-label">סה"כ נקודות שחולקו</div>
+          <div class="stat-card gold clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('navTasks'))">
+            <div class="stat-num" id="statTasksPending">0</div>
+            <div class="stat-label">משימות ממתינות לאישור</div>
           </div>
-          <div class="stat-card accent">
+          <div class="stat-card accent clickable-stat" id="checkinsStatCard" onclick="setTab('checkinApproval', document.getElementById('navCheckinApproval'))">
             <div class="stat-num" id="statPendingCheckins">0</div>
             <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
           </div>
@@ -362,10 +373,14 @@ tr.clickable{cursor:pointer}
             <div class="stat-num" id="statAtRisk">0</div>
             <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
           </div>
-          <div class="stat-card accent" id="trendsCard" style="cursor:pointer" onclick="openTrendsModal()">
+          <div class="stat-card accent clickable-stat" id="trendsCard" onclick="openTrendsModal()">
             <div class="stat-num" id="statTrends">0</div>
             <div class="stat-label">📈 מגמות – לחצו לצפייה באחוזי נוכחות של כל העובדים</div>
           </div>
+        </div>
+
+        <div class="mini-stats-row">
+          <span>סה"כ נקודות שחולקו: <strong id="statPoints">0</strong></span>
         </div>
 
         <div class="grid-3">
@@ -409,6 +424,7 @@ tr.clickable{cursor:pointer}
             <div class="sub">כל העובדים בצוות שלך, הנקודות שצברו ופרטי הקשר</div>
           </div>
         </div>
+        <div class="section-count-line">סה"כ עובדים: <strong id="statStudents">0</strong></div>
         <div class="panel">
           <div class="panel-head">
             <h3>רשימת עובדים</h3>
@@ -1085,6 +1101,7 @@ async function createTask() {
 
     allTasks.unshift(data)
     renderTasks()
+    updateTasksStatCard()
     closeTaskModal()
     showToast('המשימה נשלחה בהצלחה', 'success')
   } catch (err) {
@@ -1108,6 +1125,7 @@ async function approveTask(taskId) {
 
     task.status = 'approved'
     renderTasks()
+    updateTasksStatCard()
 
     let pointsAwarded = task.points
     const { data: freshStudent } = await supabaseClient
@@ -1145,6 +1163,7 @@ async function rejectTask(taskId) {
 
     task.status = 'rejected'
     renderTasks()
+    updateTasksStatCard()
     showToast('המשימה נדחתה', 'success')
   } catch (err) {
     showToast(err.message || 'שגיאה בדחיית המשימה', 'error')
@@ -1173,6 +1192,14 @@ function renderTasks() {
   }).join('')
 }
 
+function updateTasksStatCard() {
+  const pendingApproval = allTasks.filter(t => t.status === 'submitted').length
+  const el = document.getElementById('statTasksPending')
+  if (el) el.textContent = pendingApproval
+  const card = document.getElementById('tasksStatCard')
+  if (card) card.classList.toggle('blink-alert', pendingApproval > 0)
+}
+
 async function loadTasks() {
   const { data, error } = await supabaseClient
     .from('tasks')
@@ -1183,6 +1210,7 @@ async function loadTasks() {
   if (error) { console.error(error); allTasks = []; return }
   allTasks = data || []
   renderTasks()
+  updateTasksStatCard()
 }
 
 // ---- המשימות שהמנהל/ת עצמו/ה מקבל/ת מבעל העסק ----
@@ -1202,6 +1230,10 @@ async function loadMyTasks() {
   badge.textContent = pendingCount
   badge.classList.toggle('hidden', pendingCount === 0)
   document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
+  const statEl = document.getElementById('statMyTasks')
+  if (statEl) statEl.textContent = pendingCount
+  const card = document.getElementById('myTasksStatCard')
+  if (card) card.classList.toggle('blink-alert', pendingCount > 0)
   renderMyTasks()
 }
 
@@ -1234,6 +1266,10 @@ async function markMyTaskDone(taskId) {
     badge.textContent = pendingCount
     badge.classList.toggle('hidden', pendingCount === 0)
     document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
+    const statEl = document.getElementById('statMyTasks')
+    if (statEl) statEl.textContent = pendingCount
+    const card = document.getElementById('myTasksStatCard')
+    if (card) card.classList.toggle('blink-alert', pendingCount > 0)
     renderMyTasks()
     showToast('סומן כבוצע! ממתין לאישור בעל/ת העסק ✅', 'success')
   } catch (err) {
@@ -1259,6 +1295,8 @@ async function loadCheckinApprovals() {
   document.getElementById('statPendingCheckins').textContent = count
   document.getElementById('approveAllBtn').disabled = count === 0
   document.getElementById('navCheckinApproval').classList.toggle('has-alert', count > 0)
+  const checkinCard = document.getElementById('checkinsStatCard')
+  if (checkinCard) checkinCard.classList.toggle('blink-alert', count > 0)
   renderCheckinApprovals()
   renderOverviewSummary()
 }
