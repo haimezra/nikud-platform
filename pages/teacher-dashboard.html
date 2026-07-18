@@ -19,16 +19,15 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --paper:#F6F7FB;--paper-2:#FFFFFF;--paper-3:#F0F2F8;--ink:#12151F;--ink-2:#565D75;--ink-3:#8A90A6;
-  --brand:#4C7CF0;--brand-2:#3660D6;--violet:#8C6BEE;--gold:#C98A1E;--gold-soft:#E0AB4E;
-  --green:#1FA97C;--red:#DB4F49;
-  --line:rgba(18,21,31,0.09);--line-2:rgba(18,21,31,0.06);
-  --glass:#FFFFFF;--glass-2:#FAFBFD;--glass-border:rgba(18,21,31,0.08);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.6);
-  --sh-1:0 1px 2px rgba(18,21,31,0.04),0 2px 8px rgba(18,21,31,0.05);
-  --sh-2:0 8px 24px rgba(18,21,31,0.08),0 24px 60px rgba(18,21,31,0.1);
-  --sh-brand:0 8px 20px rgba(76,124,240,0.22);
-  --r:12px;--r-lg:16px;--r-sm:9px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
+  --paper:#F4F6FA;--paper-2:#FFFFFF;--paper-3:#EEF1F7;--ink:#10131C;--ink-2:#4B5268;--ink-3:#868C9E;
+  --brand:#2451D6;--brand-2:#1A3CA6;--brand-soft:rgba(36,81,214,0.08);
+  --gold:#B4790C;--green:#0E8F63;--red:#C43D38;
+  --line:rgba(16,19,28,0.10);--line-2:rgba(16,19,28,0.06);
+  --sidebar-bg:#12162A;--sidebar-ink:#AEB4CC;--sidebar-ink-2:#6E7594;--sidebar-active:#1F2745;
+  --sh-1:0 1px 2px rgba(16,19,28,0.04),0 2px 8px rgba(16,19,28,0.05);
+  --sh-2:0 8px 24px rgba(16,19,28,0.10),0 24px 60px rgba(16,19,28,0.12);
+  --sh-brand:0 6px 16px rgba(36,81,214,0.24);
+  --r:14px;--r-lg:18px;--r-sm:10px;--pill:999px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -39,79 +38,96 @@ h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 a{color:var(--brand);text-decoration:none}
 a:hover{color:var(--brand-2)}
 
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 22px;margin:16px 20px 0;border-radius:var(--r-sm);
-  background:var(--paper-2);border:1px solid var(--glass-border);box-shadow:var(--sh-1);
-  position:sticky;top:16px;z-index:100;
+.app-shell{display:flex;min-height:100vh}
+
+.sidebar{
+  width:232px;flex:none;background:var(--sidebar-bg);color:var(--sidebar-ink);
+  display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;
 }
-.logo{font-family:'Rubik',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:-0.2px;
-  background:linear-gradient(110deg,#6b7290 20%,#1a1d29 40%,#6b7290 60%);background-size:200% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
-@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.topbar-right{display:flex;align-items:center;gap:12px}
+.sidebar-logo{
+  font-family:'Rubik',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:0.5px;color:#fff;
+  padding:6px 10px 22px;display:flex;align-items:center;gap:8px;
+}
+.sidebar-logo::before{content:'';width:9px;height:9px;border-radius:3px;background:var(--brand);display:inline-block}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.sidebar-nav .tab{
+  display:flex;align-items:center;gap:10px;text-align:right;justify-content:flex-start;
+  padding:10px 12px;border:none;background:none;color:var(--sidebar-ink);
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;
+  transition:background 0.15s,color 0.15s;width:100%;
+}
+.sidebar-nav .tab:hover{background:rgba(255,255,255,0.05);color:#fff}
+.sidebar-nav .tab.active{background:var(--sidebar-active);color:#fff}
+.sidebar-nav .tab .tab-ico{font-size:0.95rem;width:18px;text-align:center;flex:none}
+.sidebar-foot{border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;margin-top:10px}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:18px 30px;background:var(--paper-2);border-bottom:1px solid var(--glass-border,var(--line));
+  position:sticky;top:0;z-index:100;
+}
+.page-title{font-family:'Rubik',sans-serif;font-size:1.22rem;font-weight:700;letter-spacing:-0.3px;margin-bottom:2px}
+.page-sub{color:var(--ink-3);font-size:0.82rem}
+.topbar-right{display:flex;align-items:center;gap:10px}
 .school-pill{
   background:var(--paper-3);border:1px solid var(--line);border-radius:var(--pill);
-  padding:7px 16px;font-size:0.8rem;color:var(--ink-3);
+  padding:7px 15px;font-size:0.78rem;color:var(--ink-3);
 }
 .school-pill strong{color:var(--ink)}
 .logout-btn{
-  background:transparent;border:1px solid var(--line);color:var(--ink-3);
-  padding:7px 16px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.8rem;font-weight:600;transition:all 0.2s;
+  background:transparent;border:1px solid rgba(255,255,255,0.14);color:var(--sidebar-ink);
+  padding:8px 14px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
+  font-size:0.8rem;font-weight:600;transition:all 0.2s;width:100%;
 }
-.logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(219,79,73,0.06)}
+.logout-btn:hover{border-color:var(--red);color:#fff;background:rgba(196,61,56,0.16)}
 
-.wrap{max-width:1100px;margin:0 auto;padding:26px 20px 60px}
-.page-title{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-0.4px;margin-bottom:4px}
-.page-sub{color:var(--ink-3);font-size:0.85rem;margin-bottom:22px}
+.wrap{max-width:1180px;width:100%;margin:0 auto;padding:26px 30px 60px}
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;margin-bottom:24px;background:var(--line-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--sh-1)}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
 .stat-card{
-  background:var(--paper-2);
-  padding:16px 18px;
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 20px;box-shadow:var(--sh-1);
 }
-.stat-num{font-family:'Rubik',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
-.stat-label{color:var(--ink-3);font-size:0.76rem;margin-top:7px}
+.stat-num{font-family:'Rubik',sans-serif;font-size:1.7rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
+.stat-label{color:var(--ink-3);font-size:0.76rem;margin-top:8px}
 .stat-card.accent .stat-num{color:var(--brand)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
-.stat-card.danger{cursor:pointer;transition:background 0.2s;background:rgba(219,79,73,0.05)}
-.stat-card.danger:hover{background:rgba(219,79,73,0.08)}
+.stat-card.danger{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;border-color:rgba(196,61,56,0.3);background:rgba(196,61,56,0.04)}
+.stat-card.danger:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
 .stat-card.danger .stat-num{color:var(--red)}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .copy-code-btn{
-  margin-top:8px;background:rgba(201,138,30,0.08);border:1px solid rgba(201,138,30,0.28);
+  margin-top:8px;background:rgba(180,121,12,0.08);border:1px solid rgba(180,121,12,0.28);
   color:var(--gold);padding:5px 12px;border-radius:8px;font-size:0.73rem;font-weight:700;
   cursor:pointer;font-family:'Heebo',sans-serif;
 }
+.export-btn{
+  background:var(--paper-2);border:1px solid var(--line);color:var(--ink-2);padding:8px 15px;
+  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;
+  transition:all 0.2s;
+}
+.export-btn:hover{border-color:var(--brand);color:var(--brand)}
 .bulk-btn{
   background:var(--green);border:none;color:#fff;padding:8px 15px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
-  box-shadow:0 8px 18px rgba(31,169,124,0.22);transition:all 0.2s;
+  box-shadow:0 6px 14px rgba(14,143,99,0.24);transition:all 0.2s;
 }
-.bulk-btn:hover{background:#188e69}
+.bulk-btn:hover{background:#0b7a54}
 .bulk-btn:disabled{opacity:0.4;cursor:not-allowed}
 .search-input{
-  background:var(--paper-2);border:1px solid var(--line);border-radius:9px;padding:8px 13px;color:var(--ink);
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 13px;color:var(--ink);
   font-family:'Heebo',sans-serif;font-size:0.82rem;outline:none;min-width:200px;
 }
 .search-input:focus{border-color:var(--brand)}
 
-.tabs{display:flex;gap:2px;margin-bottom:18px;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:3px;width:fit-content;flex-wrap:wrap}
-.tab{
-  padding:8px 16px;border:none;background:none;color:var(--ink-3);
-  border-radius:7px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;
-  transition:all 0.2s;
-}
-.tab.active{background:var(--brand);color:#fff}
-
 .panel{
-  background:var(--paper-2);
-  border:1px solid var(--glass-border);border-radius:var(--r);
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
   overflow:hidden;margin-bottom:22px;box-shadow:var(--sh-1);
 }
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
 .panel-head h3{font-size:0.92rem;font-weight:700;color:var(--ink)}
 .panel-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .add-btn{
@@ -122,10 +138,10 @@ tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .add-btn:hover{background:var(--brand-2)}
 
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:11px 20px;font-size:0.72rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2)}
-td{padding:13px 20px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
+td{padding:13px 22px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(18,21,31,0.015)}
+tr:hover td{background:rgba(16,19,28,0.015)}
 .role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
 .points-tag{color:var(--gold);font-weight:700}
 
@@ -138,49 +154,52 @@ tr.clickable{cursor:pointer}
 
 .empty-state{padding:36px;text-align:center;color:var(--ink-3);font-size:0.85rem}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(18,21,31,0.32);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(16,19,28,0.4);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
+.modal{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
 .modal h3{font-size:1.02rem;margin-bottom:18px;color:var(--ink)}
 .field{margin-bottom:13px}
 .field label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:6px}
 .field input,.field select,.field textarea{
-  width:100%;background:var(--paper-2);border:1px solid var(--line);border-radius:9px;padding:10px 13px;color:var(--ink);
+  width:100%;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);
   font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;
 }
 .field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--line);border-radius:9px;padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
+.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
 .modal-actions{display:flex;gap:10px;margin-top:18px}
-.modal-actions button{flex:1;padding:10px;border-radius:9px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
+.modal-actions button{flex:1;padding:10px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
 .btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--line)}
 .btn-confirm{background:var(--brand);color:#fff}
 
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:11px 20px;font-size:0.82rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);
+  background:var(--ink);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:11px 20px;font-size:0.82rem;display:none;z-index:500;box-shadow:var(--sh-2);color:#fff;
 }
 .toast.show{display:block}
-.toast.error{border-color:rgba(219,79,73,0.35);color:var(--red)}
-.toast.success{border-color:rgba(31,169,124,0.35);color:var(--green)}
+.toast.error{background:var(--red)}
+.toast.success{background:var(--green)}
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
 .hidden{display:none !important}
 
 .task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
-.task-status-badge.pending{background:rgba(138,144,166,0.12);color:var(--ink-3)}
-.task-status-badge.submitted{background:rgba(201,138,30,0.12);color:var(--gold)}
-.task-status-badge.approved{background:rgba(31,169,124,0.12);color:var(--green)}
-.task-status-badge.rejected{background:rgba(219,79,73,0.12);color:var(--red)}
+.task-status-badge.pending{background:rgba(134,140,158,0.14);color:var(--ink-3)}
+.task-status-badge.submitted{background:rgba(180,121,12,0.13);color:var(--gold)}
+.task-status-badge.approved{background:rgba(14,143,99,0.13);color:var(--green)}
+.task-status-badge.rejected{background:rgba(196,61,56,0.13);color:var(--red)}
 .task-actions{display:flex;gap:6px}
 .task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700}
-.task-act-approve{background:rgba(31,169,124,0.12);color:var(--green)}
-.task-act-reject{background:rgba(219,79,73,0.12);color:var(--red)}
+.task-act-approve{background:rgba(14,143,99,0.13);color:var(--green)}
+.task-act-reject{background:rgba(196,61,56,0.13);color:var(--red)}
 
+@media(max-width:860px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:200;transform:translateX(100%);transition:transform 0.2s}
+}
 @media(max-width:640px){
-  .topbar{margin:12px 12px 0;padding:10px 16px}
-  .wrap{padding:18px 4px 40px}
+  .topbar{padding:14px 16px}
+  .wrap{padding:18px 12px 40px}
   th:nth-child(3),td:nth-child(3){display:none}
 }
 </style>
@@ -193,121 +212,130 @@ tr.clickable{cursor:pointer}
 </head>
 <body>
 
-<div class="topbar">
-  <div class="logo">NIKUD</div>
-  <div class="topbar-right">
-    <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
-    <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
-    <button class="logout-btn" onclick="handleLogout()">יציאה</button>
-  </div>
-</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">NIKUD</div>
+    <nav class="sidebar-nav">
+      <button class="tab active" onclick="setTab('students', this)"><span class="tab-ico">👥</span>עובדים</button>
+      <button class="tab" onclick="setTab('checkinApproval', this)"><span class="tab-ico">🕒</span>צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-right:auto"></span></button>
+      <button class="tab" onclick="setTab('attendance', this)"><span class="tab-ico">📋</span>דוח נוכחות</button>
+      <button class="tab" onclick="setTab('tasks', this)"><span class="tab-ico">✅</span>משימות</button>
+      <button class="tab" onclick="setTab('myTasks', this)"><span class="tab-ico">📥</span>המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.7rem;margin-right:auto"></span></button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="logout-btn" onclick="handleLogout()">יציאה</button>
+    </div>
+  </aside>
 
-<div class="wrap" id="app">
-  <div class="loading" id="loadingState">טוען נתונים...</div>
-
-  <div id="dashboardContent" class="hidden">
-    <div class="page-title">דשבורד מנהל צוות</div>
-    <div class="page-sub">שלום <span id="teacherName">מנהל/ת</span>, הנה מצב הצוות שלך</div>
-
-    <div class="stats-grid">
-      <div class="stat-card green">
-        <div class="stat-num" id="statStudents">0</div>
-        <div class="stat-label">עובדים</div>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">דשבורד מנהל צוות</div>
+        <div class="page-sub">שלום <span id="teacherName">מנהל/ת</span>, הנה מצב הצוות שלך</div>
       </div>
-      <div class="stat-card gold">
-        <div class="stat-num" id="statPoints">0</div>
-        <div class="stat-label">סה"כ נקודות שחולקו</div>
-      </div>
-      <div class="stat-card accent">
-        <div class="stat-num" id="statPendingCheckins">0</div>
-        <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
-      </div>
-      <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
-        <div class="stat-num" id="statAtRisk">0</div>
-        <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
+      <div class="topbar-right">
+        <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
+        <button class="export-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" onclick="setTab('students', this)">עובדים</button>
-      <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-      <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
-      <button class="tab" onclick="setTab('tasks', this)">משימות</button>
-      <button class="tab" onclick="setTab('myTasks', this)">המשימות שלי <span id="myTasksBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-    </div>
+    <div class="wrap" id="app">
+      <div class="loading" id="loadingState">טוען נתונים...</div>
 
-    <div class="panel" id="studentsPanel">
-      <div class="panel-head">
-        <h3>רשימת עובדים</h3>
-        <input class="search-input" id="studentSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderStudentsTable()">
-      </div>
-      <table>
-        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
-        <tbody id="studentsBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-    </div>
+      <div id="dashboardContent" class="hidden">
+        <div class="stats-grid">
+          <div class="stat-card green">
+            <div class="stat-num" id="statStudents">0</div>
+            <div class="stat-label">עובדים</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-num" id="statPoints">0</div>
+            <div class="stat-label">סה"כ נקודות שחולקו</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-num" id="statPendingCheckins">0</div>
+            <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
+          </div>
+          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
+            <div class="stat-num" id="statAtRisk">0</div>
+            <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
+          </div>
+        </div>
 
-    <div class="panel hidden" id="checkinApprovalPanel">
-      <div class="panel-head">
-        <h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3>
-        <div class="panel-head-actions">
-          <button class="bulk-btn" id="approveAllBtn" onclick="approveAllCheckins()">✓ אשר הכל</button>
+        <div class="panel" id="studentsPanel">
+          <div class="panel-head">
+            <h3>רשימת עובדים</h3>
+            <input class="search-input" id="studentSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderStudentsTable()">
+          </div>
+          <table>
+            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
+            <tbody id="studentsBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
+        </div>
+
+        <div class="panel hidden" id="checkinApprovalPanel">
+          <div class="panel-head">
+            <h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3>
+            <div class="panel-head-actions">
+              <button class="bulk-btn" id="approveAllBtn" onclick="approveAllCheckins()">✓ אשר הכל</button>
+            </div>
+          </div>
+          <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
+          <table>
+            <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+            <tbody id="checkinApprovalBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
+        </div>
+
+        <div class="panel hidden" id="attendancePanel">
+          <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
+          <table>
+            <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
+            <tbody id="attendanceBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
+        </div>
+
+        <div class="panel hidden" id="tasksPanel">
+          <div class="panel-head">
+            <h3>משימות לעובדים</h3>
+            <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
+          </div>
+          <table>
+            <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+            <tbody id="tasksBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
+        </div>
+
+        <div class="panel hidden" id="myTasksPanel">
+          <div class="panel-head">
+            <h3>משימות שקיבלתי מבעל העסק</h3>
+          </div>
+          <table>
+            <thead><tr><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+            <tbody id="myTasksBody"></tbody>
+          </table>
+          <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
         </div>
       </div>
-      <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 20px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-      <table>
-        <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
-        <tbody id="checkinApprovalBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
-    </div>
 
-    <div class="panel hidden" id="attendancePanel">
-      <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
-      <table>
-        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
-        <tbody id="attendanceBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
-    </div>
-
-    <div class="panel hidden" id="tasksPanel">
-      <div class="panel-head">
-        <h3>משימות לעובדים</h3>
-        <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
-      </div>
-      <table>
-        <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-        <tbody id="tasksBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
-    </div>
-
-    <div class="panel hidden" id="myTasksPanel">
-      <div class="panel-head">
-        <h3>משימות שקיבלתי מבעל העסק</h3>
-      </div>
-      <table>
-        <thead><tr><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-        <tbody id="myTasksBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
+      <div class="empty-state hidden" id="errorState"></div>
     </div>
   </div>
-
-  <div class="empty-state hidden" id="errorState"></div>
 </div>
 
 <div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
   <div class="modal" style="max-width:480px">
     <h3 id="studentModalName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card gold" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+      <div class="stat-card gold" style="flex:1;padding:14px">
         <div class="stat-num" id="studentModalPoints" style="font-size:1.4rem">0</div>
         <div class="stat-label">נקודות כרגע</div>
       </div>
-      <div class="stat-card" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+      <div class="stat-card" style="flex:1;padding:14px">
         <div class="stat-num" id="studentModalClass" style="font-size:1.4rem">—</div>
         <div class="stat-label">צוות/מחלקה</div>
       </div>
@@ -324,11 +352,11 @@ tr.clickable{cursor:pointer}
   <div class="modal" style="max-width:520px">
     <h3 id="attendanceDetailName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+      <div class="stat-card" style="flex:1;padding:14px">
         <div class="stat-num" id="attendanceDetailClass" style="font-size:1.4rem">—</div>
         <div class="stat-label">צוות/מחלקה</div>
       </div>
-      <div class="stat-card gold" style="flex:1;padding:14px;border-radius:var(--r-sm);border:1px solid var(--glass-border)">
+      <div class="stat-card gold" style="flex:1;padding:14px">
         <div class="stat-num" id="attendanceDetailPct" style="font-size:1.4rem">—</div>
         <div class="stat-label">אחוז נוכחות</div>
       </div>
