@@ -234,13 +234,13 @@ tr.clickable{cursor:pointer}
   .panel-head{padding:14px 16px}
   th,td{padding:10px 12px;font-size:0.8rem}
 
-  /* --- תיקון מובייל: טבלאות נגללות אופקית במקום להסתיר עמודות --- */
+  /* --- תיקון מובייל: הטבלאות מתאימות למסך בלי גלילה הצידה --- */
   /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה, מה שהעלים את כפתור הפעולה */
-  /* בטבלת "המשימות שלי". עכשיו הטבלאות נגללות הצידה וכל הכפתורים נשארים נגישים. */
-  .panel{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  #studentsPanel table,#checkinApprovalPanel table,#tasksPanel table{min-width:560px}
-  /* טבלת "המשימות שלי" צרה (3 עמודות) — לא צריך רוחב מינימלי, הכפתור תמיד נראה */
-  #myTasksPanel table{min-width:0}
+  /* בטבלת "המשימות שלי". עכשיו לא מסתירים עמודות שרירותית, וכפתורי הפעולה תמיד נשארים. */
+  /* בטבלת הצ'ק-אין הממתינים: מסתירים במובייל "צוות/משמרת" (עמ' 2) ו"זמן לאישור" (עמ' 5) */
+  /* כדי שיישאר מקום לשם, לשעות ולכפתורי האישור/דחייה */
+  #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
+  #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
 
   .modal{padding:20px}
   .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
@@ -338,7 +338,7 @@ tr.clickable{cursor:pointer}
             </div>
           </div>
           <p style="color:var(--ink-3);font-size:0.82rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-          <table>
+          <table id="checkinApprovalTable">
             <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
             <tbody id="checkinApprovalBody"></tbody>
           </table>
