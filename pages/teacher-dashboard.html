@@ -448,10 +448,6 @@ tr.clickable{cursor:pointer}
       <label>תיאור (אופציונלי)</label>
       <textarea id="taskDescInput" placeholder="פרטים נוספים על המשימה"></textarea>
     </div>
-    <div class="field">
-      <label>נקודות בעת אישור</label>
-      <div class="fixed-value">3 נקודות (קבוע לכל המשימות)</div>
-    </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeTaskModal()">ביטול</button>
       <button class="btn-confirm" onclick="createTask()">שלח משימה</button>
@@ -945,6 +941,7 @@ async function loadTasks() {
     .from('tasks')
     .select('*')
     .eq('school_id', currentSchoolId)
+    .eq('created_by', currentUser.id)
     .order('created_at', { ascending: false })
   if (error) { console.error(error); allTasks = []; return }
   allTasks = data || []
@@ -959,6 +956,7 @@ async function loadMyTasks() {
     .from('tasks')
     .select('*')
     .eq('student_id', currentUser.id)
+    .neq('created_by', currentUser.id)
     .order('created_at', { ascending: false })
   if (error) { console.error(error); myTasks = []; return }
   myTasks = data || []
