@@ -96,7 +96,9 @@ nav{
   padding:14px;text-align:center;cursor:pointer;transition:all 0.2s;box-shadow:var(--hl);
 }
 .store-item:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh-1),var(--hl)}
-.item-icon{width:36px;height:36px;margin:0 auto 8px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.85rem;font-weight:700;color:var(--violet);background:rgba(155,123,255,0.14);border:1px solid rgba(155,123,255,0.28)}
+.item-icon{width:36px;height:36px;margin:0 auto 8px;border-radius:50%;background:rgba(155,123,255,0.14);border:1px solid rgba(155,123,255,0.28);transition:transform 0.15s ease,background 0.15s ease}
+.store-item:hover .item-icon{transform:translateY(-2px)}
+.store-item:active .item-icon{transform:scale(0.9);background:rgba(155,123,255,0.24)}
 .item-name{font-size:0.8rem;font-weight:600;color:var(--ink)}
 .item-pts{font-size:0.76rem;color:var(--gold);margin-top:4px;font-weight:600}
 
@@ -607,7 +609,7 @@ async function loadStore() {
 
   document.getElementById('storeGrid').innerHTML = data.map(item => `
     <div class="store-item" onclick="buyItem('${item.id}', '${item.name}', ${item.points_cost})">
-      <div class="item-icon">${(item.name || '').trim().slice(0,2)}</div>
+      <div class="item-icon"></div>
       <div class="item-name">${item.name}</div>
       <div class="item-pts">${item.points_cost} נקודות</div>
     </div>
