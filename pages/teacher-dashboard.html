@@ -362,6 +362,10 @@ tr.clickable{cursor:pointer}
             <div class="stat-num" id="statAtRisk">0</div>
             <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
           </div>
+          <div class="stat-card accent" id="trendsCard" style="cursor:pointer" onclick="openTrendsModal()">
+            <div class="stat-num" id="statTrends">0</div>
+            <div class="stat-label">📈 מגמות – לחצו לצפייה באחוזי נוכחות של כל העובדים</div>
+          </div>
         </div>
 
         <div class="grid-3">
@@ -558,6 +562,18 @@ tr.clickable{cursor:pointer}
   </div>
 </div>
 
+<div class="modal-overlay" id="trendsModalOverlay" onclick="if(event.target===this) closeTrendsModal()">
+  <div class="modal" style="max-width:480px">
+    <h3>📈 מגמות נוכחות – כל העובדים</h3>
+    <input class="search-input" id="trendsSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderTrendsList()" style="width:100%;margin:12px 0 14px">
+    <div id="trendsList" style="max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+    <div class="empty-state hidden" id="trendsEmpty" style="padding:20px 0">אין עדיין נתוני נוכחות להצגה.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeTrendsModal()">סגור</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="taskModalOverlay" onclick="if(event.target===this) closeTaskModal()">
   <div class="modal">
     <h3>משימה חדשה</h3>
@@ -596,6 +612,7 @@ let attendanceCheckinsPerStudent = {}
 let pendingCheckinApprovals = []
 let currentAttendanceDetailStudentId = null
 let lastAtRiskRows = []
+let lastAttendanceRows = []
 
 function showToast(msg, type) {
   const t = document.getElementById('toast')
@@ -868,6 +885,10 @@ async function renderAttendanceReport() {
   .filter(r => r.totalLessons > 0)
   .sort((a, b) => a.pct - b.pct)
 
+  lastAttendanceRows = rows
+  document.getElementById('statTrends').textContent = rows.length
+  if (document.getElementById('trendsModalOverlay').classList.contains('show')) renderTrendsList()
+
   const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD || r.decliningTrend)
   lastAtRiskRows = atRiskRows
   const atRiskCard = document.getElementById('atRiskCard')
@@ -910,6 +931,44 @@ async function renderAttendanceReport() {
       <td onclick="event.stopPropagation()">${alertCell}</td>
       <td onclick="event.stopPropagation()"><button class="copy-code-btn" onclick="exportStudentAttendanceToExcel('${r.student.id}')" title="ייצוא דוח נוכחות של ${escapeHtml(r.student.name||'').replace(/"/g,'')} לאקסל">📊 אקסל</button></td>
     </tr>`
+  }).join('')
+}
+
+function openTrendsModal() {
+  document.getElementById('trendsSearchInput').value = ''
+  renderTrendsList()
+  document.getElementById('trendsModalOverlay').classList.add('show')
+}
+
+function closeTrendsModal() {
+  document.getElementById('trendsModalOverlay').classList.remove('show')
+}
+
+function renderTrendsList() {
+  const q = (document.getElementById('trendsSearchInput').value || '').trim().toLowerCase()
+  const rows = lastAttendanceRows.filter(r => !q || (r.student.name || '').toLowerCase().includes(q))
+  const listEl = document.getElementById('trendsList')
+  document.getElementById('trendsEmpty').classList.toggle('hidden', rows.length > 0)
+
+  listEl.innerHTML = rows.map(r => {
+    let statusColor, statusRgb, statusLabel
+    if (r.pct >= 80) { statusColor = 'var(--green)'; statusRgb = 'var(--green-rgb)'; statusLabel = '✔ תקין' }
+    else if (r.pct >= 50) { statusColor = 'var(--gold)'; statusRgb = 'var(--gold-rgb)'; statusLabel = '⚠ בינוני' }
+    else { statusColor = 'var(--red)'; statusRgb = 'var(--red-rgb)'; statusLabel = '✖ נמוך' }
+    const trendBadge = r.decliningTrend
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים" style="font-size:0.64rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 7px;border-radius:99px;margin-right:6px">📉 ירידה</span>`
+      : ''
+    return `<div style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--glass-border);border-radius:var(--r-sm);background:var(--paper-3)" onclick="closeTrendsModal();openAttendanceDetailModal('${r.student.id}')">
+      <div style="min-width:0">
+        <div style="font-weight:700;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(r.student.name || '—')}</div>
+        <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px">${escapeHtml(r.student.class_name || '—')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        ${trendBadge}
+        <span style="font-size:0.72rem;font-weight:700;color:${statusColor};background:rgba(${statusRgb},0.12);padding:3px 9px;border-radius:99px;border:1px solid rgba(${statusRgb},0.35)">${statusLabel}</span>
+        <span style="font-weight:800;color:${statusColor};min-width:38px;text-align:left">${r.pct}%</span>
+      </div>
+    </div>`
   }).join('')
 }
 
