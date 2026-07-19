@@ -212,13 +212,13 @@ tr.clickable{cursor:pointer}
 
 @media(max-width:900px){
   .app-shell{flex-direction:column}
-  .sidebar{position:static;width:100%;height:auto;flex-direction:row;align-items:center;padding:12px 14px;border-left:none;border-bottom:1px solid var(--line);overflow-x:auto}
-  .sidebar-brand{border-bottom:none;padding:0 12px 0 0;margin-bottom:0}
+  .sidebar{position:static;width:100%;height:auto;flex-direction:column;padding:12px 14px;border-left:none;border-bottom:1px solid var(--line);overflow-x:visible}
+  .sidebar-brand{border-bottom:1px solid var(--line-2);padding:0 4px 10px;margin-bottom:10px}
   .sidebar-section-label{display:none}
-  .sidebar-nav{flex-direction:row}
-  .nav-item{white-space:nowrap}
-  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;flex-direction:row;align-items:center;gap:8px}
-  .sidebar-user{padding:0 6px}
+  .sidebar-nav{flex-direction:row;flex-wrap:wrap;gap:6px}
+  .nav-item{white-space:nowrap;flex:none;padding:8px 12px;font-size:0.8rem}
+  .sidebar-footer{margin-top:12px;padding-top:10px;border-top:1px solid var(--line-2);flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px}
+  .sidebar-user{padding:0 6px 0 0}
   .school-pill{display:none}
   .sidebar-export-btn{width:auto;padding:8px 12px;white-space:nowrap}
   .logout-btn{width:auto;padding:8px 14px;white-space:nowrap}
