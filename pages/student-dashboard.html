@@ -651,28 +651,115 @@ function renderCheckinCard() {
     <p style="color:var(--ink-3);font-size:0.82rem;margin:6px 0 12px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
     <button class="checkin-btn" onclick="doCheckin()">צ'ק-אין</button>
     ${lastResult}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)">
+      <button onclick="diagnoseLocation()" style="width:100%;padding:9px;border:1px dashed var(--gold);border-radius:var(--r-sm);background:rgba(224,171,78,0.06);color:var(--gold-soft);font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer">🔍 בדיקת מיקום (זמני)</button>
+      <div id="locationDiag" style="margin-top:10px;font-size:0.78rem;line-height:1.6;color:var(--ink-2);white-space:pre-wrap;word-break:break-word"></div>
+    </div>
   `
 }
 
+// ---- אבחון מיקום זמני: מדפיס על המסך בדיוק מה קורה ----
+async function diagnoseLocation() {
+  const out = document.getElementById('locationDiag')
+  const lines = []
+  const show = () => { out.innerHTML = lines.map(escapeHtml).join('\n') }
+
+  lines.push('⏳ בודק...'); show()
+
+  // 1. הקשר מאובטח?
+  lines[0] = '1) חיבור מאובטח (HTTPS): ' + (window.isSecureContext ? '✅ כן' : '❌ לא — זו הבעיה!')
+  lines.push('   כתובת: ' + location.protocol + '//' + location.host)
+  show()
+
+  // 2. API קיים?
+  if (!navigator.geolocation) {
+    lines.push('2) Geolocation API: ❌ לא נתמך בדפדפן זה'); show(); return
+  }
+  lines.push('2) Geolocation API: ✅ קיים'); show()
+
+  // 3. מצב הרשאה (אם נתמך)
+  try {
+    if (navigator.permissions && navigator.permissions.query) {
+      const st = await navigator.permissions.query({ name: 'geolocation' })
+      const map = { granted: '✅ מאושר', denied: '❌ חסום (צריך לאפס בהגדרות הדפדפן)', prompt: '🟡 יישאל עכשיו' }
+      lines.push('3) מצב הרשאת מיקום: ' + (map[st.state] || st.state))
+    } else {
+      lines.push('3) מצב הרשאה: לא ניתן לבדוק (נמשיך ישירות)')
+    }
+  } catch (e) {
+    lines.push('3) מצב הרשאה: לא ניתן לבדוק')
+  }
+  show()
+
+  // 4. ניסיון קליטה בפועל
+  lines.push('4) מבקש מיקום עכשיו... (אשר/י את הבקשה אם קופצת)'); show()
+  const res = await tryGetPosition({ timeout: 15000, enableHighAccuracy: true, maximumAge: 0 })
+  if (res.ok) {
+    lines[lines.length - 1] = '4) קליטת מיקום: ✅ הצליח!'
+    lines.push('   קו רוחב: ' + res.coords.latitude.toFixed(6))
+    lines.push('   קו אורך: ' + res.coords.longitude.toFixed(6))
+    lines.push('   דיוק: ±' + Math.round(res.coords.accuracy) + ' מטר')
+    lines.push('👉 המיקום עובד! עכשיו עשה/י צ\'ק-אין רגיל והוא יישמר.')
+  } else {
+    const why = res.code === 1 ? 'ההרשאה נדחתה (code 1) — צריך לאפשר מיקום לאתר בהגדרות'
+      : res.code === 2 ? 'המיקום לא זמין (code 2) — שירותי המיקום של המכשיר כבויים?'
+      : res.code === 3 ? 'תם הזמן (code 3) — נסה/י שוב במקום פתוח'
+      : 'שגיאה: ' + res.message
+    lines[lines.length - 1] = '4) קליטת מיקום: ❌ נכשל'
+    lines.push('   סיבה: ' + why)
+  }
+  show()
+}
+
 // ---- קליטת מיקום GPS בצ'ק-אין (אופציונלי: אם לא זמין נרשם "מיקום לא זמין") ----
-function getCheckinLocation() {
+// מנסה קודם דיוק גבוה (GPS), ואם נכשל נופל לדיוק רגיל (רשת/IP). מחזיר גם סיבת כשל לאבחון.
+function tryGetPosition(opts) {
   return new Promise((resolve) => {
-    if (!navigator.geolocation) return resolve(null)
     navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude,
-        accuracy: Math.round(pos.coords.accuracy)
-      }),
-      () => resolve(null),
-      { timeout: 8000, enableHighAccuracy: true, maximumAge: 0 }
+      (pos) => resolve({ ok: true, coords: pos.coords }),
+      (err) => resolve({ ok: false, code: err.code, message: err.message }),
+      opts
     )
   })
 }
 
+async function getCheckinLocation() {
+  if (!navigator.geolocation) {
+    console.warn('[checkin] geolocation לא נתמך בדפדפן')
+    return { loc: null, reason: 'unsupported' }
+  }
+
+  // ניסיון 1: דיוק גבוה (GPS), עד 15 שניות
+  let res = await tryGetPosition({ timeout: 15000, enableHighAccuracy: true, maximumAge: 0 })
+
+  // ניסיון 2: אם נכשל (בד"כ timeout במחשב ללא GPS) — דיוק רגיל, מהיר, מאפשר cache
+  if (!res.ok) {
+    console.warn('[checkin] ניסיון דיוק גבוה נכשל:', res.code, res.message, '→ מנסה דיוק רגיל')
+    res = await tryGetPosition({ timeout: 10000, enableHighAccuracy: false, maximumAge: 60000 })
+  }
+
+  if (res.ok) {
+    console.log('[checkin] מיקום נקלט:', res.coords.latitude, res.coords.longitude, 'דיוק:', Math.round(res.coords.accuracy), 'מ')
+    return {
+      loc: {
+        lat: res.coords.latitude,
+        lng: res.coords.longitude,
+        accuracy: Math.round(res.coords.accuracy)
+      },
+      reason: null
+    }
+  }
+
+  // כשל סופי — מיפוי קוד השגיאה לסיבה קריאה
+  // code 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+  const reason = res.code === 1 ? 'denied' : res.code === 3 ? 'timeout' : 'unavailable'
+  console.warn('[checkin] קליטת מיקום נכשלה סופית. code=' + res.code, 'reason=' + reason, res.message)
+  return { loc: null, reason }
+}
+
 async function doCheckin() {
-  showToast('קולט מיקום...')
-  const loc = await getCheckinLocation()
+  showToast('קולט מיקום... (אשר/י את בקשת המיקום)')
+  const { loc, reason } = await getCheckinLocation()
 
   const payload = {
     student_id: currentUser.id,
@@ -692,11 +779,28 @@ async function doCheckin() {
     .select()
     .single()
 
-  if (error) { showToast('שגיאה בשליחת הצ\'ק-אין', true); return }
+  if (error) {
+    console.error('[checkin] שגיאת שמירה:', error)
+    showToast('שגיאה בשליחת הצ\'ק-אין', true)
+    return
+  }
+
+  // אבחון: אם שלחנו מיקום אבל הוא לא חזר מהמסד — כנראה RLS/הרשאות חסמו את השדות
+  if (loc && (data.check_in_lat == null || data.check_in_lng == null)) {
+    console.error('[checkin] המיקום נשלח אך לא נשמר במסד (data.check_in_lat=' + data.check_in_lat + '). בדוק הרשאות עמודות/RLS.')
+    showToast('צ\'ק-אין נרשם, אך המיקום לא נשמר (בעיית הרשאה)', true)
+  } else if (!loc) {
+    const msg = reason === 'denied' ? 'נרשם צ\'ק-אין! (הרשאת מיקום נדחתה)'
+      : reason === 'timeout' ? 'נרשם צ\'ק-אין! (המיקום לקח יותר מדי זמן)'
+      : reason === 'unsupported' ? 'נרשם צ\'ק-אין! (הדפדפן לא תומך במיקום)'
+      : 'נרשם צ\'ק-אין! (מיקום לא זמין)'
+    showToast(msg)
+  } else {
+    showToast('נרשם צ\'ק-אין! המיקום נשמר ✅')
+  }
 
   myCheckin = data
   renderCheckinCard()
-  showToast(loc ? 'נרשם צ\'ק-אין! בהצלחה' : 'נרשם צ\'ק-אין! (מיקום לא זמין)')
 }
 
 async function doCheckout() {
@@ -852,7 +956,21 @@ init()
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+    navigator.serviceWorker.register('service-worker.js').then(reg => {
+      // הכרח בדיקת עדכון בכל טעינה כדי שגרסה חדשה תיטען מיד (לא מה-cache הישן)
+      reg.update()
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing
+        if (!nw) return
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            // גרסה חדשה מוכנה — רענן פעם אחת כדי להחיל אותה
+            window.location.reload()
+          }
+        })
+      })
+    }).catch(err => console.warn('SW registration failed:', err))
   })
 }
 </script>
