@@ -314,6 +314,10 @@ tr.clickable{cursor:pointer}
       </div>
 
       <div class="stats-grid">
+        <div class="stat-card clickable-stat" id="activeEmployeesCard" onclick="openActiveEmployeesModal()">
+          <div class="stat-label">🟢 עובדים פעילים כרגע</div>
+          <div class="stat-num" id="statActiveEmployees" style="color:var(--green)">0</div>
+        </div>
         <div class="stat-card clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('tabTasks'))">
           <div class="stat-label">משימות</div>
           <div class="stat-num" id="statTasksPending">0</div>
@@ -445,6 +449,22 @@ tr.clickable{cursor:pointer}
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeAttendanceDetailModal()">סגור</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="activeEmployeesModalOverlay" onclick="if(event.target===this) closeActiveEmployeesModal()">
+  <div class="modal" style="max-width:460px">
+    <h3>👥 סטטוס עובדים</h3>
+    <div style="display:flex;gap:14px;margin:4px 0 14px;font-size:0.8rem;color:var(--ink-3)">
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-left:5px;vertical-align:middle"></span>נמצא במשמרת</span>
+      <span><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-left:5px;vertical-align:middle"></span>סיים משמרת</span>
+    </div>
+    <input class="field" id="activeEmployeesSearch" placeholder="🔎 חיפוש לפי שם..." oninput="renderActiveEmployeesList()" style="width:100%;margin-bottom:14px;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none">
+    <div id="activeEmployeesList" style="max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+    <div class="empty-state hidden" id="activeEmployeesEmpty" style="padding:20px 0">אף עובד לא עשה צ'ק-אין היום.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeActiveEmployeesModal()">סגור</button>
     </div>
   </div>
 </div>
@@ -929,6 +949,78 @@ function hoursLeftLabel(checkoutIso) {
   return `${h}ש ${m}ד נותרו`
 }
 
+// ---- עובדים פעילים (נמצאים במשמרת / סיימו היום) ----
+let activeEmployeesData = []
+
+async function loadActiveEmployees() {
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
+
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .select('student_id, status, check_in_at, check_out_at, users:student_id(name, class_name)')
+    .eq('school_id', currentSchoolId)
+    .gte('check_in_at', startOfDay.toISOString())
+    .order('check_in_at', { ascending: false })
+
+  if (error) { console.error(error); return }
+
+  const byEmployee = {}
+  ;(data || []).forEach(c => {
+    if (!byEmployee[c.student_id]) {
+      byEmployee[c.student_id] = {
+        id: c.student_id,
+        name: c.users?.name || '—',
+        class_name: c.users?.class_name || '',
+        active: c.status === 'ממתינה',
+        lastCheckIn: c.check_in_at
+      }
+    }
+  })
+
+  activeEmployeesData = Object.values(byEmployee)
+    .sort((a, b) => (b.active - a.active) || new Date(b.lastCheckIn) - new Date(a.lastCheckIn))
+
+  const activeCount = activeEmployeesData.filter(e => e.active).length
+  const el = document.getElementById('statActiveEmployees')
+  if (el) el.textContent = activeCount
+
+  if (document.getElementById('activeEmployeesModalOverlay').classList.contains('show')) {
+    renderActiveEmployeesList()
+  }
+}
+
+function openActiveEmployeesModal() {
+  document.getElementById('activeEmployeesSearch').value = ''
+  renderActiveEmployeesList()
+  document.getElementById('activeEmployeesModalOverlay').classList.add('show')
+}
+
+function closeActiveEmployeesModal() {
+  document.getElementById('activeEmployeesModalOverlay').classList.remove('show')
+}
+
+function renderActiveEmployeesList() {
+  const q = (document.getElementById('activeEmployeesSearch').value || '').trim().toLowerCase()
+  const rows = activeEmployeesData.filter(e => !q || (e.name || '').toLowerCase().includes(q))
+  const listEl = document.getElementById('activeEmployeesList')
+  document.getElementById('activeEmployeesEmpty').classList.toggle('hidden', rows.length > 0)
+
+  listEl.innerHTML = rows.map(e => {
+    const dotColor = e.active ? 'var(--green)' : 'var(--red)'
+    const statusText = e.active ? 'נמצא במשמרת' : 'סיים משמרת'
+    const statusColor = e.active ? 'var(--green)' : 'var(--red)'
+    return `<div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--glass-border);border-radius:var(--r-sm);background:var(--paper-3)">
+      <span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${dotColor};flex-shrink:0;${e.active ? 'box-shadow:0 0 6px 1px ' + dotColor : ''}"></span>
+      <div style="min-width:0;flex:1">
+        <div style="font-weight:700;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(e.name)}</div>
+        ${e.class_name ? `<div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px">${escapeHtml(e.class_name)}</div>` : ''}
+      </div>
+      <span style="font-size:0.74rem;font-weight:700;color:${statusColor};flex-shrink:0">${statusText}</span>
+    </div>`
+  }).join('')
+}
+
 async function loadCheckinApprovals() {
   const { data, error } = await supabaseClient
     .from('checkins')
@@ -950,6 +1042,7 @@ async function loadCheckinApprovals() {
   const checkinsCard = document.getElementById('checkinsStatCard')
   if (checkinsCard) checkinsCard.classList.toggle('blink-alert', count > 0)
   renderCheckinApprovals()
+  loadActiveEmployees()
 }
 
 function renderCheckinApprovals() {
@@ -1069,7 +1162,9 @@ async function loadDashboard() {
   renderTeacherActivity()
   await loadTasks()
   await loadCheckinApprovals()
+  await loadActiveEmployees()
   setInterval(loadCheckinApprovals, 30000)
+  setInterval(loadActiveEmployees, 30000)
 
   document.getElementById('loadingState').classList.add('hidden')
   document.getElementById('dashboardContent').classList.remove('hidden')
