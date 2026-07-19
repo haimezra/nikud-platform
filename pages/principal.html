@@ -233,7 +233,7 @@ tr.clickable{cursor:pointer}
   th,td{padding:10px 12px;font-size:0.8rem}
   .modal{padding:20px}
   #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
-  #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
+  #checkinApprovalTable th:nth-child(6),#checkinApprovalTable td:nth-child(6){display:none}
 }
 </style>
 <!-- Vercel Web Analytics -->
@@ -359,7 +359,7 @@ tr.clickable{cursor:pointer}
         <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
         <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 20px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
         <div class="table-scroll"><table id="checkinApprovalTable">
-          <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+          <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>מיקום</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
           <tbody id="checkinApprovalBody"></tbody>
         </table></div>
         <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
@@ -911,6 +911,15 @@ function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
 }
 
+// ---- תא מיקום צ'ק-אין (כפתור מפה או "מיקום לא זמין") ----
+function locationCell(c) {
+  if (c.check_in_lat != null && c.check_in_lng != null) {
+    const acc = c.check_in_accuracy ? ` (±${c.check_in_accuracy} מ')` : ''
+    return `<a href="https://www.google.com/maps?q=${c.check_in_lat},${c.check_in_lng}" target="_blank" rel="noopener" class="task-act-btn task-act-approve" style="text-decoration:none;display:inline-block">📍 מפה${acc}</a>`
+  }
+  return `<span style="color:var(--ink-3);font-size:0.76rem">מיקום לא זמין</span>`
+}
+
 function hoursLeftLabel(checkoutIso) {
   const deadline = new Date(checkoutIso).getTime() + 8 * 60 * 60 * 1000
   const msLeft = deadline - Date.now()
@@ -953,6 +962,7 @@ function renderCheckinApprovals() {
       <td>${escapeHtml(c.users?.class_name || '—')}</td>
       <td>${fmtTime(c.check_in_at)}</td>
       <td>${fmtTime(c.check_out_at)}</td>
+      <td>${locationCell(c)}</td>
       <td>${hoursLeftLabel(c.check_out_at)}</td>
       <td>
         <button class="task-act-btn task-act-approve blink-alert" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
