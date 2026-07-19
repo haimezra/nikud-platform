@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2E5BFF">
+<meta name="theme-color" content="#0B0D14">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -19,46 +19,55 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
-  --paper:#FBFCFF;--paper-2:#F2F5FD;--ink:#080E28;--ink-2:#3E466A;--ink-3:#7C85A6;
-  --brand:#2E5BFF;--brand-2:#1636BE;--violet:#6C43F0;--gold:#E7A93A;--gold-soft:#F5C869;
-  --green:#0AA478;--red:#E25555;
-  --line:rgba(8,14,40,0.08);--line-2:rgba(8,14,40,0.05);
-  --glass:rgba(255,255,255,0.72);--glass-2:rgba(255,255,255,0.55);--glass-border:rgba(8,14,40,0.08);
-  --hl:inset 0 1px 0 rgba(255,255,255,0.85);
-  --sh-1:0 1px 2px rgba(8,14,40,0.04),0 3px 10px rgba(8,14,40,0.05);
-  --sh-2:0 4px 14px rgba(8,14,40,0.06),0 18px 44px rgba(8,14,40,0.08);
-  --sh-brand:0 12px 30px rgba(46,91,255,0.30);
-  --r:22px;--r-lg:28px;--r-sm:14px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
+  --paper:#0A0B10;--paper-2:#0D0F16;--paper-3:#11141C;--ink:#F3F5FA;--ink-2:#A6ACC0;--ink-3:#6E7488;
+  --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#E0AB4E;--gold-soft:#EFC784;
+  --green:#2FBF8F;--red:#EF5F58;
+  --brand-rgb:92,140,255;--green-rgb:47,191,143;--red-rgb:239,95,88;--gold-rgb:224,171,78;
+  --line:rgba(255,255,255,0.08);--line-2:rgba(255,255,255,0.05);
+  --glass:rgba(255,255,255,0.045);--glass-2:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.09);
+  --hl:inset 0 1px 0 rgba(255,255,255,0.04);
+  --sh-1:0 1px 2px rgba(0,0,0,0.35),0 2px 8px rgba(0,0,0,0.3);
+  --sh-2:0 8px 24px rgba(0,0,0,0.5),0 24px 60px rgba(0,0,0,0.55);
+  --sh-brand:0 8px 20px rgba(92,140,255,0.26);
+  --r:20px;--r-lg:26px;--r-sm:13px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
   color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
   -webkit-font-smoothing:antialiased;
   background-image:
-    radial-gradient(ellipse 50% 40% at 92% -6%, rgba(46,91,255,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 42% 36% at 0% 8%, rgba(108,67,240,0.09) 0%, transparent 58%);
+    linear-gradient(180deg, rgba(92,140,255,0.05) 0%, transparent 12%),
+    radial-gradient(ellipse 44% 34% at 94% -6%, rgba(92,140,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 2% 6%, rgba(155,123,255,0.07) 0%, transparent 58%);
   background-attachment:fixed;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-2)}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
 
 .topbar{
   display:flex;align-items:center;justify-content:space-between;
   padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
-  background:var(--glass);backdrop-filter:blur(20px) saturate(1.4);
+  background:var(--paper-2);backdrop-filter:blur(20px) saturate(1.2);
   border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
   position:sticky;top:16px;z-index:10;
 }
-.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;color:var(--brand);letter-spacing:-0.4px}
+.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;letter-spacing:-0.3px;
+  background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
+@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .topbar-right{display:flex;align-items:center;gap:14px}
 .school-pill{
-  background:var(--glass-2);border:1px solid var(--line);border-radius:var(--pill);
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--pill);
   padding:8px 18px;font-size:0.85rem;color:var(--ink-3);
 }
 .school-pill strong{color:var(--ink)}
 .logout-btn{
   background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
   padding:8px 18px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.85rem;font-weight:500;transition:all 0.2s;
+  font-size:0.85rem;font-weight:600;transition:all 0.2s;
 }
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
 
@@ -68,7 +77,7 @@ h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
 .stat-card{
-  background:var(--glass);backdrop-filter:blur(14px);
+  background:var(--paper-2);
   border:1px solid var(--glass-border);border-radius:var(--r);
   padding:20px;box-shadow:var(--sh-1),var(--hl);
 }
@@ -77,47 +86,59 @@ h1,h2,h3,h4{font-family:'Rubik',sans-serif}
 .stat-card.accent .stat-num{color:var(--brand)}
 .stat-card.gold .stat-num{color:var(--gold)}
 .stat-card.green .stat-num{color:var(--green)}
-.stat-card.danger{border-color:rgba(226,85,85,0.35);background:rgba(226,85,85,0.06);cursor:pointer;transition:transform 0.2s}
+.stat-card.danger{border-color:rgba(239,95,88,0.32);background:rgba(239,95,88,0.07);cursor:pointer;transition:transform 0.2s, box-shadow 0.2s}
 .stat-card.danger:hover{transform:translateY(-2px)}
 .stat-card.danger .stat-num{color:var(--red)}
+@keyframes weakRedPulse{
+  0%,100%{box-shadow:var(--sh-1);border-color:rgba(239,95,88,0.32)}
+  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.22),var(--sh-1);border-color:rgba(239,95,88,0.55)}
+}
+.stat-card.blink-alert{animation:weakRedPulse 1.8s ease-in-out infinite}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .copy-code-btn{
-  margin-top:8px;background:rgba(231,169,58,0.12);border:1px solid rgba(231,169,58,0.35);
-  color:#9A6B10;padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
+  margin-top:8px;background:rgba(224,171,78,0.12);border:1px solid rgba(224,171,78,0.32);
+  color:var(--gold-soft);padding:5px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;
   cursor:pointer;font-family:'Heebo',sans-serif;
 }
 
-.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--glass-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px;width:fit-content;flex-wrap:wrap}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes btnWeakRedPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,95,88,0)}
+  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.28)}
+}
+
+.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:4px;width:fit-content;flex-wrap:wrap}
 .tab{
   padding:9px 18px;border:none;background:none;color:var(--ink-3);
   border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
-  transition:all 0.2s;
+  transition:all 0.2s;display:flex;align-items:center;gap:6px;
 }
 .tab.active{background:var(--brand);color:#fff}
+.tab.has-alert:not(.active){color:var(--red);animation:badgePulse 1.8s ease-in-out infinite}
 
 .panel{
-  background:var(--glass);backdrop-filter:blur(14px);
+  background:var(--paper-2);
   border:1px solid var(--glass-border);border-radius:var(--r);
   overflow:hidden;margin-bottom:24px;box-shadow:var(--sh-1),var(--hl);
 }
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
 .panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
 .add-btn{
-  background:linear-gradient(135deg,var(--brand),var(--brand-2));border:none;color:#fff;padding:9px 16px;
+  background:var(--brand);border:none;color:#fff;padding:9px 16px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
   box-shadow:var(--sh-brand);transition:all 0.2s;
 }
-.add-btn:hover{transform:translateY(-1px)}
+.add-btn:hover{background:var(--brand-2)}
 
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:12px 22px;font-size:0.78rem;color:var(--ink-3);font-weight:600;border-bottom:1px solid var(--line-2)}
+th{text-align:right;padding:12px 22px;font-size:0.75rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
 td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(8,14,40,0.015)}
+tr:hover td{background:rgba(255,255,255,0.015)}
 .role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
-.role-badge.teacher{background:rgba(46,91,255,0.10);color:var(--brand)}
-.role-badge.student{background:rgba(10,164,120,0.10);color:var(--green)}
-.points-tag{color:#9A6B10;font-weight:700}
+.role-badge.teacher{background:rgba(var(--brand-rgb),0.14);color:var(--brand)}
+.role-badge.student{background:rgba(var(--green-rgb),0.14);color:var(--green)}
+.points-tag{color:var(--gold);font-weight:700}
 
 .history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.85rem;color:var(--ink-2)}
 .history-item:last-child{border-bottom:none}
@@ -128,45 +149,46 @@ tr.clickable{cursor:pointer}
 
 .empty-state{padding:40px;text-align:center;color:var(--ink-3);font-size:0.9rem}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(8,14,40,0.42);backdrop-filter:blur(7px);align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;z-index:50;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:rgba(255,255,255,0.96);backdrop-filter:blur(22px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:28px;width:100%;max-width:400px;box-shadow:var(--sh-2),var(--hl)}
+.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:28px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
 .modal h3{font-size:1.1rem;margin-bottom:20px;color:var(--ink)}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:0.82rem;color:var(--ink-3);margin-bottom:6px}
 .field input,.field select,.field textarea{
-  width:100%;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 14px;color:var(--ink);
+  width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:10px;padding:11px 14px;color:var(--ink);
   font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;
 }
 .field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:#F4F5F7;border:1px solid var(--line);border-radius:10px;padding:11px 14px;color:var(--ink-3);font-size:0.9rem}
+.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:10px;padding:11px 14px;color:var(--ink-3);font-size:0.9rem}
 .modal-actions{display:flex;gap:10px;margin-top:20px}
 .modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700}
-.btn-cancel{background:var(--glass-2);color:var(--ink-3);border:1px solid var(--line)}
+.btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--glass-border)}
 .btn-confirm{background:var(--brand);color:#fff}
 
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--glass);backdrop-filter:blur(18px);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:12px 20px;font-size:0.85rem;display:none;z-index:60;box-shadow:var(--sh-2);color:var(--ink);
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:12px 20px;font-size:0.85rem;display:none;z-index:60;box-shadow:var(--sh-2);color:var(--ink);font-weight:600;
 }
 .toast.show{display:block}
-.toast.error{border-color:rgba(226,85,85,0.4);color:var(--red)}
-.toast.success{border-color:rgba(10,164,120,0.4);color:var(--green)}
+.toast.error{background:var(--red);color:#fff;border-color:transparent}
+.toast.success{background:var(--green);color:#08140F;border-color:transparent}
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
 .hidden{display:none !important}
 
 .task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
-.task-status-badge.pending{background:rgba(124,133,166,0.12);color:var(--ink-3)}
-.task-status-badge.submitted{background:rgba(231,169,58,0.14);color:#9A6B10}
-.task-status-badge.approved{background:rgba(10,164,120,0.12);color:var(--green)}
-.task-status-badge.rejected{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-status-badge.pending{background:rgba(110,116,136,0.18);color:var(--ink-3)}
+.task-status-badge.submitted{background:rgba(224,171,78,0.16);color:var(--gold-soft)}
+.task-status-badge.approved{background:rgba(47,191,143,0.16);color:var(--green)}
+.task-status-badge.rejected{background:rgba(239,95,88,0.16);color:var(--red)}
 .task-actions{display:flex;gap:6px}
 .task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700}
-.task-act-approve{background:rgba(10,164,120,0.12);color:var(--green)}
-.task-act-reject{background:rgba(226,85,85,0.12);color:var(--red)}
+.task-act-approve{background:rgba(47,191,143,0.16);color:var(--green)}
+.task-act-reject{background:rgba(239,95,88,0.16);color:var(--red)}
+.task-act-btn.blink-alert{animation:btnWeakRedPulse 1.6s ease-in-out infinite}
 
 @media(max-width:640px){
   .topbar{margin:12px 12px 0;padding:11px 18px;flex-wrap:wrap;gap:8px}
@@ -181,11 +203,7 @@ tr.clickable{cursor:pointer}
   .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
   .tab{flex:none;white-space:nowrap;padding:8px 13px;font-size:0.82rem}
   .panel-head{padding:14px 16px}
-  /* --- תיקון מובייל: הטבלאות מתאימות למסך בלי גלילה הצידה --- */
-  /* קודם הכלל nth-child(3) הסתיר עמודה שלישית בכל טבלה. הוסר כדי שכפתורי הפעולה יישארו. */
   th,td{padding:10px 8px;font-size:0.8rem}
-  /* בטבלת הצ'ק-אין הממתינים: מסתירים במובייל "צוות/משמרת" (עמ' 2) ו"זמן לאישור" (עמ' 5) */
-  /* כדי שיישאר מקום לשם, לשעות ולכפתורי האישור/דחייה */
   #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
   #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
 }
@@ -233,19 +251,19 @@ tr.clickable{cursor:pointer}
         <div class="stat-label">קוד הצטרפות לעסק</div>
         <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
       </div>
-      <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.querySelectorAll('.tab')[2])">
+      <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.getElementById('tabAttendance'))">
         <div class="stat-num" id="statAtRisk">0</div>
         <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tab active" onclick="setTab('students', this)">עובדים</button>
-      <button class="tab" onclick="setTab('teachers', this)">מנהלי צוותים</button>
-      <button class="tab" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px"></span></button>
-      <button class="tab" onclick="setTab('attendance', this)">דוח נוכחות</button>
-      <button class="tab" onclick="setTab('teacherActivity', this)">פעילות מנהלים</button>
-      <button class="tab" onclick="setTab('tasks', this)">משימות</button>
+      <button class="tab active" id="tabStudents" onclick="setTab('students', this)">עובדים</button>
+      <button class="tab" id="tabTeachers" onclick="setTab('teachers', this)">מנהלי צוותים</button>
+      <button class="tab" id="tabCheckinApproval" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
+      <button class="tab" id="tabAttendance" onclick="setTab('attendance', this)">דוח נוכחות <span id="atRiskBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
+      <button class="tab" id="tabTeacherActivity" onclick="setTab('teacherActivity', this)">פעילות מנהלים</button>
+      <button class="tab" id="tabTasks" onclick="setTab('tasks', this)">משימות <span id="tasksApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
     </div>
 
     <div class="panel" id="studentsPanel">
@@ -414,7 +432,7 @@ async function handleLogout() {
 
 function setTab(tab, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
-  btn.classList.add('active')
+  if (btn) btn.classList.add('active')
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
   document.getElementById('checkinApprovalPanel').classList.toggle('hidden', tab !== 'checkinApproval')
@@ -581,19 +599,28 @@ async function renderAttendanceReport() {
   const atRiskCard = document.getElementById('atRiskCard')
   document.getElementById('statAtRisk').textContent = atRiskRows.length
   atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
+  atRiskCard.classList.toggle('blink-alert', atRiskRows.length > 0)
+
+  const atRiskBadge = document.getElementById('atRiskBadge')
+  if (atRiskBadge) {
+    atRiskBadge.textContent = atRiskRows.length
+    atRiskBadge.classList.toggle('hidden', atRiskRows.length === 0)
+  }
+  const tabAttendance = document.getElementById('tabAttendance')
+  if (tabAttendance) tabAttendance.classList.toggle('has-alert', atRiskRows.length > 0)
 
   document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
   document.getElementById('attendanceBody').innerHTML = rows.map(r => {
     const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--red)'
     const atRisk = r.pct < AT_RISK_THRESHOLD
     const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(231,169,58,0.15);color:#9A6B10;padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
+      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
       : ''
     const phone = r.student.parent_phone || ''
     const alertCell = (atRisk || r.decliningTrend)
       ? phone
         ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
-        : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${r.student.name.replace(/'/g,"")}')">📱 הוסף טלפון</button>`
+        : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
       : '<span style="color:var(--ink-3);font-size:0.78rem">—</span>'
     return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
       <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
@@ -708,6 +735,7 @@ async function createTask() {
 
     allTasks.unshift(data)
     renderTasks()
+    updateTasksBadge()
     closeTaskModal()
     showToast('המשימה נשלחה בהצלחה', 'success')
   } catch (err) {
@@ -729,6 +757,7 @@ async function approveTask(taskId) {
     task.status = 'approved'
 
     renderTasks()
+    updateTasksBadge()
     showToast('✅ המשימה אושרה', 'success')
   } catch (err) {
     showToast(err.message || 'שגיאה באישור המשימה', 'error')
@@ -748,10 +777,22 @@ async function rejectTask(taskId) {
 
     task.status = 'rejected'
     renderTasks()
+    updateTasksBadge()
     showToast('המשימה נדחתה', 'success')
   } catch (err) {
     showToast(err.message || 'שגיאה בדחיית המשימה', 'error')
   }
+}
+
+function updateTasksBadge() {
+  const pendingApproval = allTasks.filter(t => t.status === 'submitted').length
+  const badge = document.getElementById('tasksApprovalBadge')
+  if (badge) {
+    badge.textContent = pendingApproval
+    badge.classList.toggle('hidden', pendingApproval === 0)
+  }
+  const tabTasks = document.getElementById('tabTasks')
+  if (tabTasks) tabTasks.classList.toggle('has-alert', pendingApproval > 0)
 }
 
 function renderTasks() {
@@ -760,7 +801,7 @@ function renderTasks() {
     const student = allTeachers.find(s => s.id === t.student_id)
     const actions = t.status === 'submitted'
       ? `<div class="task-actions">
-           <button class="task-act-btn task-act-approve" onclick="approveTask('${t.id}')">✅ אשר</button>
+           <button class="task-act-btn task-act-approve blink-alert" onclick="approveTask('${t.id}')">✅ אשר</button>
            <button class="task-act-btn task-act-reject" onclick="rejectTask('${t.id}')">✗ דחה</button>
          </div>`
       : t.status === 'pending'
@@ -784,6 +825,7 @@ async function loadTasks() {
   if (error) { console.error(error); allTasks = []; return }
   allTasks = data || []
   renderTasks()
+  updateTasksBadge()
 }
 
 let pendingCheckinApprovals = []
@@ -813,8 +855,11 @@ async function loadCheckinApprovals() {
   if (error) { console.error(error); return }
 
   pendingCheckinApprovals = data || []
-  document.getElementById('checkinApprovalBadge').classList.toggle('hidden', pendingCheckinApprovals.length === 0)
-  document.getElementById('checkinApprovalBadge').textContent = pendingCheckinApprovals.length
+  const count = pendingCheckinApprovals.length
+  document.getElementById('checkinApprovalBadge').classList.toggle('hidden', count === 0)
+  document.getElementById('checkinApprovalBadge').textContent = count
+  const tabCheckin = document.getElementById('tabCheckinApproval')
+  if (tabCheckin) tabCheckin.classList.toggle('has-alert', count > 0)
   renderCheckinApprovals()
 }
 
@@ -830,7 +875,7 @@ function renderCheckinApprovals() {
       <td>${fmtTime(c.check_out_at)}</td>
       <td>${hoursLeftLabel(c.check_out_at)}</td>
       <td>
-        <button class="task-act-btn task-act-approve" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
+        <button class="task-act-btn task-act-approve blink-alert" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
         <button class="task-act-btn task-act-reject" onclick="rejectCheckinRow('${c.id}')">✗ דחה</button>
       </td>
     </tr>
