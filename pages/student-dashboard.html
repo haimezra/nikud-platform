@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מסך מנהל צוות – ניקוד★</title>
+<title>הדשבורד שלי – ניקוד★</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -16,13 +16,11 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{
   --paper:#0A0B10;--paper-2:#0D0F16;--paper-3:#11141C;--ink:#F3F5FA;--ink-2:#A6ACC0;--ink-3:#6E7488;
   --brand:#5C8CFF;--brand-2:#3D68E8;--violet:#9B7BFF;--gold:#E0AB4E;--gold-soft:#EFC784;
   --green:#2FBF8F;--red:#EF5F58;
-  --brand-rgb:92,140,255;--green-rgb:47,191,143;--red-rgb:239,95,88;--gold-rgb:224,171,78;
   --line:rgba(255,255,255,0.08);--line-2:rgba(255,255,255,0.05);
   --glass:rgba(255,255,255,0.035);--glass-2:rgba(255,255,255,0.025);--glass-border:rgba(255,255,255,0.08);
   --hl:inset 0 1px 0 rgba(255,255,255,0.04);
@@ -35,7 +33,7 @@
 html,body{height:100%}
 body{
   background:var(--paper);color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;
-  -webkit-font-smoothing:antialiased;font-size:14px;
+  -webkit-font-smoothing:antialiased;font-size:13.5px;
   background-image:
     linear-gradient(180deg, rgba(92,140,255,0.05) 0%, transparent 12%),
     radial-gradient(ellipse 40% 30% at 96% -6%, rgba(92,140,255,0.06) 0%, transparent 60%);
@@ -46,15 +44,13 @@ a{color:var(--brand);text-decoration:none}
 a:hover{color:var(--brand-2)}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
+
 .hidden{display:none !important}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-  outline:2px solid var(--brand);outline-offset:2px;border-radius:6px;
-}
 
 /* ---------- Shell / Sidebar ---------- */
 .app-shell{display:flex;min-height:100vh;align-items:stretch}
 .sidebar{
-  width:238px;flex-shrink:0;background:var(--paper-2);
+  width:224px;flex-shrink:0;background:var(--paper-2);
   border-left:1px solid var(--line);
   padding:18px 14px;display:flex;flex-direction:column;
   position:sticky;top:0;height:100vh;overflow-y:auto;
@@ -62,41 +58,25 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .sidebar-brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
 .sidebar-brand .txt .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.3px;background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
 @keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.sidebar-brand .txt .sub{font-size:0.72rem;color:var(--ink-3);margin-top:1px;display:flex;align-items:center;gap:5px}
-.sidebar-brand .txt .sub .dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:dotBlink 1.4s ease-in-out infinite}
-@keyframes dotBlink{0%,49%{opacity:1;box-shadow:0 0 5px 1px var(--green)}50%,100%{opacity:0.15;box-shadow:0 0 0 0 transparent}}
+.sidebar-brand .txt .sub{font-size:0.72rem;color:var(--ink-3);margin-top:1px}
 
 .sidebar-section-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--ink-3);font-weight:700;padding:0 10px;margin:12px 0 6px}
 .sidebar-nav{display:flex;flex-direction:column;gap:1px}
 .nav-item{
-  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
-  color:var(--ink-2);text-decoration:none;font-size:0.85rem;font-weight:500;
-  cursor:pointer;transition:background 0.15s, color 0.15s;border:1px solid transparent;position:relative;
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+  color:var(--ink-2);text-decoration:none;font-size:0.83rem;font-weight:500;
+  cursor:pointer;transition:background 0.15s, color 0.15s;border:1px solid transparent;
 }
 .nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;flex-shrink:0}
 .nav-item:hover{background:var(--glass);color:var(--ink)}
 .nav-item.active{background:rgba(92,140,255,0.10);color:var(--brand);border-color:rgba(92,140,255,0.16);font-weight:700}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;padding:1px 7px;font-size:0.68rem;font-weight:700;line-height:1.5}
-.nav-item.has-alert .nav-badge{animation:badgePulse 1.8s ease-in-out infinite}
-@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.45}}
 
-.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-2);display:flex;flex-direction:column;gap:8px}
-.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px 8px 4px}
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-2)}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px 8px 12px}
 .sidebar-user .av{width:28px;height:28px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.76rem;color:var(--ink-2);flex-shrink:0}
 .sidebar-user .info{min-width:0}
 .sidebar-user .info .n{font-size:0.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-user .info .r{font-size:0.7rem;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.school-pill{
-  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:8px 11px;font-size:0.74rem;color:var(--ink-3);
-}
-.school-pill strong{color:var(--ink);display:block;font-size:0.82rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-export-btn{
-  width:100%;background:var(--glass);border:1px solid var(--glass-border);color:var(--ink-2);
-  padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;
-  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;
-}
-.sidebar-export-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(92,140,255,0.08)}
+.sidebar-user .info .r{font-size:0.7rem;color:var(--ink-3)}
 .logout-btn{
   width:100%;background:transparent;border:1px solid var(--line);color:var(--ink-3);
   padding:7px 14px;border-radius:8px;cursor:pointer;
@@ -106,153 +86,138 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(239,95,88,0.06)}
 
 /* ---------- Main ---------- */
-.main{flex:1;min-width:0;padding:24px 30px 60px}
-.view-header{margin-bottom:20px}
-.view-header h1{font-size:1.22rem;font-weight:700;letter-spacing:-0.3px}
-.view-header .sub{font-size:0.8rem;color:var(--ink-3);margin-top:4px;font-weight:500}
-.view-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.main{flex:1;min-width:0;padding:20px 30px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+.topbar h1{font-size:1.22rem;font-weight:700;letter-spacing:-0.3px}
+.topbar .date-sub{font-size:0.78rem;color:var(--ink-3);margin-top:3px;font-weight:500}
+.pts-chip{
+  display:flex;align-items:center;gap:10px;
+  background:var(--paper-3);border:1px solid var(--glass-border);
+  border-radius:var(--r-sm);padding:8px 16px 8px 12px;box-shadow:var(--sh-1);
+}
+.pts-chip::before{content:"";width:7px;height:7px;border-radius:2px;background:linear-gradient(135deg,var(--brand),var(--violet));flex-shrink:0}
+.pts-chip .pts-num{font-family:'Rubik',sans-serif;font-size:1.05rem;font-weight:800;color:var(--ink)}
+.pts-chip .pts-label{font-size:0.68rem;color:var(--ink-3);font-weight:600}
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px}
-.stat-card{
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-bottom:18px;background:var(--line-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);overflow:hidden;box-shadow:var(--sh-1)}
+.stat-tile{
+  background:var(--paper-2);
+  padding:15px 17px;position:relative;
+}
+.stat-tile .label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--ink-3);font-weight:700;margin-bottom:9px}
+.stat-tile .value{font-family:'Rubik',sans-serif;font-size:1.42rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
+.stat-tile .value.small{font-size:1.1rem}
+.stat-tile .foot{font-size:0.72rem;color:var(--ink-3);margin-top:7px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.attn-track{height:5px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;margin-top:7px}
+.attn-fill{height:100%;border-radius:var(--pill);background:var(--green);transition:width 0.4s}
+.card{
   background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r);
-  padding:18px 20px;box-shadow:var(--sh-1);
+  padding:17px 19px;box-shadow:var(--sh-1);
 }
-.stat-num{font-family:'Rubik',sans-serif;font-size:1.7rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
-.stat-label{color:var(--ink-3);font-size:0.78rem;margin-top:9px}
-.stat-card.accent .stat-num{color:var(--brand)}
-.stat-card.gold .stat-num{color:var(--gold)}
-.stat-card.green .stat-num{color:var(--green)}
-.stat-card.danger{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;border-color:rgba(239,95,88,0.3);background:rgba(239,95,88,0.06)}
-.stat-card.danger:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
-.stat-card.danger .stat-num{color:var(--red)}
-.stat-card.clickable-stat{cursor:pointer;transition:box-shadow 0.2s,transform 0.2s}
-.stat-card.clickable-stat:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
-@keyframes weakRedPulse{
-  0%,100%{box-shadow:var(--sh-1);border-color:var(--glass-border)}
-  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.22),var(--sh-1);border-color:rgba(239,95,88,0.45)}
-}
-.stat-card.blink-alert{animation:weakRedPulse 1.8s ease-in-out infinite}
-.mini-stats-row{display:flex;gap:18px;flex-wrap:wrap;margin:-6px 2px 18px;font-size:0.78rem;color:var(--ink-3)}
-.mini-stats-row strong{color:var(--ink);font-weight:700;font-family:'Rubik',sans-serif}
-.section-count-line{font-size:0.78rem;color:var(--ink-3);margin-bottom:10px}
-.section-count-line strong{color:var(--ink);font-weight:700}
-tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
-.copy-code-btn{
-  background:rgba(224,171,78,0.1);border:1px solid rgba(224,171,78,0.28);
-  color:var(--gold-soft);padding:5px 12px;border-radius:8px;font-size:0.73rem;font-weight:700;
-  cursor:pointer;font-family:'Heebo',sans-serif;white-space:nowrap;
-}
-.export-btn{
-  background:var(--paper-3);border:1px solid var(--glass-border);color:var(--ink-2);padding:8px 15px;
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;
-  transition:all 0.2s;
-}
-.export-btn:hover{border-color:var(--brand);color:var(--brand)}
-.bulk-btn{
-  background:var(--green);border:none;color:#08140F;padding:8px 15px;
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
-  box-shadow:0 6px 14px rgba(47,191,143,0.24);transition:all 0.2s;
-}
-.bulk-btn:hover{filter:brightness(1.08)}
-.bulk-btn:disabled{opacity:0.4;cursor:not-allowed}
-.search-input{
-  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:8px 13px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.82rem;outline:none;min-width:200px;
-}
-.search-input:focus{border-color:var(--brand)}
+.card h3{font-size:0.7rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
 
-.card,.panel{
-  background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r);
-  overflow:hidden;margin-bottom:16px;box-shadow:var(--sh-1);
+.activity-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
+.activity-item:last-child{border-bottom:none}
+.activity-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif;font-size:0.83rem}
+
+.lb-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2)}
+.lb-item:last-child{border-bottom:none}
+.lb-rank{font-size:0.75rem;color:var(--ink-3);width:16px;font-weight:700;font-family:'Rubik',sans-serif}
+.lb-avatar{width:25px;height:25px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;box-shadow:var(--hl)}
+.lb-name{flex:1;font-size:0.83rem;color:var(--ink-2)}
+.lb-pts{font-weight:700;color:var(--ink);font-size:0.83rem;font-family:'Rubik',sans-serif}
+
+.store-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.store-item{
+  background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:13px 12px;text-align:center;cursor:pointer;transition:all 0.15s;
 }
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:17px 22px;border-bottom:1px solid var(--line-2);flex-wrap:wrap;gap:10px}
-.panel-head h3{font-size:0.92rem;font-weight:700;color:var(--ink)}
-.panel-head-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.panel-note{color:var(--ink-3);font-size:0.82rem;margin:12px 22px 14px}
-.add-btn{
-  background:var(--brand);border:none;color:#fff;padding:8px 15px;
-  border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
-  box-shadow:var(--sh-brand);transition:all 0.2s;
+.store-item:hover{border-color:rgba(224,171,78,0.5);transform:translateY(-1px);box-shadow:var(--sh-1)}
+.item-icon{width:30px;height:30px;margin:0 auto 8px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(92,140,255,0.08);border:1px solid rgba(92,140,255,0.18);transition:transform 0.15s ease,background 0.15s ease}
+.item-icon svg{width:15px;height:15px;stroke:var(--brand);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.store-item:active .item-icon{transform:scale(0.9);background:rgba(155,123,255,0.2)}
+.item-name{font-size:0.76rem;font-weight:600;color:var(--ink)}
+.item-pts{font-size:0.7rem;color:var(--gold);margin-top:3px;font-weight:600}
+
+.earn-list{display:flex;flex-direction:column;gap:1px;margin-top:12px;border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden}
+.earn-item{display:flex;align-items:center;gap:11px;padding:11px 13px;background:var(--paper-3)}
+.earn-badge{width:24px;height:24px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Rubik',sans-serif;font-size:0.66rem;font-weight:700;color:var(--brand);background:rgba(92,140,255,0.08);border:1px solid rgba(92,140,255,0.18)}
+.earn-text{font-size:0.81rem;color:var(--ink-2)}
+.earn-text b{color:var(--ink);font-weight:700}
+.earn-text span{color:var(--ink-3);display:block;font-size:0.74rem;margin-top:1px}
+
+.expired-screen{max-width:440px;margin:80px auto;text-align:center;padding:0 20px}
+.expired-screen .icon{font-size:3rem;margin-bottom:16px}
+.expired-screen h2{font-size:1.3rem;margin-bottom:10px;font-weight:800}
+.expired-screen p{color:var(--ink-2);font-size:0.9rem;line-height:1.7;margin-bottom:24px}
+.expired-screen a{
+  display:inline-block;padding:13px 28px;
+  background:var(--brand);color:#fff;
+  text-decoration:none;border-radius:var(--r-sm);font-weight:700;font-size:0.9rem;
+  box-shadow:var(--sh-brand);
 }
-.add-btn:hover{background:var(--brand-2)}
 
-.table-scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:11px 22px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3);white-space:nowrap}
-td{padding:13px 22px;font-size:0.85rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,0.015)}
-.role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
-.points-tag{color:var(--gold);font-weight:700;white-space:nowrap}
-
-.history-item{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
-.history-item:last-child{border-bottom:none}
-.history-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif}
-tr.clickable{cursor:pointer}
-.attn-bar-track{height:5px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;width:64px;display:inline-block;margin-left:8px;vertical-align:middle}
-.attn-bar-fill{height:100%;border-radius:var(--pill)}
-
-.empty-state{padding:36px;text-align:center;color:var(--ink-3);font-size:0.85rem}
-
-.preview-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem}
-.preview-item:last-child{border-bottom:none}
-.preview-item .pi-name{color:var(--ink);font-weight:600}
-.preview-item .pi-sub{color:var(--ink-3);font-size:0.74rem;margin-top:1px}
-.preview-item .pi-tag{margin-right:auto;font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:var(--pill);white-space:nowrap}
-.quick-actions{display:flex;flex-direction:column;gap:8px}
-.quick-actions button{
-  display:flex;align-items:center;gap:8px;background:var(--paper-3);border:1px solid var(--glass-border);
-  color:var(--ink-2);padding:10px 13px;border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.83rem;font-weight:600;transition:all 0.15s;text-align:right;
+.demo-banner{
+  background:rgba(224,171,78,0.06);border:1px solid rgba(224,171,78,0.2);
+  border-radius:var(--r-sm);padding:10px 15px;margin-bottom:16px;
+  font-size:0.8rem;color:var(--gold-soft);display:flex;align-items:center;gap:9px;
 }
-.quick-actions button:hover{border-color:var(--brand);color:var(--brand);background:rgba(92,140,255,0.06)}
-.quick-actions button svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;flex-shrink:0}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-.grid-3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:16px}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:400;padding:20px}
-.modal-overlay.show{display:flex}
-.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
-.modal h3{font-size:1.02rem;margin-bottom:18px;color:var(--ink)}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:6px}
-.field input,.field select,.field textarea{
-  width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;
+.empty-state{text-align:center;padding:22px 16px;color:var(--ink-3);font-size:0.82rem}
+
+.checkin-btn{
+  width:100%;padding:11px;border:none;border-radius:var(--r-sm);cursor:pointer;
+  background:var(--brand);color:#fff;
+  font-family:'Rubik',sans-serif;font-weight:700;font-size:0.87rem;
+  box-shadow:var(--sh-brand);transition:transform 0.2s, background 0.2s;
 }
-.field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink-3);font-size:0.86rem}
-.modal-actions{display:flex;gap:10px;margin-top:18px}
-.modal-actions button{flex:1;padding:10px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
-.btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--glass-border)}
-.btn-confirm{background:var(--brand);color:#fff}
+.checkin-btn:hover:not(:disabled){background:var(--brand-2)}
+.checkin-btn:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none}
+
+.checkin-btn.active-shift{
+  background:var(--red);
+  box-shadow:0 8px 20px rgba(239,95,88,0.2);
+  animation:activeShiftPulse 2.4s ease-in-out infinite;
+}
+@keyframes activeShiftPulse{
+  0%,100%{opacity:1}
+  50%{opacity:0.65}
+}
+
+.checkin-status{display:flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:700;padding:4px 0}
+.checkin-status.pending{color:var(--gold-soft)}
+.checkin-status.approved{color:var(--green)}
+.checkin-status.rejected{color:var(--red)}
 
 .toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:11px 20px;font-size:0.85rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);font-weight:600;
+  position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:var(--paper-3);border:1px solid var(--glass-border);color:var(--ink);padding:12px 22px;border-radius:var(--r-sm);
+  font-weight:600;font-size:0.85rem;z-index:999;box-shadow:var(--sh-2);
+  transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.toast.show{display:block}
-.toast.error{background:var(--red);color:#fff;border-color:transparent}
-.toast.success{background:var(--green);color:#08140F;border-color:transparent}
+.toast.show{transform:translateX(-50%) translateY(0)}
 
-.loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
+.loading{text-align:center;padding:100px 20px;color:var(--ink-3);font-size:0.9rem}
 
-.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
-.task-status-badge.pending{background:rgba(110,116,136,0.18);color:var(--ink-3)}
-.task-status-badge.submitted{background:rgba(224,171,78,0.16);color:var(--gold-soft)}
-.task-status-badge.approved{background:rgba(47,191,143,0.16);color:var(--green)}
-.task-status-badge.rejected{background:rgba(239,95,88,0.16);color:var(--red)}
-.task-actions{display:flex;gap:6px}
-.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700;white-space:nowrap}
-.task-act-approve{background:rgba(47,191,143,0.16);color:var(--green)}
-.task-act-reject{background:rgba(239,95,88,0.16);color:var(--red)}
-@keyframes btnWeakRedPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(239,95,88,0)}
-  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.28)}
+.task-item{
+  display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line-2);
 }
-.task-act-btn.blink-alert{animation:btnWeakRedPulse 1.6s ease-in-out infinite}
+.task-item:last-child{border-bottom:none}
+.task-icon{font-size:1.1rem;width:18px;text-align:center;flex-shrink:0}
+.task-body{flex:1;min-width:0}
+.task-title{font-weight:700;font-size:0.84rem;color:var(--ink)}
+.task-desc{font-size:0.74rem;color:var(--ink-3);margin-top:2px}
+.task-status-tag{font-size:0.68rem;font-weight:700;padding:3px 9px;border-radius:var(--pill);white-space:nowrap}
+.task-status-tag.pending{background:rgba(110,116,136,0.14);color:var(--ink-3)}
+.task-status-tag.submitted{background:rgba(224,171,78,0.14);color:var(--gold-soft)}
+.task-status-tag.approved{background:rgba(47,191,143,0.14);color:var(--green)}
+.task-status-tag.rejected{background:rgba(239,95,88,0.14);color:var(--red)}
+.task-done-btn{
+  background:var(--brand);color:#fff;border:none;padding:6px 12px;border-radius:var(--r-sm);
+  cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.73rem;font-weight:700;white-space:nowrap;
+}
 
 @media(max-width:900px){
   .app-shell{flex-direction:column}
@@ -261,29 +226,14 @@ tr.clickable{cursor:pointer}
   .sidebar-section-label{display:none}
   .sidebar-nav{flex-direction:row}
   .nav-item{white-space:nowrap}
-  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;flex-direction:row;align-items:center;gap:8px}
-  .sidebar-user{padding:0 6px}
-  .school-pill{display:none}
-  .sidebar-export-btn{width:auto;padding:8px 12px;white-space:nowrap}
-  .logout-btn{width:auto;padding:8px 14px;white-space:nowrap}
-  .main{padding:16px 14px 40px}
-  .grid-2,.grid-3{grid-template-columns:1fr}
+  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;display:flex;align-items:center}
+  .sidebar-user{padding:0 10px}
+  .logout-btn{width:auto;padding:8px 14px}
+  .main{padding:16px 12px 40px}
+  .stat-strip{grid-template-columns:1fr 1fr}
+  .grid-2{grid-template-columns:1fr}
+  .store-grid{grid-template-columns:1fr 1fr}
 }
-@media(max-width:640px){
-  .view-header h1{font-size:1.05rem}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .stat-card{padding:14px 14px}
-  .stat-num{font-size:1.3rem}
-  .panel-head{padding:14px 16px}
-  th,td{padding:10px 12px;font-size:0.8rem}
-  .modal{padding:20px}
-  .modal table th,.modal table td{padding:8px 4px;font-size:0.76rem}
-}
-
-/* מספרים לבנים בקוביות לוח הבקרה (מראה ניהולי) — גובר על צבעי green/gold/accent */
-#myTasksStatCard .stat-num,
-#tasksStatCard .stat-num,
-#trendsCard .stat-num{color:var(--ink)}
 </style>
 <!-- Vercel Web Analytics -->
 <script>
@@ -294,1034 +244,326 @@ tr.clickable{cursor:pointer}
 </head>
 <body>
 
-<div class="app-shell">
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="txt">
-        <div class="name">NIKUD</div>
-        <div class="sub"><span class="dot"></span>מסך ניהול</div>
-      </div>
-    </div>
-
-    <div class="sidebar-section-label">תפריט</div>
-    <nav class="sidebar-nav">
-      <a class="nav-item active" id="navOverview" href="#" onclick="setTab('overview', this);return false">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-        לוח בקרה
-      </a>
-      <a class="nav-item" id="navStudents" href="#" onclick="setTab('students', this);return false">
-        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22.5 21v-2a4 4 0 0 0-3-3.87"/><path d="M15.5 3.13a4 4 0 0 1 0 7.75"/></svg>
-        עובדים
-      </a>
-      <a class="nav-item" id="navCheckinApproval" href="#" onclick="setTab('checkinApproval', this);return false">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        צ'ק-אין ממתינים
-        <span class="nav-badge hidden" id="checkinApprovalBadge">0</span>
-      </a>
-      <a class="nav-item" id="navTasks" href="#" onclick="setTab('tasks', this);return false">
-        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M7 12l2.5 2.5L16 9"/></svg>
-        משימות
-      </a>
-      <a class="nav-item" id="navMyTasks" href="#" onclick="setTab('myTasks', this);return false">
-        <svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-        המשימות שלי
-        <span class="nav-badge hidden" id="myTasksBadge">0</span>
-      </a>
-      <a class="nav-item" id="navAttendance" href="#" onclick="setTab('attendance', this);return false">
-        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
-        דוח נוכחות
-        <span class="nav-badge hidden" id="atRiskBadge">0</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="av" id="teacherAvatar">·</div>
-        <div class="info">
-          <div class="n" id="teacherName">מנהל/ת</div>
-          <div class="r">מנהל/ת צוות</div>
-        </div>
-      </div>
-      <div class="school-pill">עסק<strong id="schoolNameLabel">טוען...</strong></div>
-      <button class="sidebar-export-btn" onclick="exportToExcel()">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        ייצוא לאקסל
-      </button>
-      <button class="logout-btn" onclick="handleLogout()">
-        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg>
-        יציאה
-      </button>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="loading" id="loadingState">טוען נתונים...</div>
-
-    <div id="dashboardContent" class="hidden">
-
-      <!-- ===== לוח בקרה (סקירה כללית) ===== -->
-      <div id="overviewPanel">
-        <div class="view-header">
-          <h1>לוח בקרה</h1>
-          <div class="sub">שלום <span id="teacherNameInline">מנהל/ת</span>, הנה מצב הצוות שלך</div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card green clickable-stat" id="myTasksStatCard" onclick="setTab('myTasks', document.getElementById('navMyTasks'))">
-            <div class="stat-num" id="statMyTasks">0</div>
-            <div class="stat-label">המשימות שלי</div>
-          </div>
-          <div class="stat-card gold clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('navTasks'))">
-            <div class="stat-num" id="statTasksPending">0</div>
-            <div class="stat-label">משימות ממתינות לאישור</div>
-          </div>
-          <div class="stat-card accent clickable-stat" id="checkinsStatCard" onclick="setTab('checkinApproval', document.getElementById('navCheckinApproval'))">
-            <div class="stat-num" id="statPendingCheckins">0</div>
-            <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
-          </div>
-          <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.getElementById('navAttendance'))">
-            <div class="stat-num" id="statAtRisk">0</div>
-            <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
-          </div>
-          <div class="stat-card accent clickable-stat" id="trendsCard" onclick="openTrendsModal()">
-            <div class="stat-num" id="statTrends">0</div>
-            <div class="stat-label">מגמות</div>
-          </div>
-        </div>
-
-        <div class="mini-stats-row">
-          <span>סה"כ נקודות שחולקו: <strong id="statPoints">0</strong></span>
-        </div>
-
-        <div class="grid-3">
-          <div class="card" style="margin-bottom:0">
-            <div class="panel-head">
-              <h3>ממתין לטיפול שלך</h3>
-            </div>
-            <div style="padding:6px 22px 16px" id="overviewPendingList">
-              <div class="empty-state">אין כרגע פעולות הממתינות לטיפול</div>
-            </div>
-          </div>
-          <div class="card" style="margin-bottom:0">
-            <div class="panel-head"><h3>פעולות מהירות</h3></div>
-            <div style="padding:6px 22px 18px" class="quick-actions">
-              <button onclick="setTab('checkinApproval', document.getElementById('navCheckinApproval'))">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-                אישור צ'ק-אין ממתינים
-              </button>
-              <button onclick="openTaskModal()">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                יצירת משימה חדשה
-              </button>
-              <button onclick="setTab('attendance', document.getElementById('navAttendance'))">
-                <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
-                צפייה בדוח נוכחות
-              </button>
-              <button onclick="exportToExcel()">
-                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                ייצוא כל הנתונים לאקסל
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ===== עובדים ===== -->
-      <div class="hidden" id="studentsPanel">
-        <div class="view-header view-header-row">
-          <div>
-            <h1>עובדים</h1>
-            <div class="sub">כל העובדים בצוות שלך, הנקודות שצברו ופרטי הקשר</div>
-          </div>
-        </div>
-        <div class="section-count-line">סה"כ עובדים: <strong id="statStudents">0</strong></div>
-        <div class="panel">
-          <div class="panel-head">
-            <h3>רשימת עובדים</h3>
-            <input class="search-input" id="studentSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderStudentsTable()">
-          </div>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
-              <tbody id="studentsBody"></tbody>
-            </table>
-          </div>
-          <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-        </div>
-      </div>
-
-      <!-- ===== צ'ק-אין ממתינים ===== -->
-      <div class="hidden" id="checkinApprovalPanel">
-        <div class="view-header">
-          <h1>צ'ק-אין ממתינים לאישור</h1>
-          <div class="sub">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד.</div>
-        </div>
-        <div class="panel">
-          <div class="panel-head">
-            <h3>ממתינים לאישור</h3>
-            <div class="panel-head-actions">
-              <button class="bulk-btn" id="approveAllBtn" onclick="approveAllCheckins()">✓ אשר הכל</button>
-            </div>
-          </div>
-          <div class="table-scroll">
-            <table id="checkinApprovalTable">
-              <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>מיקום</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
-              <tbody id="checkinApprovalBody"></tbody>
-            </table>
-          </div>
-          <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
-        </div>
-      </div>
-
-      <!-- ===== דוח נוכחות ===== -->
-      <div class="hidden" id="attendancePanel">
-        <div class="view-header">
-          <h1>דוח נוכחות</h1>
-          <div class="sub">👆 לחצו על שם עובד כדי לפתוח כרטיסייה עם כל הכניסות, היציאות והתאריכים שלו</div>
-        </div>
-        <div class="panel">
-          <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
-          <div class="table-scroll">
-            <table id="attendanceTable">
-              <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>כניסה אחרונה (יום ושעה)</th><th>יציאה אחרונה (יום ושעה)</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th><th>ייצוא</th></tr></thead>
-              <tbody id="attendanceBody"></tbody>
-            </table>
-          </div>
-          <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
-        </div>
-      </div>
-
-      <!-- ===== משימות ===== -->
-      <div class="hidden" id="tasksPanel">
-        <div class="view-header view-header-row">
-          <div>
-            <h1>משימות לעובדים</h1>
-            <div class="sub">הקצו משימות לעובדים ואשרו את הביצוע שלהן</div>
-          </div>
-        </div>
-        <div class="panel">
-          <div class="panel-head">
-            <h3>כל המשימות</h3>
-            <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
-          </div>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>עובד</th><th>משימה</th><th>נקודות</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-              <tbody id="tasksBody"></tbody>
-            </table>
-          </div>
-          <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
-        </div>
-      </div>
-
-      <!-- ===== המשימות שלי ===== -->
-      <div class="hidden" id="myTasksPanel">
-        <div class="view-header">
-          <h1>המשימות שלי</h1>
-          <div class="sub">משימות שקיבלת מבעל/ת העסק</div>
-        </div>
-        <div class="panel">
-          <div class="panel-head">
-            <h3>משימות שקיבלתי מבעל העסק</h3>
-          </div>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-              <tbody id="myTasksBody"></tbody>
-            </table>
-          </div>
-          <div class="empty-state hidden" id="myTasksEmpty">אין כרגע משימות שקיבלת מבעל העסק.</div>
-        </div>
-      </div>
-
-      <div class="empty-state hidden" id="errorState"></div>
-    </div>
-  </main>
-</div>
-
-<div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
-  <div class="modal" style="max-width:480px">
-    <h3 id="studentModalName">עובד/ת</h3>
-    <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalPoints" style="font-size:1.4rem">0</div>
-        <div class="stat-label">נקודות כרגע</div>
-      </div>
-      <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalAttendance" style="font-size:1.4rem">—</div>
-        <div class="stat-label">אחוז נוכחות</div>
-      </div>
-    </div>
-    <h3 style="font-size:0.88rem;margin-bottom:10px">היסטוריית פעילות</h3>
-    <div id="studentModalHistory" style="max-height:320px;overflow-y:auto"></div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeStudentModal()">סגור</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="attendanceDetailModalOverlay" onclick="if(event.target===this) closeAttendanceDetailModal()">
-  <div class="modal" style="max-width:520px">
-    <h3 id="attendanceDetailName">עובד/ת</h3>
-    <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.4rem">—</div>
-        <div class="stat-label">צוות/מחלקה</div>
-      </div>
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.4rem">—</div>
-        <div class="stat-label">אחוז נוכחות</div>
-      </div>
-    </div>
-    <h3 style="font-size:0.88rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
-    <div id="attendanceDetailHistory" style="max-height:380px;overflow-y:auto">
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
-        <tbody id="attendanceDetailBody"></tbody>
-      </table>
-      <div class="empty-state hidden" id="attendanceDetailEmpty" style="padding:20px 0">אין עדיין רשומות נוכחות לעובד זה.</div>
-    </div>
-    <div class="modal-actions">
-      <button class="export-btn" onclick="exportStudentAttendanceToExcel(currentAttendanceDetailStudentId)">📊 ייצוא לאקסל</button>
-      <button class="btn-cancel" onclick="closeAttendanceDetailModal()">סגור</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="trendsModalOverlay" onclick="if(event.target===this) closeTrendsModal()">
-  <div class="modal" style="max-width:480px">
-    <h3>📈 מגמות נוכחות – כל העובדים</h3>
-    <input class="search-input" id="trendsSearchInput" placeholder="🔎 חיפוש לפי שם..." oninput="renderTrendsList()" style="width:100%;margin:12px 0 14px">
-    <div id="trendsList" style="max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
-    <div class="empty-state hidden" id="trendsEmpty" style="padding:20px 0">אין עדיין נתוני נוכחות להצגה.</div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeTrendsModal()">סגור</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="taskModalOverlay" onclick="if(event.target===this) closeTaskModal()">
-  <div class="modal">
-    <h3>משימה חדשה</h3>
-    <div class="field">
-      <label>עובד</label>
-      <select id="taskStudentSelect"></select>
-    </div>
-    <div class="field">
-      <label>כותרת המשימה</label>
-      <input type="text" id="taskTitleInput" placeholder="למשל: הגשת דוח שבועי">
-    </div>
-    <div class="field">
-      <label>תיאור (אופציונלי)</label>
-      <textarea id="taskDescInput" placeholder="פרטים נוספים על המשימה"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeTaskModal()">ביטול</button>
-      <button class="btn-confirm" onclick="createTask()">שלח משימה</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
+
+<div id="loadingScreen" class="loading">טוען את הנתונים שלך...</div>
+
+<div id="expiredScreen" class="expired-screen" style="display:none">
+  <div class="icon">⏳</div>
+  <h2>תקופת הניסיון הסתיימה</h2>
+  <p>15 הימים של הניסיון החינמי של החברה שלך הסתיימו. כדי להמשיך להשתמש במערכת, צריך לאשר את החברה למנוי רשמי.</p>
+  <a href="https://wa.me/972543771767?text=%D7%94%D7%99%D7%99%2C%20%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%20%D7%94%D7%A0%D7%99%D7%A1%D7%99%D7%95%D7%9F%20%D7%A9%D7%9C%20%D7%94%D7%97%D7%91%D7%A8%D7%94%20%D7%A9%D7%9C%D7%99%20%D7%94%D7%A1%D7%AA%D7%99%D7%99%D7%9E%D7%94%2C%20%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%94%D7%A1%D7%93%D7%99%D7%A8%20%D7%9E%D7%A0%D7%95%D7%99%20%D7%A8%D7%A9%D7%9E%D7%99" target="_blank">דברו איתנו בוואטסאפ</a>
+</div>
+
+<div id="dashboard" style="display:none">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="txt">
+          <div class="name">NIKUD</div>
+          <div class="sub">system</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section-label">תפריט</div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" id="navOverview" href="#" onclick="showView('overview');return false"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>לוח בקרה</a>
+        <a class="nav-item" id="navAttendance" href="#" onclick="showView('attendance');return false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>נוכחות שלי</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="av" id="userAvatar">·</div>
+          <div class="info">
+            <div class="n" id="userName">—</div>
+          </div>
+        </div>
+        <button class="logout-btn" onclick="logout()">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg>
+          יציאה
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+    <div id="overviewView">
+      <div class="topbar">
+        <div>
+          <h1 id="welcomeText">שלום</h1>
+          <div class="date-sub" id="classInfo"></div>
+        </div>
+        <div class="pts-chip">
+          <div>
+            <div class="pts-num" id="pointsDisplay">0</div>
+            <div class="pts-label">נקודות</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="demo-banner hidden" id="demoBanner" style="display:none">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>
+        <span>חשבון זה נמצא במצב <b>דמו</b> (ניסיון חינם) - לא ניתן לממש פרסים בפועל עד לאישור הרשמה רשמי של החברה.</span>
+      </div>
+
+      <div class="card hidden" id="checkinCard" style="margin-bottom:14px"></div>
+
+      <div class="card hidden" id="tasksCard" style="margin-bottom:14px">
+        <h3>המשימות שלי</h3>
+        <div id="tasksList"></div>
+      </div>
+
+      <div class="stat-strip">
+        <div class="stat-tile">
+          <div class="label">יתרת נקודות</div>
+          <div class="value" id="statPoints">0</div>
+        </div>
+        <div class="stat-tile" id="attendanceCard">
+          <div class="label">אחוז נוכחות</div>
+          <div id="attendanceContent">
+            <div class="value small" style="color:var(--ink-3)">—</div>
+          </div>
+        </div>
+        <div class="stat-tile">
+          <div class="label">משימות פתוחות</div>
+          <div class="value" id="statOpenTasks">0</div>
+          <div class="foot">ממתינות לביצוע / אישור</div>
+        </div>
+        <div class="stat-tile">
+          <div class="label">דירוג בצוות</div>
+          <div class="value" id="statRank">—</div>
+        </div>
+      </div>
+
+      <div class="card" id="store" style="margin-bottom:14px">
+        <h3 style="text-transform:none;font-size:0.9rem;letter-spacing:0">יתרה: <span style="color:var(--gold);font-family:'Rubik',sans-serif;font-weight:700" id="storeBalance">0</span> נקודות</h3>
+        <div class="store-grid" id="storeGrid" style="margin-top:12px"></div>
+
+        <h3 style="margin-top:20px">איך צוברים נקודות</h3>
+        <div class="earn-list">
+          <div class="earn-item">
+            <div class="earn-badge">01</div>
+            <div class="earn-text"><b>נוכחות מאושרת</b><span>מסמנים צ'ק-אין במשמרת, והמנהל/ת מאשר/ת - הנקודות נכנסות אוטומטית</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">02</div>
+            <div class="earn-text"><b>עמידה במשימות</b><span>משלימים משימה או מטלה שהוטלה, והמנהל/ת מאשר/ת את הביצוע</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">03</div>
+            <div class="earn-text"><b>משמרות בביקוש נמוך</b><span>לפעמים משמרות מסוימות מזכות בנקודות מוגדלות - שווה לקחת דווקא אותן</span></div>
+          </div>
+          <div class="earn-item">
+            <div class="earn-badge">04</div>
+            <div class="earn-text"><b>הכל מבוקר והוגן</b><span>כל נקודה עוברת אישור - אף אחד לא יכול "לחלק" נקודות בלי הצדקה אמיתית</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>פעילות אחרונה</h3>
+          <div id="activityList"><div class="empty-state">אין עדיין פעילות. המשמרת הראשונה שלך תופיע כאן!</div></div>
+        </div>
+        <div class="card">
+          <h3>ליגת הצוות</h3>
+          <div id="leaderboardList"><div class="empty-state">אין עדיין דירוג בצוות</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="attendanceView" class="hidden">
+      <div class="topbar">
+        <div>
+          <h1>נוכחות שלי</h1>
+          <div class="date-sub">כל הצ'ק-אין / צ'ק-אאוט שלך, כולל שעות ותאריך</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <h3>היסטוריית נוכחות</h3>
+        <table style="width:100%;border-collapse:collapse;margin-top:10px">
+          <thead>
+            <tr>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">תאריך</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">שעת כניסה</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">שעת יציאה</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">סטטוס</th>
+              <th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:8px 4px;border-bottom:1px solid var(--line)">נקודות</th>
+            </tr>
+          </thead>
+          <tbody id="myAttendanceBody"></tbody>
+        </table>
+        <div class="empty-state hidden" id="myAttendanceEmpty" style="padding:20px 0">עדיין אין לך היסטוריית נוכחות. תעשה/י צ'ק-אין כדי להתחיל!</div>
+      </div>
+    </div>
+    </main>
+  </div>
+</div>
 
 <script>
 const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
 const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
+let supabaseClient = null
 let currentUser = null
-let currentSchoolId = null
-let allStudents = []
-let allPointLogs = []
-let allTasks = []
-let attendanceCheckinsPerStudent = {}
-let pendingCheckinApprovals = []
-let recentCheckinEvents = []
-let currentAttendanceDetailStudentId = null
-let lastAtRiskRows = []
-let lastAttendanceRows = []
+let currentPoints = 0
+let myCheckin = null
+let checkinPollTimer = null
+let isDemoAccount = false
+let myTasks = []
 
-function showToast(msg, type) {
-  const t = document.getElementById('toast')
-  t.textContent = msg
-  t.className = 'toast show ' + (type || '')
-  setTimeout(() => t.classList.remove('show'), 3500)
-}
+let myAttendanceLoaded = false
 
-async function handleLogout() {
-  await supabaseClient.auth.signOut()
-  window.location.href = 'login.html'
-}
-
-function setTab(tab, btn) {
-  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'))
-  if (btn) btn.classList.add('active')
-  document.getElementById('overviewPanel').classList.toggle('hidden', tab !== 'overview')
-  document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
-  document.getElementById('checkinApprovalPanel').classList.toggle('hidden', tab !== 'checkinApproval')
-  document.getElementById('attendancePanel').classList.toggle('hidden', tab !== 'attendance')
-  document.getElementById('tasksPanel').classList.toggle('hidden', tab !== 'tasks')
-  document.getElementById('myTasksPanel').classList.toggle('hidden', tab !== 'myTasks')
-  if (tab === 'checkinApproval') loadCheckinApprovals()
-  if (tab === 'attendance') {
-    const at = document.getElementById('navAttendance')
-    if (at) at.classList.remove('has-alert')
-    renderAttendanceReport()
+function showView(view) {
+  document.getElementById('overviewView').classList.toggle('hidden', view !== 'overview')
+  document.getElementById('attendanceView').classList.toggle('hidden', view !== 'attendance')
+  document.getElementById('navOverview').classList.toggle('active', view === 'overview')
+  document.getElementById('navAttendance').classList.toggle('active', view === 'attendance')
+  if (view === 'attendance' && !myAttendanceLoaded) {
+    myAttendanceLoaded = true
+    loadMyAttendanceHistory()
   }
-  if (tab === 'myTasks') loadMyTasks()
-  if (tab === 'tasks') loadTasks()
-  if (tab === 'overview') renderOverviewSummary()
 }
 
-function escapeHtml(str) {
-  const div = document.createElement('div')
-  div.textContent = str ?? ''
-  return div.innerHTML
-}
+const myAttendanceStatusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ לא אושר', 'הושלם': '⏳ ממתין לאישור', 'ממתינה': '🟡 במשמרת פעילה' }
 
-function fmtTime(iso) {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
-}
-
-function fmtDate(iso) {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('he-IL')
-}
-
-function fmtDateTime(iso) {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  return `${d.toLocaleDateString('he-IL')} · ${d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}`
-}
-
-// ---- תא מיקום צ'ק-אין (כפתור מפה או "מיקום לא זמין") ----
-function locationCell(c) {
-  if (c.check_in_lat != null && c.check_in_lng != null) {
-    const acc = c.check_in_accuracy ? ` (±${c.check_in_accuracy} מ')` : ''
-    return `<a href="https://www.google.com/maps?q=${c.check_in_lat},${c.check_in_lng}" target="_blank" rel="noopener" class="task-act-btn task-act-approve" style="text-decoration:none;display:inline-block">📍 מפה${acc}</a>`
-  }
-  return `<span style="color:var(--ink-3);font-size:0.76rem">מיקום לא זמין</span>`
-}
-
-function durationLabel(inIso, outIso) {
-  if (!inIso || !outIso) return '—'
-  const ms = new Date(outIso) - new Date(inIso)
-  if (ms <= 0) return '—'
-  const h = Math.floor(ms / 3600000)
-  const m = Math.round((ms % 3600000) / 60000)
-  return `${h}ש ${m}ד`
-}
-
-function hoursLeftLabel(checkoutIso) {
-  const deadline = new Date(checkoutIso).getTime() + 8 * 60 * 60 * 1000
-  const msLeft = deadline - Date.now()
-  if (msLeft <= 0) return `<span style="color:var(--red);font-weight:700">⚠️ עברו 8 שעות</span>`
-  const h = Math.floor(msLeft / 3600000)
-  const m = Math.floor((msLeft % 3600000) / 60000)
-  return `${h}ש ${m}ד נותרו`
-}
-
-// ---- סקירה כללית (לוח בקרה) ----
-const ACTIVITY_STATUS_STYLE = {
-  waiting: { label: 'ממתין', bg: 'rgba(224,171,78,0.16)', color: 'var(--gold-soft)' },
-  done: { label: 'בוצע', bg: 'rgba(47,191,143,0.16)', color: 'var(--green)' },
-  rejected: { label: 'נדחה', bg: 'rgba(239,95,88,0.16)', color: 'var(--red)' }
-}
-const CHECKIN_ACTIVITY_STATE = { 'הושלם': 'waiting', 'אושר': 'done', 'נדחה': 'rejected' }
-const TASK_ACTIVITY_STATE = { submitted: 'waiting', approved: 'done', rejected: 'rejected' }
-
-function renderOverviewSummary() {
-  const items = []
-  const activity = []
-
-  // עדכוני צ'ק-אין (נשארים ברשימה גם אחרי אישור/דחייה, רק הסטטוס משתנה)
-  recentCheckinEvents.forEach(c => {
-    const state = CHECKIN_ACTIVITY_STATE[c.status]
-    if (!state) return
-    const st = ACTIVITY_STATUS_STYLE[state]
-    activity.push({
-      time: new Date(c.check_out_at || c.check_in_at).getTime(),
-      html: `<div class="preview-item">
-        <div>
-          <div class="pi-name">${escapeHtml(c.users?.name || '—')}</div>
-          <div class="pi-sub">צ'ק-אין · ${fmtTime(c.check_in_at)}–${fmtTime(c.check_out_at)}</div>
-        </div>
-        <span class="pi-tag" style="background:${st.bg};color:${st.color}">${st.label}</span>
-      </div>`
-    })
-  })
-
-  // עדכוני משימות (נשארים ברשימה גם אחרי אישור/דחייה, רק הסטטוס משתנה)
-  allTasks.forEach(t => {
-    const state = TASK_ACTIVITY_STATE[t.status]
-    if (!state) return
-    const st = ACTIVITY_STATUS_STYLE[state]
-    const student = allStudents.find(s => s.id === t.student_id)
-    activity.push({
-      time: new Date(t.submitted_at || t.created_at).getTime(),
-      html: `<div class="preview-item">
-        <div>
-          <div class="pi-name">${escapeHtml(student ? student.name : '—')}</div>
-          <div class="pi-sub">משימה: ${escapeHtml(t.title)}</div>
-        </div>
-        <span class="pi-tag" style="background:${st.bg};color:${st.color}">${st.label}</span>
-      </div>`
-    })
-  })
-
-  // תמיד 10 העדכונים האחרונים, ממוינים מהחדש לישן
-  activity.sort((a, b) => b.time - a.time)
-  activity.slice(0, 10).forEach(a => items.push(a.html))
-
-  lastAtRiskRows.slice(0, 4).forEach(r => {
-    items.push(`<div class="preview-item">
-      <div>
-        <div class="pi-name">⚠️ ${escapeHtml(r.student.name || '—')}</div>
-        <div class="pi-sub">${r.pct}% נוכחות${r.decliningTrend ? ' · מגמת ירידה' : ''}</div>
-      </div>
-      <span class="pi-tag" style="background:rgba(239,95,88,0.16);color:var(--red)">בסיכון</span>
-    </div>`)
-  })
-
-  const list = document.getElementById('overviewPendingList')
-  if (!list) return
-  list.innerHTML = items.length > 0
-    ? items.join('')
-    : '<div class="empty-state">אין כרגע פעולות הממתינות לטיפול</div>'
-}
-
-async function loadRecentActivity() {
-  const { data, error } = await supabaseClient
-    .from('checkins')
-    .select('*, users:student_id(name, class_name)')
-    .eq('school_id', currentSchoolId)
-    .not('check_out_at', 'is', null)
-    .order('check_out_at', { ascending: false })
-    .limit(15)
-  if (!error) recentCheckinEvents = data || []
-  renderOverviewSummary()
-}
-
-// ---- עובדים ----
-function renderStudentRow(user) {
-  return `<tr class="clickable" onclick="openStudentModal('${user.id}')">
-      <td>${escapeHtml(user.name || '—')}</td>
-      <td>${escapeHtml(user.class_name || '—')}</td>
-      <td>${escapeHtml(user.email || '—')}</td>
-      <td>${escapeHtml(user.phone || '—')}</td>
-      <td class="points-tag">${user.points ?? 0}</td>
-    </tr>`
-}
-
-function renderStudentsTable() {
-  const q = (document.getElementById('studentSearchInput').value || '').trim().toLowerCase()
-  const filtered = q ? allStudents.filter(s => (s.name || '').toLowerCase().includes(q)) : allStudents
-  document.getElementById('studentsBody').innerHTML = filtered.map(renderStudentRow).join('')
-  document.getElementById('studentsEmpty').classList.toggle('hidden', filtered.length > 0)
-}
-
-function openStudentModal(studentId) {
-  const student = allStudents.find(s => s.id === studentId)
-  if (!student) return
-
-  document.getElementById('studentModalName').textContent = student.name || 'עובד/ת'
-  document.getElementById('studentModalPoints').textContent = student.points ?? 0
-
-  const studentCheckins = attendanceCheckinsPerStudent[studentId] || []
-  const attendedCount = studentCheckins.filter(c => c.status === 'אושר').length
-  const attendancePct = studentCheckins.length > 0 ? Math.round((attendedCount / studentCheckins.length) * 100) : null
-  document.getElementById('studentModalAttendance').textContent = attendancePct !== null ? attendancePct + '%' : '—'
-
-  const logs = allPointLogs
-    .filter(l => l.student_id === studentId)
-    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-
-  const reasonLabel = { attendance: '📍 נוכחות', checkin_approved: '📍 נוכחות', approved: '📍 נוכחות', bonus: '⭐ בונוס', personal_bonus: '🎁 בונוס אישי', task: '✅ משימה' }
-  const historyEl = document.getElementById('studentModalHistory')
-  historyEl.innerHTML = logs.length === 0
-    ? '<div class="empty-state" style="padding:20px">אין עדיין פעילות לעובד/ת זה</div>'
-    : logs.map(l => {
-        const label = reasonLabel[l.reason] || '📌'
-        const subject = l.reason === 'task' ? (l.note || 'משימה שאושרה') : (l.reason === 'personal_bonus' ? 'בונוס אישי' : 'נוכחות במשמרת')
-        return `<div class="history-item">
-          <div>${label}</div>
-          <div>${escapeHtml(subject)}<br><span style="font-size:0.72rem;color:var(--ink-3)">${new Date(l.created_at).toLocaleDateString('he-IL')}</span></div>
-          <div class="history-pts">+${l.points}</div>
-        </div>`
-      }).join('')
-
-  document.getElementById('studentModalOverlay').classList.add('show')
-}
-
-function closeStudentModal() {
-  document.getElementById('studentModalOverlay').classList.remove('show')
-}
-
-async function openAttendanceDetailModal(studentId) {
-  const student = allStudents.find(s => s.id === studentId)
-  if (!student) return
-
-  currentAttendanceDetailStudentId = studentId
-  document.getElementById('attendanceDetailName').textContent = student.name || 'עובד/ת'
-  document.getElementById('attendanceDetailClass').textContent = student.class_name || '—'
-  document.getElementById('attendanceDetailPct').textContent = '…'
-  document.getElementById('attendanceDetailBody').innerHTML = ''
-  document.getElementById('attendanceDetailEmpty').classList.add('hidden')
-  document.getElementById('attendanceDetailModalOverlay').classList.add('show')
-
+async function loadMyAttendanceHistory() {
   const { data, error } = await supabaseClient
     .from('checkins')
     .select('*')
-    .eq('school_id', currentSchoolId)
-    .eq('student_id', studentId)
+    .eq('student_id', currentUser.id)
     .order('check_in_at', { ascending: false })
 
-  if (error) {
-    showToast('שגיאה בטעינת נתוני העובד: ' + error.message, 'error')
-    document.getElementById('attendanceDetailPct').textContent = '—'
-    document.getElementById('attendanceDetailEmpty').classList.remove('hidden')
-    return
-  }
+  if (error) { showToast('שגיאה בטעינת היסטוריית נוכחות', true); return }
 
-  const checkins = data || []
-
-  const completed = checkins.filter(c => c.check_out_at)
-  const approved = completed.filter(c => c.status === 'אושר').length
-  const pct = completed.length > 0 ? Math.round((approved / completed.length) * 100) : null
-  document.getElementById('attendanceDetailPct').textContent = pct !== null ? pct + '%' : '—'
-
-  const statusLabel = { 'אושר': '✅ אושר', 'נדחה': '❌ נדחה', 'הושלם': '⏳ ממתין לאישור', 'ממתינה': '🟢 במשמרת כרגע' }
-
-  const tbody = document.getElementById('attendanceDetailBody')
-  document.getElementById('attendanceDetailEmpty').classList.toggle('hidden', checkins.length > 0)
-  tbody.innerHTML = checkins.map(c => `
+  const rows = data || []
+  document.getElementById('myAttendanceEmpty').classList.toggle('hidden', rows.length > 0)
+  document.getElementById('myAttendanceBody').innerHTML = rows.map(c => `
     <tr>
-      <td style="padding:6px 4px;font-size:0.83rem">${fmtDate(c.check_in_at)}</td>
-      <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_in_at)}</td>
-      <td style="padding:6px 4px;font-size:0.83rem">${fmtTime(c.check_out_at)}</td>
-      <td style="padding:6px 4px;font-size:0.83rem">${statusLabel[c.status] || escapeHtml(c.status || '—')}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${new Date(c.check_in_at).toLocaleDateString('he-IL')}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${formatTime(c.check_in_at) || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${formatTime(c.check_out_at) || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${myAttendanceStatusLabel[c.status] || c.status || '—'}</td>
+      <td style="padding:8px 4px;font-size:0.85rem;border-bottom:1px solid var(--line-2)">${c.status === 'אושר' ? (c.points ?? 0) : '—'}</td>
     </tr>
   `).join('')
 }
 
-function closeAttendanceDetailModal() {
-  document.getElementById('attendanceDetailModalOverlay').classList.remove('show')
+function setPointsDisplays() {
+  document.getElementById('pointsDisplay').textContent = currentPoints.toLocaleString()
+  document.getElementById('storeBalance').textContent = currentPoints.toLocaleString()
+  const sp = document.getElementById('statPoints')
+  if (sp) sp.textContent = currentPoints.toLocaleString()
 }
 
-// ---- דוח נוכחות (זיהוי סיכון + מגמת ירידה) ----
-async function renderAttendanceReport() {
-  const AT_RISK_THRESHOLD = 70
-  const TREND_WINDOW_DAYS = 14
-  const TREND_DROP_THRESHOLD = 20
-  const now = Date.now()
-  const recentStart = now - TREND_WINDOW_DAYS * 86400000
-  const previousStart = now - 2 * TREND_WINDOW_DAYS * 86400000
-
-  const { data: checkins, error: checkinsErr } = await supabaseClient
-    .from('checkins')
-    .select('*')
-    .eq('school_id', currentSchoolId)
-
-  if (checkinsErr) {
-    showToast('שגיאה בטעינת נתוני נוכחות: ' + checkinsErr.message, 'error')
-    document.getElementById('attendanceEmpty').classList.remove('hidden')
-    document.getElementById('attendanceBody').innerHTML = ''
+async function init() {
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  } catch(e) {
+    document.getElementById('loadingScreen').innerHTML =
+      'המערכת לא מחוברת ל-Supabase עדיין.<br>זהו דמו תצוגה – חבר את הפרטים ב-config.js כדי להפעיל נתונים אמיתיים.'
     return
   }
 
-  const allCheckins = checkins || []
-  const completedCheckins = allCheckins.filter(c => c.check_out_at)
+  const { data: { user } } = await supabaseClient.auth.getUser()
+  if (!user) { window.location.href = 'login.html'; return }
 
-  const checkinsPerStudent = {}
-  completedCheckins.forEach(c => {
-    if (!checkinsPerStudent[c.student_id]) checkinsPerStudent[c.student_id] = []
-    checkinsPerStudent[c.student_id].push(c)
-  })
-  attendanceCheckinsPerStudent = checkinsPerStudent
+  const { data: profile } = await supabaseClient.from('users').select('*').eq('id', user.id).single()
+  // ה-role של עובד במסד הנתונים נשאר 'student' (ירושה מגרסת בית הספר)
+  if (!profile || profile.role !== 'student') { window.location.href = 'login.html'; return }
 
-  function statsFor(list) {
-    if (!list || list.length === 0) return null
-    const total = list.length
-    const approved = list.filter(c => c.status === 'אושר').length
-    return Math.round((approved / total) * 100)
-  }
+  currentUser = profile
+  currentPoints = profile.points || 0
 
-  const rows = allStudents.map(s => {
-    const studentCheckins = checkinsPerStudent[s.id] || []
-    const totalLessons = studentCheckins.length
-    const attended = studentCheckins.filter(c => c.status === 'אושר').length
-    const pct = totalLessons > 0 ? Math.round((attended / totalLessons) * 100) : null
+  const { data: company } = await supabaseClient.from('schools').select('plan, plan_expires_at').eq('id', profile.school_id).single()
+  isDemoAccount = !company || company.plan === 'trial'
+  const trialExpired = isDemoAccount && company?.plan_expires_at && new Date(company.plan_expires_at) < new Date()
 
-    const recentCheckins = studentCheckins.filter(c => new Date(c.check_in_at).getTime() >= recentStart)
-    const previousCheckins = studentCheckins.filter(c => {
-      const t = new Date(c.check_in_at).getTime()
-      return t >= previousStart && t < recentStart
-    })
-    const recentPct = statsFor(recentCheckins)
-    const previousPct = statsFor(previousCheckins)
-    const decliningTrend = recentPct !== null && previousPct !== null &&
-      previousPct >= 50 && (previousPct - recentPct) >= TREND_DROP_THRESHOLD
-
-    const sortedByCheckIn = [...studentCheckins].sort((a, b) => new Date(b.check_in_at) - new Date(a.check_in_at))
-    const lastCheckin = sortedByCheckIn[0] || null
-
-    return { student: s, totalLessons, attended, pct, recentPct, previousPct, decliningTrend, lastCheckin }
-  })
-  .filter(r => r.totalLessons > 0)
-  .sort((a, b) => a.pct - b.pct)
-
-  lastAttendanceRows = rows
-  document.getElementById('statTrends').textContent = rows.length
-  if (document.getElementById('trendsModalOverlay').classList.contains('show')) renderTrendsList()
-
-  const atRiskRows = rows.filter(r => r.pct < AT_RISK_THRESHOLD || r.decliningTrend)
-  lastAtRiskRows = atRiskRows
-  const atRiskCard = document.getElementById('atRiskCard')
-  document.getElementById('statAtRisk').textContent = atRiskRows.length
-  atRiskCard.classList.toggle('hidden', atRiskRows.length === 0)
-
-  const atRiskBadge = document.getElementById('atRiskBadge')
-  if (atRiskBadge) {
-    atRiskBadge.textContent = atRiskRows.length
-    atRiskBadge.classList.toggle('hidden', atRiskRows.length === 0)
-  }
-  const navAttendance = document.getElementById('navAttendance')
-  if (navAttendance) {
-    const viewing = navAttendance.classList.contains('active')
-    navAttendance.classList.toggle('has-alert', atRiskRows.length > 0 && !viewing)
-  }
-  renderOverviewSummary()
-
-  document.getElementById('attendanceEmpty').classList.toggle('hidden', rows.length > 0)
-  document.getElementById('attendanceBody').innerHTML = rows.map(r => {
-    const barColor = r.pct >= 80 ? 'var(--green)' : r.pct >= 50 ? 'var(--gold)' : 'var(--red)'
-    const atRisk = r.pct < AT_RISK_THRESHOLD
-    const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.66rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
-      : ''
-    const phone = r.student.parent_phone || ''
-    const alertCell = (atRisk || r.decliningTrend)
-      ? phone
-        ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
-        : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
-      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
-    return `<tr class="clickable ${(atRisk || r.decliningTrend) ? 'at-risk-row' : ''}" onclick="openAttendanceDetailModal('${r.student.id}')">
-      <td>${atRisk ? '⚠️ ' : ''}${escapeHtml(r.student.name || '—')} ${trendBadge}</td>
-      <td>${escapeHtml(r.student.class_name || '—')}</td>
-      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_in_at : null)}</td>
-      <td>${fmtDateTime(r.lastCheckin ? r.lastCheckin.check_out_at : null)}</td>
-      <td>${r.totalLessons}</td>
-      <td>${r.attended}</td>
-      <td>${r.pct}% <span class="attn-bar-track"><span class="attn-bar-fill" style="width:${r.pct}%;background:${barColor}"></span></span></td>
-      <td onclick="event.stopPropagation()">${alertCell}</td>
-      <td onclick="event.stopPropagation()"><button class="copy-code-btn" onclick="exportStudentAttendanceToExcel('${r.student.id}')" title="ייצוא דוח נוכחות של ${escapeHtml(r.student.name||'').replace(/"/g,'')} לאקסל">📊 אקסל</button></td>
-    </tr>`
-  }).join('')
-}
-
-function openTrendsModal() {
-  document.getElementById('trendsSearchInput').value = ''
-  renderTrendsList()
-  document.getElementById('trendsModalOverlay').classList.add('show')
-}
-
-function closeTrendsModal() {
-  document.getElementById('trendsModalOverlay').classList.remove('show')
-}
-
-function renderTrendsList() {
-  const q = (document.getElementById('trendsSearchInput').value || '').trim().toLowerCase()
-  const rows = lastAttendanceRows.filter(r => !q || (r.student.name || '').toLowerCase().includes(q))
-  const listEl = document.getElementById('trendsList')
-  document.getElementById('trendsEmpty').classList.toggle('hidden', rows.length > 0)
-
-  listEl.innerHTML = rows.map(r => {
-    let statusColor, statusRgb, statusLabel
-    if (r.pct >= 80) { statusColor = 'var(--green)'; statusRgb = 'var(--green-rgb)'; statusLabel = '✔ תקין' }
-    else if (r.pct >= 50) { statusColor = 'var(--gold)'; statusRgb = 'var(--gold-rgb)'; statusLabel = '⚠ בינוני' }
-    else { statusColor = 'var(--red)'; statusRgb = 'var(--red-rgb)'; statusLabel = '✖ נמוך' }
-    const trendBadge = r.decliningTrend
-      ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים" style="font-size:0.64rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 7px;border-radius:99px;margin-right:6px">📉 ירידה</span>`
-      : ''
-    return `<div style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--glass-border);border-radius:var(--r-sm);background:var(--paper-3)" onclick="closeTrendsModal();openAttendanceDetailModal('${r.student.id}')">
-      <div style="min-width:0">
-        <div style="font-weight:700;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(r.student.name || '—')}</div>
-        <div style="font-size:0.72rem;color:var(--ink-3);margin-top:2px">${escapeHtml(r.student.class_name || '—')}</div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-        ${trendBadge}
-        <span style="font-size:0.72rem;font-weight:700;color:${statusColor};background:rgba(${statusRgb},0.12);padding:3px 9px;border-radius:99px;border:1px solid rgba(${statusRgb},0.35)">${statusLabel}</span>
-        <span style="font-weight:800;color:${statusColor};min-width:38px;text-align:left">${r.pct}%</span>
-      </div>
-    </div>`
-  }).join('')
-}
-
-function buildWhatsappAlertLink(phone, name, pct) {
-  const cleanPhone = phone.replace(/[^0-9]/g, '').replace(/^0/, '972')
-  const msg = encodeURIComponent(`שלום ${name}, שמנו לב שאחוז הנוכחות שלך במשמרות עומד על ${pct}%. נשמח לשוחח ולוודא שהכל בסדר.`)
-  return `https://wa.me/${cleanPhone}?text=${msg}`
-}
-
-async function promptParentPhone(studentId, studentName) {
-  const phone = prompt(`הזן/י מספר טלפון ליצירת קשר עבור ${studentName}:`)
-  if (!phone) return
-  const { error } = await supabaseClient.from('users').update({ parent_phone: phone }).eq('id', studentId)
-  if (error) { showToast(error.message, 'error'); return }
-  const student = allStudents.find(s => s.id === studentId)
-  if (student) student.parent_phone = phone
-  showToast('הטלפון נשמר', 'success')
-  await renderAttendanceReport()
-}
-
-// ---- ייצוא דוח נוכחות של עובד בודד לאקסל ----
-async function exportStudentAttendanceToExcel(studentId) {
-  const student = allStudents.find(s => s.id === studentId)
-  if (!student) { showToast('העובד לא נמצא', 'error'); return }
-
-  showToast('מכין קובץ אקסל...', 'success')
-
-  const { data, error } = await supabaseClient
-    .from('checkins')
-    .select('*')
-    .eq('school_id', currentSchoolId)
-    .eq('student_id', studentId)
-    .order('check_in_at', { ascending: false })
-
-  if (error) { showToast('שגיאה בטעינת נתוני העובד: ' + error.message, 'error'); return }
-
-  const checkins = data || []
-
-  if (checkins.length === 0) {
-    showToast(`ל${student.name || 'עובד זה'} אין עדיין רשומות נוכחות לייצוא`, 'error')
+  if (trialExpired) {
+    document.getElementById('loadingScreen').style.display = 'none'
+    document.getElementById('expiredScreen').style.display = 'block'
     return
   }
 
-  const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
+  document.getElementById('demoBanner').style.display = isDemoAccount ? 'flex' : 'none'
 
-  const completed = checkins.filter(c => c.check_out_at)
-  const approved = completed.filter(c => c.status === 'אושר').length
-  const pct = completed.length > 0 ? Math.round((approved / completed.length) * 100) : null
+  document.getElementById('userName').textContent = profile.name
+  document.getElementById('userAvatar').textContent = profile.name ? profile.name[0] : '·'
+  document.getElementById('welcomeText').textContent = `שלום, ${profile.name.split(' ')[0]}`
+  document.getElementById('classInfo').textContent = `צוות ${profile.class_name || ''}`
+  setPointsDisplays()
 
-  const attendanceSheet = checkins.map(c => {
-    const checkInDate = c.check_in_at ? new Date(c.check_in_at) : null
-    return {
-      'תאריך': checkInDate ? checkInDate.toLocaleDateString('he-IL') : '—',
-      'שעת כניסה (צ\'ק-אין)': checkInDate ? checkInDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
-      'שעת יציאה (צ\'ק-אאוט)': c.check_out_at ? new Date(c.check_out_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
-      'סטטוס': statusLabel[c.status] || c.status,
-      'נקודות': c.points ?? 0
-    }
-  })
+  await loadActivity(profile.id)
+  await loadLeaderboard(profile.school_id, profile.class_name, profile.id)
+  await loadAttendanceStats(profile.id, profile.school_id, profile.class_name)
+  await loadStore()
+  await loadTasks()
+  await refreshMyCheckin()
+  checkinPollTimer = setInterval(refreshMyCheckinAndTasks, 6000)
 
-  const summarySheet = [{
-    'שם': student.name || '—',
-    'צוות/מחלקה': student.class_name || '—',
-    'סה"כ משמרות שהסתיימו': completed.length,
-    'משמרות שאושרו': approved,
-    'אחוז נוכחות': pct !== null ? pct + '%' : '—'
-  }]
-
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summarySheet), 'סיכום')
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות מפורטת')
-
-  const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
-  const safeName = (student.name || 'עובד').replace(/[\\/:*?"<>|]/g, '')
-  XLSX.writeFile(wb, `נוכחות-${safeName}-${dateStr}.xlsx`)
-  showToast('הקובץ הורד בהצלחה ✅', 'success')
+  document.getElementById('loadingScreen').style.display = 'none'
+  document.getElementById('dashboard').style.display = 'block'
 }
 
-// ---- משימות ----
-function taskStatusLabel(status) {
-  return { pending: '⏳ ממתין לביצוע', submitted: '📩 ממתין לאישור שלך', approved: '✓ אושר', rejected: '✗ נדחה' }[status] || status
-}
-
-function openTaskModal() {
-  const select = document.getElementById('taskStudentSelect')
-  select.innerHTML = allStudents.map(s => `<option value="${s.id}">${escapeHtml(s.name)}${s.class_name ? ' - ' + escapeHtml(s.class_name) : ''}</option>`).join('')
-  if (allStudents.length === 0) select.innerHTML = '<option value="">אין עדיין עובדים רשומים</option>'
-  document.getElementById('taskTitleInput').value = ''
-  document.getElementById('taskDescInput').value = ''
-  document.getElementById('taskModalOverlay').classList.add('show')
-}
-
-function closeTaskModal() {
-  document.getElementById('taskModalOverlay').classList.remove('show')
-}
-
-async function createTask() {
-  const studentId = document.getElementById('taskStudentSelect').value
-  const title = document.getElementById('taskTitleInput').value.trim()
-  const description = document.getElementById('taskDescInput').value.trim()
-
-  if (!studentId) { showToast('נא לבחור עובד', 'error'); return }
-  if (!title) { showToast('נא למלא כותרת למשימה', 'error'); return }
-
-  try {
-    const { data, error } = await supabaseClient.from('tasks').insert({
-      school_id: currentSchoolId,
-      created_by: currentUser.id,
-      student_id: studentId,
-      title, description: description || null,
-      points: 3, status: 'pending'
-    }).select().single()
-    if (error) throw error
-
-    allTasks.unshift(data)
-    renderTasks()
-    updateTasksStatCard()
-    closeTaskModal()
-    showToast('המשימה נשלחה בהצלחה', 'success')
-  } catch (err) {
-    showToast(err.message || 'שגיאה ביצירת המשימה', 'error')
-  }
-}
-
-async function approveTask(taskId) {
-  const task = allTasks.find(t => t.id === taskId)
-  if (!task) return
-  if (!confirm(`לאשר את המשימה "${task.title}" ולהעניק ${task.points} נקודות?`)) return
-
-  try {
-    const student = allStudents.find(s => s.id === task.student_id)
-    const pointsBefore = student ? (student.points || 0) : 0
-
-    const { error: taskErr } = await supabaseClient.from('tasks')
-      .update({ status: 'approved' })
-      .eq('id', taskId)
-    if (taskErr) throw taskErr
-
-    task.status = 'approved'
-    renderTasks()
-    updateTasksStatCard()
-
-    let pointsAwarded = task.points
-    const { data: freshStudent } = await supabaseClient
-      .from('users').select('points').eq('id', task.student_id).single()
-    if (freshStudent) {
-      pointsAwarded = freshStudent.points - pointsBefore
-      if (student) student.points = freshStudent.points
-    } else if (student) {
-      student.points = pointsBefore + task.points
-    }
-
-    renderStudentsTable()
-    updateHeaderStats()
-
-    if (pointsAwarded > 0) {
-      showToast(`✅ אושר! ${pointsAwarded} נקודות הועברו`, 'success')
-    } else {
-      showToast(`המשימה אושרה, אך העובד כבר קיבל 3 נקודות היום ולכן לא הועברו נקודות נוספות`, 'success')
-    }
-  } catch (err) {
-    showToast(err.message || 'שגיאה באישור המשימה', 'error')
-  }
-}
-
-async function rejectTask(taskId) {
-  const task = allTasks.find(t => t.id === taskId)
-  if (!task) return
-  if (!confirm(`לדחות את המשימה "${task.title}"?`)) return
-
-  try {
-    const { error } = await supabaseClient.from('tasks')
-      .update({ status: 'rejected' })
-      .eq('id', taskId)
-    if (error) throw error
-
-    task.status = 'rejected'
-    renderTasks()
-    updateTasksStatCard()
-    showToast('המשימה נדחתה', 'success')
-  } catch (err) {
-    showToast(err.message || 'שגיאה בדחיית המשימה', 'error')
-  }
-}
-
-function renderTasks() {
-  document.getElementById('tasksEmpty').classList.toggle('hidden', allTasks.length > 0)
-  document.getElementById('tasksBody').innerHTML = allTasks.map(t => {
-    const student = allStudents.find(s => s.id === t.student_id)
-    const actions = t.status === 'submitted'
-      ? `<div class="task-actions">
-           <button class="task-act-btn task-act-approve" onclick="approveTask('${t.id}')">✅ אשר</button>
-           <button class="task-act-btn task-act-reject" onclick="rejectTask('${t.id}')">✗ דחה</button>
-         </div>`
-      : t.status === 'pending'
-      ? `<span style="color:var(--ink-3);font-size:0.76rem">ממתין לביצוע</span>`
-      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
-    return `<tr>
-      <td>${escapeHtml(student ? student.name : '—')}</td>
-      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td class="points-tag">${t.points}</td>
-      <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
-      <td>${actions}</td>
-    </tr>`
-  }).join('')
-}
-
-function updateTasksStatCard() {
-  const pendingApproval = allTasks.filter(t => t.status === 'submitted').length
-  const el = document.getElementById('statTasksPending')
-  if (el) el.textContent = pendingApproval
-  const card = document.getElementById('tasksStatCard')
-  if (card) card.classList.toggle('blink-alert', pendingApproval > 0)
+async function refreshMyCheckinAndTasks() {
+  await refreshMyCheckin()
+  await loadTasks()
 }
 
 async function loadTasks() {
   const { data, error } = await supabaseClient
     .from('tasks')
     .select('*')
-    .eq('school_id', currentSchoolId)
-    .eq('created_by', currentUser.id)
-    .order('created_at', { ascending: false })
-  if (error) { console.error(error); allTasks = []; return }
-  allTasks = data || []
-  renderTasks()
-  updateTasksStatCard()
-}
-
-// ---- המשימות שהמנהל/ת עצמו/ה מקבל/ת מבעל העסק ----
-let myTasks = []
-
-async function loadMyTasks() {
-  const { data, error } = await supabaseClient
-    .from('tasks')
-    .select('*')
     .eq('student_id', currentUser.id)
-    .neq('created_by', currentUser.id)
     .order('created_at', { ascending: false })
-  if (error) { console.error(error); myTasks = []; return }
+
+  if (error) { console.error(error); return }
+
+  const previousApprovedIds = new Set(myTasks.filter(t => t.status === 'approved').map(t => t.id))
   myTasks = data || []
-  const pendingCount = myTasks.filter(t => t.status === 'pending').length
-  const badge = document.getElementById('myTasksBadge')
-  badge.textContent = pendingCount
-  badge.classList.toggle('hidden', pendingCount === 0)
-  document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
-  const statEl = document.getElementById('statMyTasks')
-  if (statEl) statEl.textContent = pendingCount
-  const card = document.getElementById('myTasksStatCard')
-  if (card) card.classList.toggle('blink-alert', pendingCount > 0)
-  renderMyTasks()
+
+  // Detect newly-approved tasks since last refresh to refresh points + celebrate
+  const newlyApproved = myTasks.filter(t => t.status === 'approved' && !previousApprovedIds.has(t.id))
+  if (newlyApproved.length > 0) {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    setPointsDisplays()
+    await loadActivity(currentUser.id)
+    showToast(`המשימה "${newlyApproved[0].title}" אושרה! קיבלת ${newlyApproved[0].points} נקודות`)
+  }
+
+  const openCount = myTasks.filter(t => t.status === 'pending' || t.status === 'submitted').length
+  const statOpen = document.getElementById('statOpenTasks')
+  if (statOpen) statOpen.textContent = openCount
+
+  renderTasks()
 }
 
-function renderMyTasks() {
-  document.getElementById('myTasksEmpty').classList.toggle('hidden', myTasks.length > 0)
-  document.getElementById('myTasksBody').innerHTML = myTasks.map(t => {
+function taskStatusLabel(status) {
+  return { pending: 'לביצוע', submitted: 'ממתין לאישור', approved: 'אושר', rejected: 'לא אושר' }[status] || status
+}
+
+function renderTasks() {
+  const card = document.getElementById('tasksCard')
+  if (myTasks.length === 0) { card.classList.add('hidden'); return }
+  card.classList.remove('hidden')
+
+  document.getElementById('tasksList').innerHTML = myTasks.map(t => {
+    const icon = t.status === 'approved' ? '<span style="color:var(--green);opacity:0.65;font-size:1.1rem">✓</span>' : t.status === 'rejected' ? '<span style="color:var(--red);opacity:0.7;font-size:1rem">✕</span>' : t.status === 'submitted' ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--gold-soft);display:inline-block"></span>' : '<span style="width:8px;height:8px;border-radius:50%;background:var(--ink-3);display:inline-block"></span>'
     const action = t.status === 'pending'
-      ? `<button class="task-act-btn task-act-approve blink-alert" onclick="markMyTaskDone('${t.id}')">סמן כבוצע</button>`
-      : '<span style="color:var(--ink-3);font-size:0.76rem">—</span>'
-    return `<tr>
-      <td>${escapeHtml(t.title)}${t.description ? `<br><span style="font-size:0.74rem;color:var(--ink-3)">${escapeHtml(t.description)}</span>` : ''}</td>
-      <td><span class="task-status-badge ${t.status}">${taskStatusLabel(t.status)}</span></td>
-      <td>${action}</td>
-    </tr>`
+      ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">סמן כבוצע</button>`
+      : `<span class="task-status-tag ${t.status}">${taskStatusLabel(t.status)}${t.status === 'approved' ? ' +' + t.points : ''}</span>`
+    return `<div class="task-item">
+      <div class="task-icon">${icon}</div>
+      <div class="task-body">
+        <div class="task-title">${escapeHtml(t.title)}</div>
+        ${t.description ? `<div class="task-desc">${escapeHtml(t.description)}</div>` : ''}
+      </div>
+      ${action}
+    </div>`
   }).join('')
 }
 
-async function markMyTaskDone(taskId) {
+async function markTaskDone(taskId) {
   try {
     const { error } = await supabaseClient
       .from('tasks')
@@ -1331,257 +573,347 @@ async function markMyTaskDone(taskId) {
 
     const task = myTasks.find(t => t.id === taskId)
     if (task) task.status = 'submitted'
-    const pendingCount = myTasks.filter(t => t.status === 'pending').length
-    const badge = document.getElementById('myTasksBadge')
-    badge.textContent = pendingCount
-    badge.classList.toggle('hidden', pendingCount === 0)
-    document.getElementById('navMyTasks').classList.toggle('has-alert', pendingCount > 0)
-    const statEl = document.getElementById('statMyTasks')
-    if (statEl) statEl.textContent = pendingCount
-    const card = document.getElementById('myTasksStatCard')
-    if (card) card.classList.toggle('blink-alert', pendingCount > 0)
-    renderMyTasks()
-    showToast('סומן כבוצע! ממתין לאישור בעל/ת העסק ✅', 'success')
+    renderTasks()
+    showToast('סומן כבוצע! ממתין לאישור המנהל/ת')
   } catch (err) {
-    showToast(err.message || 'שגיאה בסימון המשימה', 'error')
+    showToast('שגיאה בסימון המשימה', true)
   }
 }
 
-// ---- צ'ק-אין ממתינים ----
-async function loadCheckinApprovals() {
-  const { data, error } = await supabaseClient
-    .from('checkins')
-    .select('*, users:student_id(name, class_name)')
-    .eq('school_id', currentSchoolId)
-    .eq('status', 'הושלם')
-    .order('check_out_at', { ascending: true })
-
-  if (error) { console.error(error); return }
-
-  pendingCheckinApprovals = data || []
-  const count = pendingCheckinApprovals.length
-  document.getElementById('checkinApprovalBadge').classList.toggle('hidden', count === 0)
-  document.getElementById('checkinApprovalBadge').textContent = count
-  document.getElementById('statPendingCheckins').textContent = count
-  document.getElementById('approveAllBtn').disabled = count === 0
-  document.getElementById('navCheckinApproval').classList.toggle('has-alert', count > 0)
-  const checkinCard = document.getElementById('checkinsStatCard')
-  if (checkinCard) checkinCard.classList.toggle('blink-alert', count > 0)
-  renderCheckinApprovals()
-  renderOverviewSummary()
+function escapeHtml(str) {
+  const div = document.createElement('div')
+  div.textContent = str ?? ''
+  return div.innerHTML
 }
 
-function renderCheckinApprovals() {
-  const tbody = document.getElementById('checkinApprovalBody')
-  document.getElementById('checkinApprovalEmpty').classList.toggle('hidden', pendingCheckinApprovals.length > 0)
+async function refreshMyCheckin() {
+  const { data } = await supabaseClient
+    .from('checkins')
+    .select('*')
+    .eq('student_id', currentUser.id)
+    .order('check_in_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  tbody.innerHTML = pendingCheckinApprovals.map(c => `
-    <tr>
-      <td>${escapeHtml(c.users?.name || '—')}</td>
-      <td>${escapeHtml(c.users?.class_name || '—')}</td>
-      <td>${fmtTime(c.check_in_at)}</td>
-      <td>${fmtTime(c.check_out_at)}</td>
-      <td>${locationCell(c)}</td>
-      <td>${hoursLeftLabel(c.check_out_at)}</td>
-      <td>
-        <button class="task-act-btn task-act-approve" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
-        <button class="task-act-btn task-act-reject" onclick="rejectCheckinRow('${c.id}')">✗ דחה</button>
-      </td>
-    </tr>
+  const previousStatus = myCheckin?.status
+  myCheckin = data || null
+  const card = document.getElementById('checkinCard')
+  card.classList.remove('hidden')
+  renderCheckinCard()
+
+  if (myCheckin && myCheckin.status !== previousStatus && (myCheckin.status === 'אושר' || myCheckin.status === 'נדחה')) {
+    const { data: profile } = await supabaseClient.from('users').select('points').eq('id', currentUser.id).single()
+    currentPoints = profile?.points ?? currentPoints
+    setPointsDisplays()
+    await loadActivity(currentUser.id)
+    if (myCheckin.status === 'אושר') showToast('המנהל/ת אישר/ה את הצ\'ק-אין שלך!')
+    else showToast('הצ\'ק-אין שלך לא אושר הפעם', true)
+  }
+}
+
+function formatTime(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+}
+
+function renderCheckinCard() {
+  const card = document.getElementById('checkinCard')
+
+  if (myCheckin && myCheckin.status === 'ממתינה') {
+    // במשמרת פעילה: הכפתור הופך לאדום חלש ומהבהב לאט עד לצ'ק-אאוט
+    card.innerHTML = `
+      <h3>נוכחות פעילה</h3>
+      <div class="checkin-status pending">נכנסת בשעה ${formatTime(myCheckin.check_in_at)}</div>
+      <p style="color:var(--ink-3);font-size:0.82rem;margin:6px 0 12px">כשתסיים/י, סמן/י צ'ק-אאוט. אפשר בכל שלב, אין הגבלת זמן.</p>
+      <button class="checkin-btn active-shift" onclick="doCheckout()">צ'ק-אאוט - סיימתי</button>
+    `
+    return
+  }
+
+  if (myCheckin && myCheckin.status === 'הושלם') {
+    card.innerHTML = `
+      <h3>נוכחות</h3>
+      <div class="checkin-status pending">נכנסת ${formatTime(myCheckin.check_in_at)} · יצאת ${formatTime(myCheckin.check_out_at)}</div>
+      <div class="checkin-status pending">ממתין/ה לאישור המנהל/ה...</div>
+    `
+    return
+  }
+
+  const lastResult = myCheckin && myCheckin.status === 'אושר'
+    ? `<div class="checkin-status approved" style="font-size:0.78rem">הצ'ק-אין הקודם אושר! קיבלת ${myCheckin.points || ''} נקודות</div>`
+    : myCheckin && myCheckin.status === 'נדחה'
+    ? `<div class="checkin-status rejected">הצ'ק-אין הקודם לא אושר הפעם</div>`
+    : ''
+
+  // אין משמרת פעילה: הכפתור הרגיל בצבע כחול
+  card.innerHTML = `
+    <h3>צ'ק-אין</h3>
+    <p style="color:var(--ink-3);font-size:0.82rem;margin:6px 0 12px">לחץ/י כשאת/ה מתחיל/ה במשמרת. אפשר בכל שעה.</p>
+    <button class="checkin-btn" onclick="doCheckin()">צ'ק-אין</button>
+    ${lastResult}
+  `
+}
+
+// ---- קליטת מיקום GPS בצ'ק-אין (אופציונלי: אם לא זמין נרשם "מיקום לא זמין") ----
+// מנסה קודם דיוק גבוה (GPS), ואם נכשל נופל לדיוק רגיל (רשת/IP). מחזיר גם סיבת כשל לאבחון.
+function tryGetPosition(opts) {
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ ok: true, coords: pos.coords }),
+      (err) => resolve({ ok: false, code: err.code, message: err.message }),
+      opts
+    )
+  })
+}
+
+async function getCheckinLocation() {
+  if (!navigator.geolocation) {
+    console.warn('[checkin] geolocation לא נתמך בדפדפן')
+    return { loc: null, reason: 'unsupported' }
+  }
+
+  // ניסיון 1: דיוק גבוה (GPS), עד 15 שניות
+  let res = await tryGetPosition({ timeout: 15000, enableHighAccuracy: true, maximumAge: 0 })
+
+  // ניסיון 2: אם נכשל (בד"כ timeout במחשב ללא GPS) — דיוק רגיל, מהיר, מאפשר cache
+  if (!res.ok) {
+    console.warn('[checkin] ניסיון דיוק גבוה נכשל:', res.code, res.message, '→ מנסה דיוק רגיל')
+    res = await tryGetPosition({ timeout: 10000, enableHighAccuracy: false, maximumAge: 60000 })
+  }
+
+  if (res.ok) {
+    console.log('[checkin] מיקום נקלט:', res.coords.latitude, res.coords.longitude, 'דיוק:', Math.round(res.coords.accuracy), 'מ')
+    return {
+      loc: {
+        lat: res.coords.latitude,
+        lng: res.coords.longitude,
+        accuracy: Math.round(res.coords.accuracy)
+      },
+      reason: null
+    }
+  }
+
+  // כשל סופי — מיפוי קוד השגיאה לסיבה קריאה
+  // code 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+  const reason = res.code === 1 ? 'denied' : res.code === 3 ? 'timeout' : 'unavailable'
+  console.warn('[checkin] קליטת מיקום נכשלה סופית. code=' + res.code, 'reason=' + reason, res.message)
+  return { loc: null, reason }
+}
+
+async function doCheckin() {
+  showToast('קולט מיקום... (אשר/י את בקשת המיקום)')
+  const { loc, reason } = await getCheckinLocation()
+
+  const payload = {
+    student_id: currentUser.id,
+    status: 'ממתינה',
+    check_in_at: new Date().toISOString()
+  }
+  if (loc) {
+    payload.check_in_lat = loc.lat
+    payload.check_in_lng = loc.lng
+    payload.check_in_accuracy = loc.accuracy
+    payload.location_captured_at = new Date().toISOString()
+  }
+
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .insert(payload)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('[checkin] שגיאת שמירה:', error)
+    showToast('שגיאה בשליחת הצ\'ק-אין', true)
+    return
+  }
+
+  // אבחון: אם שלחנו מיקום אבל הוא לא חזר מהמסד — כנראה RLS/הרשאות חסמו את השדות
+  if (loc && (data.check_in_lat == null || data.check_in_lng == null)) {
+    console.error('[checkin] המיקום נשלח אך לא נשמר במסד (data.check_in_lat=' + data.check_in_lat + '). בדוק הרשאות עמודות/RLS.')
+    showToast('צ\'ק-אין נרשם, אך המיקום לא נשמר (בעיית הרשאה)', true)
+  } else if (!loc) {
+    const msg = reason === 'denied' ? 'נרשם צ\'ק-אין! (הרשאת מיקום נדחתה)'
+      : reason === 'timeout' ? 'נרשם צ\'ק-אין! (המיקום לקח יותר מדי זמן)'
+      : reason === 'unsupported' ? 'נרשם צ\'ק-אין! (הדפדפן לא תומך במיקום)'
+      : 'נרשם צ\'ק-אין! (מיקום לא זמין)'
+    showToast(msg)
+  } else {
+    showToast('נרשם צ\'ק-אין! המיקום נשמר ✅')
+  }
+
+  myCheckin = data
+  renderCheckinCard()
+}
+
+async function doCheckout() {
+  if (!myCheckin || myCheckin.status !== 'ממתינה') return
+  const { data, error } = await supabaseClient
+    .from('checkins')
+    .update({ status: 'הושלם', check_out_at: new Date().toISOString() })
+    .eq('id', myCheckin.id)
+    .select()
+    .single()
+
+  if (error) { showToast('שגיאה בשליחת הצ\'ק-אאוט', true); return }
+
+  myCheckin = data
+  renderCheckinCard()
+  showToast('הצ\'ק-אאוט נשלח לאישור המנהל/ה')
+}
+
+async function loadActivity(employeeId) {
+  const { data } = await supabaseClient
+    .from('point_logs')
+    .select('*, lessons(subject)')
+    .eq('student_id', employeeId)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  if (!data || data.length === 0) return
+
+  document.getElementById('activityList').innerHTML = data.map(log => `
+    <div class="activity-item">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0"></div>
+      <div>${log.lessons?.subject || (log.reason === 'task' ? 'משימה שאושרה' : 'נוכחות במשמרת')}<br><span style="font-size:0.73rem;color:var(--ink-3)">${new Date(log.created_at).toLocaleDateString('he-IL')}</span></div>
+      <div class="activity-pts">+${log.points}</div>
+    </div>
   `).join('')
 }
 
-async function approveCheckinRow(id) {
-  const { error } = await supabaseClient.from('checkins').update({ status: 'אושר' }).eq('id', id)
-  if (error) { showToast('שגיאה באישור', 'error'); return }
-  showToast('אושר! 3 נקודות ניתנו ✅', 'success')
-  await loadCheckinApprovals()
-  await renderAttendanceReport()
-  await refreshStudentsAndStats()
-  await loadRecentActivity()
+async function loadAttendanceStats(employeeId, companyId, teamName) {
+  const { data: shifts } = await supabaseClient
+    .from('lessons')
+    .select('id')
+    .eq('school_id', companyId)
+    .eq('class_name', teamName)
+
+  const totalShifts = (shifts || []).length
+  const content = document.getElementById('attendanceContent')
+
+  if (totalShifts === 0) {
+    content.innerHTML = '<div class="value small" style="color:var(--ink-3)">—</div><div class="foot">אין עדיין משמרות</div>'
+    return
+  }
+
+  const { data: logs } = await supabaseClient
+    .from('point_logs')
+    .select('lesson_id')
+    .eq('student_id', employeeId)
+    .in('reason', ['attendance', 'approved', 'bonus'])
+
+  const attendedSet = new Set((logs || []).map(l => l.lesson_id))
+  const attended = Math.min(attendedSet.size, totalShifts)
+  const pct = Math.round((attended / totalShifts) * 100)
+  const barColor = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--red)'
+
+  content.innerHTML = `
+    <div class="value" style="color:${barColor}">${pct}%</div>
+    <div class="attn-track"><div class="attn-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    <div class="foot">${attended}/${totalShifts} משמרות</div>
+  `
 }
 
-async function rejectCheckinRow(id) {
-  const { error } = await supabaseClient.from('checkins').update({ status: 'נדחה' }).eq('id', id)
-  if (error) { showToast('שגיאה בדחייה', 'error'); return }
-  showToast('הצ\'ק-אין נדחה', 'success')
-  await loadCheckinApprovals()
-  await renderAttendanceReport()
-  await loadRecentActivity()
-}
-
-async function approveAllCheckins() {
-  if (pendingCheckinApprovals.length === 0) return
-  if (!confirm(`לאשר את כל ${pendingCheckinApprovals.length} דיווחי הנוכחות הממתינים? כל אחד יזכה 3 נקודות.`)) return
-
-  const ids = pendingCheckinApprovals.map(c => c.id)
-  const { error } = await supabaseClient.from('checkins').update({ status: 'אושר' }).in('id', ids)
-  if (error) { showToast('שגיאה באישור מרוכז: ' + error.message, 'error'); return }
-
-  showToast(`✅ ${ids.length} דיווחים אושרו בהצלחה`, 'success')
-  await loadCheckinApprovals()
-  await renderAttendanceReport()
-  await refreshStudentsAndStats()
-  await loadRecentActivity()
-}
-
-async function refreshStudentsAndStats() {
+async function loadLeaderboard(companyId, teamName, currentUserId) {
   const { data } = await supabaseClient
-    .from('users').select('*').eq('school_id', currentSchoolId).eq('role', 'student').order('name')
-  allStudents = data || []
-  renderStudentsTable()
-  updateHeaderStats()
+    .from('users')
+    .select('id, name, points')
+    .eq('school_id', companyId)
+    .eq('class_name', teamName)
+    .eq('role', 'student')
+    .order('points', { ascending: false })
+    .limit(8)
+
+  if (!data || data.length === 0) return
+
+  const myRank = data.findIndex(s => s.id === currentUserId)
+  const statRank = document.getElementById('statRank')
+  if (statRank) statRank.textContent = myRank >= 0 ? `#${myRank + 1}` : '—'
+
+  const colors = ['#5C8CFF,#9B7BFF', '#33C48D,#22A6D6', '#E8B04C,#F0C67A', '#F0665E,#FF9E9E']
+  document.getElementById('leaderboardList').innerHTML = data.map((s, i) => `
+    <div class="lb-item">
+      <div class="lb-rank" style="${i===0?'color:var(--gold)':''}">${i+1}</div>
+      <div class="lb-avatar" style="background:linear-gradient(135deg,${colors[i % colors.length]})">${s.name[0]}</div>
+      <div class="lb-name" style="${s.id===currentUserId?'color:var(--brand);font-weight:700':''}">${s.name}${s.id===currentUserId?' (אתה)':''}</div>
+      <div class="lb-pts">${s.points.toLocaleString()}</div>
+    </div>
+  `).join('')
 }
 
-function updateHeaderStats() {
-  document.getElementById('statStudents').textContent = allStudents.length
-  document.getElementById('statPoints').textContent = allStudents.reduce((sum, s) => sum + (s.points || 0), 0)
+async function loadStore() {
+  const { data } = await supabaseClient.from('store_items').select('*').eq('active', true).order('points_cost')
+  if (!data) return
+
+  const icons = [
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="2.3"/><path d="M12 21s-7-7.4-7-12a7 7 0 0 1 14 0c0 4.6-7 12-7 12z"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.6 6.1.6-4.6 4.1 1.3 6-5.3-3.2-5.3 3.2 1.3-6-4.6-4.1 6.1-.6z"/></svg>',
+    '<svg viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11" rx="1.2"/><path d="M4 13h16M12 9v11M12 9c-2-3-6-3-6-.5S9 9 12 9zm0 0c2-3 6-3 6-.5S15 9 12 9z"/></svg>'
+  ]
+
+  document.getElementById('storeGrid').innerHTML = data.map((item, i) => `
+    <div class="store-item" onclick="buyItem('${item.id}', '${item.name}', ${item.points_cost})">
+      <div class="item-icon">${icons[i % icons.length]}</div>
+      <div class="item-name">${item.name}</div>
+      <div class="item-pts">${item.points_cost} נקודות</div>
+    </div>
+  `).join('')
 }
 
-// ---- ייצוא לאקסל ----
-async function exportToExcel() {
-  if (!currentSchoolId) { showToast('עדיין טוען נתונים, נסה/י שוב בעוד רגע', 'error'); return }
-  showToast('מכין קובץ אקסל...', 'success')
+async function buyItem(itemId, name, cost) {
+  if (isDemoAccount) { showToast('חשבון דמו - מימוש פרסים יופעל לאחר אישור הרשמה רשמי', true); return }
+  if (currentPoints < cost) { showToast('אין מספיק נקודות!', true); return }
 
-  const { data: checkins, error } = await supabaseClient
-    .from('checkins')
-    .select('*')
-    .eq('school_id', currentSchoolId)
-    .order('check_in_at', { ascending: false })
-  if (error) { showToast('שגיאה בשליפת נתוני נוכחות: ' + error.message, 'error'); return }
-  const checkinRows = checkins || []
+  try {
+    const { error } = await supabaseClient.from('purchases').insert({
+      student_id: currentUser.id, item_id: itemId, points_spent: cost
+    })
+    if (error) throw error
 
-  if (checkinRows.length === 0 && allStudents.length === 0 && allTasks.length === 0) {
-    showToast('אין עדיין נתונים לייצוא', 'error')
-    return
+    currentPoints -= cost
+    setPointsDisplays()
+    showToast(`${name} נרכש בהצלחה!`)
+  } catch (err) {
+    showToast('שגיאה ברכישה, נסה שוב', true)
   }
-
-  const statusLabel = { 'ממתינה': 'במשמרת (לא סיים)', 'הושלם': 'ממתין לאישור', 'אושר': 'אושר', 'נדחה': 'נדחה' }
-
-  const attendanceSheet = checkinRows.map(c => {
-    const student = allStudents.find(s => s.id === c.student_id)
-    const checkInDate = c.check_in_at ? new Date(c.check_in_at) : null
-    return {
-      'שם עובד/ת': student ? student.name : '—',
-      'צוות/מחלקה': student ? (student.class_name || '—') : '—',
-      'תאריך': checkInDate ? checkInDate.toLocaleDateString('he-IL') : '—',
-      'שעת כניסה (צ\'ק-אין)': checkInDate ? checkInDate.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
-      'שעת יציאה (צ\'ק-אאוט)': c.check_out_at ? new Date(c.check_out_at).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }) : '—',
-      'סטטוס': statusLabel[c.status] || c.status,
-      'נקודות': c.points ?? 0
-    }
-  })
-
-  const studentsSheet = allStudents.map(s => ({
-    'שם': s.name || '—',
-    'צוות/מחלקה': s.class_name || '—',
-    'אימייל': s.email || '—',
-    'טלפון': s.phone || '—',
-    'נקודות': s.points ?? 0
-  }))
-
-  const tasksSheet = allTasks.map(t => {
-    const student = allStudents.find(s => s.id === t.student_id)
-    return {
-      'עובד': student ? student.name : '—',
-      'משימה': t.title,
-      'תיאור': t.description || '—',
-      'נקודות': t.points,
-      'סטטוס': taskStatusLabel(t.status)
-    }
-  })
-
-  const wb = XLSX.utils.book_new()
-  if (attendanceSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attendanceSheet), 'נוכחות - כניסה ויציאה')
-  if (studentsSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(studentsSheet), 'עובדים')
-  if (tasksSheet.length > 0) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(tasksSheet), 'משימות')
-
-  if (wb.SheetNames.length === 0) {
-    showToast('אין עדיין נתונים לייצוא', 'error')
-    return
-  }
-
-  const businessName = document.getElementById('schoolNameLabel').textContent || 'עסק'
-  const dateStr = new Date().toLocaleDateString('he-IL').replace(/\//g, '-')
-  XLSX.writeFile(wb, `דוח-${businessName}-${dateStr}.xlsx`)
-  showToast('הקובץ הורד בהצלחה ✅', 'success')
 }
 
-function showFatalError(msg) {
-  document.getElementById('loadingState').classList.add('hidden')
-  const el = document.getElementById('errorState')
-  el.textContent = msg
-  el.classList.remove('hidden')
-  showToast(msg, 'error')
+async function logout() {
+  if (checkinPollTimer) clearInterval(checkinPollTimer)
+  await supabaseClient.auth.signOut()
+  window.location.href = 'index.html'
 }
 
-async function loadDashboard() {
-  const { data: sessionData } = await supabaseClient.auth.getSession()
-  if (!sessionData.session) {
-    window.location.href = 'login.html'
-    return
-  }
-  currentUser = sessionData.session.user
-
-  const { data: profile, error: profileErr } = await supabaseClient
-    .from('users').select('*').eq('id', currentUser.id).single()
-
-  if (profileErr || !profile) {
-    showFatalError('לא הצלחנו לטעון את הפרופיל שלך. נסה להתחבר שוב.')
-    return
-  }
-  if (profile.role !== 'teacher') {
-    window.location.href = profile.role === 'principal' ? 'principal.html' : 'student-dashboard.html'
-    return
-  }
-
-  currentSchoolId = profile.school_id
-  const displayName = profile.name || 'מנהל/ת'
-  document.getElementById('teacherName').textContent = displayName
-  document.getElementById('teacherNameInline').textContent = displayName
-  document.getElementById('teacherAvatar').textContent = displayName ? displayName[0] : '·'
-
-  const { data: school } = await supabaseClient
-    .from('schools').select('*').eq('id', currentSchoolId).single()
-  document.getElementById('schoolNameLabel').textContent = school ? school.name : 'לא ידוע'
-
-  const { data: students, error: studentsErr } = await supabaseClient
-    .from('users').select('*').eq('school_id', currentSchoolId).eq('role', 'student').order('name')
-
-  if (studentsErr) {
-    showFatalError('שגיאה בטעינת העובדים: ' + studentsErr.message)
-    return
-  }
-  allStudents = students || []
-  updateHeaderStats()
-  renderStudentsTable()
-
-  const studentIds = allStudents.map(s => s.id)
-  if (studentIds.length > 0) {
-    const { data: logs } = await supabaseClient
-      .from('point_logs').select('*').in('student_id', studentIds)
-    allPointLogs = logs || []
-  } else {
-    allPointLogs = []
-  }
-
-  await renderAttendanceReport()
-  await loadTasks()
-  await loadMyTasks()
-  await loadCheckinApprovals()
-  await loadRecentActivity()
-  setInterval(loadCheckinApprovals, 30000)
-  setInterval(loadRecentActivity, 30000)
-
-  document.getElementById('loadingState').classList.add('hidden')
-  document.getElementById('dashboardContent').classList.remove('hidden')
+let toastTimer
+function showToast(msg, isError) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.background = isError ? 'var(--red)' : 'var(--green)'
+  t.style.color = isError ? '#fff' : '#08140F'
+  t.classList.add('show')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800)
 }
 
-loadDashboard()
+init()
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(err => console.warn('SW registration failed:', err))
+    navigator.serviceWorker.register('service-worker.js').then(reg => {
+      // הכרח בדיקת עדכון בכל טעינה כדי שגרסה חדשה תיטען מיד (לא מה-cache הישן)
+      reg.update()
+      if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' })
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing
+        if (!nw) return
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+            // גרסה חדשה מוכנה — רענן פעם אחת כדי להחיל אותה
+            window.location.reload()
+          }
+        })
+      })
+    }).catch(err => console.warn('SW registration failed:', err))
   })
 }
 </script>
