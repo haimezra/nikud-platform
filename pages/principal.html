@@ -70,6 +70,11 @@ a:hover{color:var(--brand-2)}
   font-size:0.85rem;font-weight:600;transition:all 0.2s;
 }
 .logout-btn:hover{border-color:var(--red);color:var(--red)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:dotBlink 1.4s ease-in-out infinite}
+@keyframes dotBlink{0%,49%{opacity:1;box-shadow:0 0 5px 1px var(--green)}50%,100%{opacity:0.15;box-shadow:0 0 0 0 transparent}}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.clickable-stat{cursor:pointer;transition:transform 0.2s}
+.clickable-stat:hover{transform:translateY(-2px)}
 
 .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
 .page-title{font-family:'Rubik',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.6px;margin-bottom:4px}
@@ -218,7 +223,7 @@ tr.clickable{cursor:pointer}
 <body>
 
 <div class="topbar">
-  <div class="logo">nikud</div>
+  <div style="display:flex;align-items:center;gap:6px"><div class="logo">nikud</div><span style="font-size:0.68rem;color:var(--ink-3);font-weight:600;letter-spacing:0.3px">system</span><span class="live-dot"></span></div>
   <div class="topbar-right">
     <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
     <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
@@ -234,13 +239,13 @@ tr.clickable{cursor:pointer}
     <div class="page-sub">שלום <span id="principalName">מנהל/ת</span>, הנה מצב העסק שלך</div>
 
     <div class="stats-grid">
-      <div class="stat-card accent">
-        <div class="stat-num" id="statTeachers">0</div>
-        <div class="stat-label">מנהלי צוותים</div>
+      <div class="stat-card accent clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('tabTasks'))">
+        <div class="stat-num" id="statTasksPending">0</div>
+        <div class="stat-label">משימות ממתינות לאישור</div>
       </div>
-      <div class="stat-card green">
-        <div class="stat-num" id="statStudents">0</div>
-        <div class="stat-label">עובדים</div>
+      <div class="stat-card green clickable-stat" id="checkinsStatCard" onclick="setTab('checkinApproval', document.getElementById('tabCheckinApproval'))">
+        <div class="stat-num" id="statCheckinsPending">0</div>
+        <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
       </div>
       <div class="stat-card gold">
         <div class="stat-num" id="statPoints">0</div>
@@ -268,47 +273,47 @@ tr.clickable{cursor:pointer}
 
     <div class="panel" id="studentsPanel">
       <div class="panel-head"><h3>רשימת עובדים</h3></div>
-      <table>
+      <div class="table-scroll"><table>
         <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
         <tbody id="studentsBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
     </div>
 
     <div class="panel hidden" id="teachersPanel">
       <div class="panel-head"><h3>רשימת מנהלי צוותים</h3></div>
-      <table>
+      <div class="table-scroll"><table>
         <thead><tr><th>שם</th><th>אימייל</th><th></th></tr></thead>
         <tbody id="teachersBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="teachersEmpty">עדיין אין מנהלי צוותים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
     </div>
 
     <div class="panel hidden" id="checkinApprovalPanel">
       <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
       <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-      <table id="checkinApprovalTable">
+      <div class="table-scroll"><table id="checkinApprovalTable">
         <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
         <tbody id="checkinApprovalBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
     </div>
 
     <div class="panel hidden" id="attendancePanel">
       <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
-      <table>
+      <div class="table-scroll"><table>
         <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
         <tbody id="attendanceBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
     </div>
 
     <div class="panel hidden" id="teacherActivityPanel">
       <div class="panel-head"><h3>פעילות מנהלי צוותים (מהכי פעיל להכי פחות)</h3></div>
-      <table>
+      <div class="table-scroll"><table>
         <thead><tr><th>שם</th><th>משמרות שנפתחו</th><th>נקודות שחולקו</th><th>פעילות אחרונה</th></tr></thead>
         <tbody id="teacherActivityBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מנהלי צוותים להציג.</div>
       <div class="empty-state hidden" id="teacherActivityLocked">🔒 דוח פעילות מנהלים זמין רק במנוי הפרימיום (₪699). <a href="payment.html" style="color:var(--brand)">שדרגו עכשיו</a></div>
     </div>
@@ -318,10 +323,10 @@ tr.clickable{cursor:pointer}
         <h3>משימות למנהלי צוותים</h3>
         <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
       </div>
-      <table>
+      <div class="table-scroll"><table>
         <thead><tr><th>מנהל</th><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
         <tbody id="tasksBody"></tbody>
-      </table>
+      </table></div>
       <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
     </div>
   </div>
@@ -793,6 +798,10 @@ function updateTasksBadge() {
   }
   const tabTasks = document.getElementById('tabTasks')
   if (tabTasks) tabTasks.classList.toggle('has-alert', pendingApproval > 0)
+  const statTasksEl = document.getElementById('statTasksPending')
+  if (statTasksEl) statTasksEl.textContent = pendingApproval
+  const tasksCard = document.getElementById('tasksStatCard')
+  if (tasksCard) tasksCard.classList.toggle('blink-alert', pendingApproval > 0)
 }
 
 function renderTasks() {
@@ -860,6 +869,10 @@ async function loadCheckinApprovals() {
   document.getElementById('checkinApprovalBadge').textContent = count
   const tabCheckin = document.getElementById('tabCheckinApproval')
   if (tabCheckin) tabCheckin.classList.toggle('has-alert', count > 0)
+  const statCheckinsEl = document.getElementById('statCheckinsPending')
+  if (statCheckinsEl) statCheckinsEl.textContent = count
+  const checkinsCard = document.getElementById('checkinsStatCard')
+  if (checkinsCard) checkinsCard.classList.toggle('blink-alert', count > 0)
   renderCheckinApprovals()
 }
 
@@ -949,8 +962,6 @@ async function loadDashboard() {
   allTeachers = teachers
   allStudents = students
 
-  document.getElementById('statTeachers').textContent = teachers.length
-  document.getElementById('statStudents').textContent = students.length
   document.getElementById('statPoints').textContent = totalPoints
 
   const studentsBody = document.getElementById('studentsBody')
