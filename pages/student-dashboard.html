@@ -654,10 +654,41 @@ function renderCheckinCard() {
   `
 }
 
+// ---- קליטת מיקום GPS בצ'ק-אין (אופציונלי: אם לא זמין נרשם "מיקום לא זמין") ----
+function getCheckinLocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) return resolve(null)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude,
+        accuracy: Math.round(pos.coords.accuracy)
+      }),
+      () => resolve(null),
+      { timeout: 8000, enableHighAccuracy: true, maximumAge: 0 }
+    )
+  })
+}
+
 async function doCheckin() {
+  showToast('קולט מיקום...')
+  const loc = await getCheckinLocation()
+
+  const payload = {
+    student_id: currentUser.id,
+    status: 'ממתינה',
+    check_in_at: new Date().toISOString()
+  }
+  if (loc) {
+    payload.check_in_lat = loc.lat
+    payload.check_in_lng = loc.lng
+    payload.check_in_accuracy = loc.accuracy
+    payload.location_captured_at = new Date().toISOString()
+  }
+
   const { data, error } = await supabaseClient
     .from('checkins')
-    .insert({ student_id: currentUser.id, status: 'ממתינה', check_in_at: new Date().toISOString() })
+    .insert(payload)
     .select()
     .single()
 
@@ -665,7 +696,7 @@ async function doCheckin() {
 
   myCheckin = data
   renderCheckinCard()
-  showToast('נרשם צ\'ק-אין! בהצלחה')
+  showToast(loc ? 'נרשם צ\'ק-אין! בהצלחה' : 'נרשם צ\'ק-אין! (מיקום לא זמין)')
 }
 
 async function doCheckout() {
