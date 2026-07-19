@@ -246,6 +246,28 @@ a:hover{color:var(--brand-2)}
 
 <div class="toast" id="toast"></div>
 
+<!-- מסך הסכמה חד-פעמי לאיסוף מיקום נקודתי בצ'ק-אין -->
+<div id="locationConsentOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);z-index:1000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px 24px;width:100%;max-width:420px;box-shadow:var(--sh-2)">
+    <div style="width:52px;height:52px;border-radius:14px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;background:rgba(92,140,255,0.1);border:1px solid rgba(92,140,255,0.25);font-size:1.6rem">📍</div>
+    <h2 style="font-size:1.15rem;font-weight:800;text-align:center;margin-bottom:14px;color:var(--ink)">אימות מיקום בתחילת המשמרת</h2>
+    <div style="font-size:0.88rem;line-height:1.75;color:var(--ink-2)">
+      <p style="margin-bottom:12px">כדי לאמת שהכניסה למשמרת נעשית ממקום העבודה, המערכת מציינת את מיקומך <b style="color:var(--ink)">פעם אחת בלבד — ברגע הצ'ק-אין</b>.</p>
+      <div style="background:var(--paper-3);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:14px">
+        <div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:9px"><span style="color:var(--green);font-weight:700">✓</span><span>ציון מיקום <b style="color:var(--ink)">נקודתי וחד-פעמי</b> בתחילת המשמרת</span></div>
+        <div style="display:flex;gap:9px;align-items:flex-start;margin-bottom:9px"><span style="color:var(--green);font-weight:700">✓</span><span><b style="color:var(--ink)">אין</b> מעקב רציף, לא במהלך המשמרת ולא לאחריה</span></div>
+        <div style="display:flex;gap:9px;align-items:flex-start"><span style="color:var(--green);font-weight:700">✓</span><span>המיקום גלוי <b style="color:var(--ink)">להנהלה בלבד</b>, לצורך אימות נוכחות</span></div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--ink-3);margin-bottom:4px">אישורך יישמר פעם אחת. בפעמים הבאות הצ'ק-אין יתבצע ישירות.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-top:20px">
+      <button onclick="acceptLocationConsent()" style="width:100%;padding:12px;border:none;border-radius:var(--r-sm);background:var(--brand);color:#fff;font-family:'Rubik',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;box-shadow:var(--sh-brand)">אני מאשר/ת — המשך לצ'ק-אין</button>
+      <button onclick="declineLocationConsent()" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:var(--r-sm);background:transparent;color:var(--ink-3);font-family:'Heebo',sans-serif;font-weight:600;font-size:0.84rem;cursor:pointer">ביטול</button>
+    </div>
+  </div>
+</div>
+
+
 <div id="loadingScreen" class="loading">טוען את הנתונים שלך...</div>
 
 <div id="expiredScreen" class="expired-screen" style="display:none">
@@ -700,7 +722,41 @@ async function getCheckinLocation() {
   return { loc: null, reason }
 }
 
+// שער הסכמה: אם העובד עוד לא אישר איסוף מיקום — מציג מסך הסבר חד-פעמי
 async function doCheckin() {
+  if (!currentUser.location_consent_at) {
+    document.getElementById('locationConsentOverlay').style.display = 'flex'
+    return
+  }
+  await performCheckin()
+}
+
+function declineLocationConsent() {
+  document.getElementById('locationConsentOverlay').style.display = 'none'
+  showToast('הצ\'ק-אין בוטל. ניתן לאשר בכל עת כדי להתחיל משמרת.', true)
+}
+
+async function acceptLocationConsent() {
+  document.getElementById('locationConsentOverlay').style.display = 'none'
+  const consentAt = new Date().toISOString()
+
+  // שמירת ההסכמה במסד לתיעוד (תאריך + שהעובד אישר)
+  const { error } = await supabaseClient
+    .from('users')
+    .update({ location_consent_at: consentAt })
+    .eq('id', currentUser.id)
+
+  if (error) {
+    console.error('[consent] שגיאה בשמירת ההסכמה:', error)
+    showToast('שגיאה בשמירת האישור, נסה/י שוב', true)
+    return
+  }
+
+  currentUser.location_consent_at = consentAt
+  await performCheckin()
+}
+
+async function performCheckin() {
   showToast('קולט מיקום... (אשר/י את בקשת המיקום)')
   const { loc, reason } = await getCheckinLocation()
 
