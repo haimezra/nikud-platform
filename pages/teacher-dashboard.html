@@ -460,7 +460,7 @@ tr.clickable{cursor:pointer}
           </div>
           <div class="table-scroll">
             <table id="checkinApprovalTable">
-              <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+              <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>מיקום</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
               <tbody id="checkinApprovalBody"></tbody>
             </table>
           </div>
@@ -688,6 +688,15 @@ function fmtDateTime(iso) {
   if (!iso) return '—'
   const d = new Date(iso)
   return `${d.toLocaleDateString('he-IL')} · ${d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+// ---- תא מיקום צ'ק-אין (כפתור מפה או "מיקום לא זמין") ----
+function locationCell(c) {
+  if (c.check_in_lat != null && c.check_in_lng != null) {
+    const acc = c.check_in_accuracy ? ` (±${c.check_in_accuracy} מ')` : ''
+    return `<a href="https://www.google.com/maps?q=${c.check_in_lat},${c.check_in_lng}" target="_blank" rel="noopener" class="task-act-btn task-act-approve" style="text-decoration:none;display:inline-block">📍 מפה${acc}</a>`
+  }
+  return `<span style="color:var(--ink-3);font-size:0.76rem">מיקום לא זמין</span>`
 }
 
 function durationLabel(inIso, outIso) {
@@ -1367,6 +1376,7 @@ function renderCheckinApprovals() {
       <td>${escapeHtml(c.users?.class_name || '—')}</td>
       <td>${fmtTime(c.check_in_at)}</td>
       <td>${fmtTime(c.check_out_at)}</td>
+      <td>${locationCell(c)}</td>
       <td>${hoursLeftLabel(c.check_out_at)}</td>
       <td>
         <button class="task-act-btn task-act-approve" onclick="approveCheckinRow('${c.id}')">✓ אשר (3 נק')</button>
