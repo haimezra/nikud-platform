@@ -29,16 +29,16 @@
   --sh-1:0 1px 2px rgba(0,0,0,0.35),0 2px 8px rgba(0,0,0,0.3);
   --sh-2:0 8px 24px rgba(0,0,0,0.5),0 24px 60px rgba(0,0,0,0.55);
   --sh-brand:0 8px 20px rgba(92,140,255,0.26);
-  --r:20px;--r-lg:26px;--r-sm:13px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
+  --r:16px;--r-lg:22px;--r-sm:12px;--pill:999px;--ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
 body{
   color:var(--ink);font-family:'Heebo',sans-serif;min-height:100vh;background:var(--paper);
-  -webkit-font-smoothing:antialiased;
+  -webkit-font-smoothing:antialiased;font-size:14px;
   background-image:
     linear-gradient(180deg, rgba(92,140,255,0.05) 0%, transparent 12%),
-    radial-gradient(ellipse 44% 34% at 94% -6%, rgba(92,140,255,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 30% at 2% 6%, rgba(155,123,255,0.07) 0%, transparent 58%);
+    radial-gradient(ellipse 40% 30% at 96% -6%, rgba(92,140,255,0.06) 0%, transparent 60%);
   background-attachment:fixed;
 }
 h1,h2,h3,h4{font-family:'Rubik',sans-serif}
@@ -46,54 +46,84 @@ a{color:var(--brand);text-decoration:none}
 a:hover{color:var(--brand-2)}
 ::-webkit-scrollbar{width:8px;height:8px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:99px}
-
-.topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:13px 26px;margin:16px 20px 0;border-radius:var(--pill);
-  background:var(--paper-2);backdrop-filter:blur(20px) saturate(1.2);
-  border:1px solid var(--glass-border);box-shadow:var(--sh-1),var(--hl);
-  position:sticky;top:16px;z-index:10;
-}
-.logo{font-family:'Rubik',sans-serif;font-size:1.35rem;font-weight:800;letter-spacing:-0.3px;
-  background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;
-  -webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
-@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.topbar-right{display:flex;align-items:center;gap:14px}
-.school-pill{
-  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--pill);
-  padding:8px 18px;font-size:0.85rem;color:var(--ink-3);
-}
-.school-pill strong{color:var(--ink)}
-.logout-btn{
-  background:var(--glass-2);border:1px solid var(--line);color:var(--ink-2);
-  padding:8px 18px;border-radius:var(--pill);cursor:pointer;font-family:'Heebo',sans-serif;
-  font-size:0.85rem;font-weight:600;transition:all 0.2s;
-}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.hidden{display:none !important}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:dotBlink 1.4s ease-in-out infinite}
 @keyframes dotBlink{0%,49%{opacity:1;box-shadow:0 0 5px 1px var(--green)}50%,100%{opacity:0.15;box-shadow:0 0 0 0 transparent}}
 .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .clickable-stat{cursor:pointer;transition:transform 0.2s}
 .clickable-stat:hover{transform:translateY(-2px)}
 
-.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
-.page-title{font-family:'Rubik',sans-serif;font-size:1.6rem;font-weight:800;letter-spacing:-0.6px;margin-bottom:4px}
-.page-sub{color:var(--ink-3);font-size:0.92rem;margin-bottom:26px}
+/* ---------- Shell / Sidebar ---------- */
+.app-shell{display:flex;min-height:100vh;align-items:stretch}
+.sidebar{
+  width:230px;flex-shrink:0;background:var(--paper-2);
+  border-left:1px solid var(--line);
+  padding:18px 14px;display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sidebar-brand{display:flex;align-items:center;gap:6px;padding:4px 8px 20px;border-bottom:1px solid var(--line-2);margin-bottom:16px;direction:ltr;justify-content:flex-start}
+.sidebar-brand .name{font-family:'Rubik',sans-serif;font-weight:800;font-size:1.1rem;letter-spacing:-0.3px;background:linear-gradient(110deg,#8b93a8 20%,#e4e7f0 40%,#8b93a8 60%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brandShimmer 4s linear infinite}
+@keyframes brandShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sidebar-brand .sub{font-size:0.68rem;color:var(--ink-3);font-weight:600;letter-spacing:0.3px}
 
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+.sidebar-section-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--ink-3);font-weight:700;padding:0 10px;margin:12px 0 6px}
+.sidebar-nav{display:flex;flex-direction:column;gap:1px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;
+  color:var(--ink-2);text-decoration:none;font-size:0.85rem;font-weight:500;
+  cursor:pointer;transition:background 0.15s, color 0.15s;border:1px solid transparent;position:relative;
+}
+.nav-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.6;flex-shrink:0}
+.nav-item:hover{background:var(--glass);color:var(--ink)}
+.nav-item.active{background:rgba(92,140,255,0.10);color:var(--brand);border-color:rgba(92,140,255,0.16);font-weight:700}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;padding:1px 7px;font-size:0.68rem;font-weight:700;line-height:1.5}
+.nav-item.has-alert:not(.active){color:var(--red)}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.sidebar-footer{margin-top:auto;padding-top:14px;border-top:1px solid var(--line-2);display:flex;flex-direction:column;gap:8px}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px 8px 4px}
+.sidebar-user .av{width:28px;height:28px;border-radius:8px;background:var(--glass-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.76rem;color:var(--ink-2);flex-shrink:0}
+.sidebar-user .info{min-width:0}
+.sidebar-user .info .n{font-size:0.82rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .info .r{font-size:0.7rem;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.school-pill{
+  background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
+  padding:8px 11px;font-size:0.74rem;color:var(--ink-3);
+}
+.school-pill strong{color:var(--ink);display:block;font-size:0.82rem;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-export-btn{
+  width:100%;background:var(--glass);border:1px solid var(--glass-border);color:var(--ink-2);
+  padding:8px 12px;border-radius:8px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;
+  transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.sidebar-export-btn:hover{border-color:var(--brand);color:var(--brand);background:rgba(92,140,255,0.08)}
+.logout-btn{
+  width:100%;background:transparent;border:1px solid var(--line);color:var(--ink-3);
+  padding:7px 14px;border-radius:8px;cursor:pointer;
+  font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:600;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.logout-btn:hover{border-color:var(--red);color:var(--red);background:rgba(239,95,88,0.06)}
+
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0;padding:24px 30px 60px}
+.topbar{margin-bottom:22px}
+.topbar h1{font-size:1.22rem;font-weight:700;letter-spacing:-0.3px}
+.topbar .date-sub{font-size:0.8rem;color:var(--ink-3);margin-top:4px;font-weight:500}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:22px;box-shadow:var(--sh-1)}
 .stat-card{
   background:var(--paper-2);
-  border:1px solid var(--glass-border);border-radius:var(--r);
-  padding:20px;box-shadow:var(--sh-1),var(--hl);
+  padding:16px 18px;position:relative;
 }
-.stat-num{font-family:'Rubik',sans-serif;font-size:2rem;font-weight:800;line-height:1;letter-spacing:-1px}
-.stat-label{color:var(--ink-3);font-size:0.82rem;margin-top:6px}
-.stat-card.danger{border-color:rgba(239,95,88,0.32);background:rgba(239,95,88,0.07);cursor:pointer;transition:transform 0.2s, box-shadow 0.2s}
+.stat-num{font-family:'Rubik',sans-serif;font-size:1.5rem;font-weight:700;line-height:1;letter-spacing:-0.3px}
+.stat-label{color:var(--ink-3);font-size:0.66rem;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;margin-bottom:9px}
+.stat-card.danger{background:rgba(239,95,88,0.07);cursor:pointer;transition:transform 0.2s, box-shadow 0.2s}
 .stat-card.danger:hover{transform:translateY(-2px)}
 .stat-card.danger .stat-num{color:var(--red)}
 @keyframes weakRedPulse{
-  0%,100%{box-shadow:var(--sh-1);border-color:rgba(239,95,88,0.32)}
-  50%{box-shadow:0 0 0 4px rgba(239,95,88,0.22),var(--sh-1);border-color:rgba(239,95,88,0.55)}
+  0%,100%{box-shadow:none}
+  50%{box-shadow:inset 0 0 0 2px rgba(239,95,88,0.4)}
 }
 .stat-card.blink-alert{animation:weakRedPulse 1.8s ease-in-out infinite}
 tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
@@ -103,28 +133,18 @@ tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
   cursor:pointer;font-family:'Heebo',sans-serif;
 }
 
-@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:0.4}}
 @keyframes btnWeakRedPulse{
   0%,100%{box-shadow:0 0 0 0 rgba(239,95,88,0)}
   50%{box-shadow:0 0 0 4px rgba(239,95,88,0.28)}
 }
 
-.tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:4px;width:fit-content;flex-wrap:wrap}
-.tab{
-  padding:9px 18px;border:none;background:none;color:var(--ink-3);
-  border-radius:10px;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
-  transition:all 0.2s;display:flex;align-items:center;gap:6px;
-}
-.tab.active{background:var(--brand);color:#fff}
-.tab.has-alert:not(.active){color:var(--red);animation:badgePulse 1.8s ease-in-out infinite}
-
 .panel{
   background:var(--paper-2);
   border:1px solid var(--glass-border);border-radius:var(--r);
-  overflow:hidden;margin-bottom:24px;box-shadow:var(--sh-1),var(--hl);
+  overflow:hidden;margin-bottom:20px;box-shadow:var(--sh-1),var(--hl);
 }
-.panel-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line-2)}
-.panel-head h3{font-size:1rem;font-weight:700;color:var(--ink)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:17px 20px;border-bottom:1px solid var(--line-2)}
+.panel-head h3{font-size:0.92rem;font-weight:700;color:var(--ink)}
 .add-btn{
   background:var(--brand);border:none;color:#fff;padding:9px 16px;
   border-radius:var(--r-sm);cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;
@@ -133,79 +153,85 @@ tr.at-risk-row td:first-child{border-right:3px solid var(--red)}
 .add-btn:hover{background:var(--brand-2)}
 
 table{width:100%;border-collapse:collapse}
-th{text-align:right;padding:12px 22px;font-size:0.75rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
-td{padding:14px 22px;font-size:0.9rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
+th{text-align:right;padding:11px 20px;font-size:0.71rem;color:var(--ink-3);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid var(--line-2);background:var(--paper-3)}
+td{padding:13px 20px;font-size:0.87rem;border-bottom:1px solid var(--line-2);color:var(--ink-2)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,0.015)}
-.role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
+.role-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
 .role-badge.teacher{background:rgba(var(--brand-rgb),0.14);color:var(--brand)}
 .role-badge.student{background:rgba(var(--green-rgb),0.14);color:var(--green)}
 .points-tag{color:var(--gold);font-weight:700}
 
-.history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.85rem;color:var(--ink-2)}
+.history-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line-2);font-size:0.83rem;color:var(--ink-2)}
 .history-item:last-child{border-bottom:none}
 .history-pts{margin-right:auto;color:var(--green);font-weight:700;font-family:'Rubik',sans-serif}
 tr.clickable{cursor:pointer}
 .attn-bar-track{height:6px;border-radius:var(--pill);background:var(--line-2);overflow:hidden;width:70px;display:inline-block;margin-left:8px;vertical-align:middle}
 .attn-bar-fill{height:100%;border-radius:var(--pill)}
 
-.empty-state{padding:40px;text-align:center;color:var(--ink-3);font-size:0.9rem}
+.empty-state{padding:36px;text-align:center;color:var(--ink-3);font-size:0.85rem}
 
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;z-index:400;padding:20px}
 .modal-overlay.show{display:flex}
-.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:28px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
-.modal h3{font-size:1.1rem;margin-bottom:20px;color:var(--ink)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:0.82rem;color:var(--ink-3);margin-bottom:6px}
+.modal{background:var(--paper-2);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:26px;width:100%;max-width:400px;box-shadow:var(--sh-2)}
+.modal h3{font-size:1.02rem;margin-bottom:18px;color:var(--ink)}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:0.78rem;color:var(--ink-3);margin-bottom:6px}
 .field input,.field select,.field textarea{
-  width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:10px;padding:11px 14px;color:var(--ink);
-  font-family:'Heebo',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;
+  width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);padding:10px 13px;color:var(--ink);
+  font-family:'Heebo',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;
 }
 .field textarea{resize:vertical;min-height:70px;font-family:'Heebo',sans-serif}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand)}
-.field .fixed-value{width:100%;background:var(--paper-3);border:1px solid var(--glass-border);border-radius:10px;padding:11px 14px;color:var(--ink-3);font-size:0.9rem}
-.modal-actions{display:flex;gap:10px;margin-top:20px}
-.modal-actions button{flex:1;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700}
+.modal-actions{display:flex;gap:10px;margin-top:18px}
+.modal-actions button{flex:1;padding:10px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.86rem;font-weight:700}
 .btn-cancel{background:var(--paper-3);color:var(--ink-3);border:1px solid var(--glass-border)}
 .btn-confirm{background:var(--brand);color:#fff}
 
 .toast{
   position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
   background:var(--paper-3);border:1px solid var(--glass-border);border-radius:var(--r-sm);
-  padding:12px 20px;font-size:0.85rem;display:none;z-index:60;box-shadow:var(--sh-2);color:var(--ink);font-weight:600;
+  padding:11px 20px;font-size:0.85rem;display:none;z-index:500;box-shadow:var(--sh-2);color:var(--ink);font-weight:600;
 }
 .toast.show{display:block}
 .toast.error{background:var(--red);color:#fff;border-color:transparent}
 .toast.success{background:var(--green);color:#08140F;border-color:transparent}
 
 .loading{text-align:center;padding:100px 20px;color:var(--ink-3)}
-.hidden{display:none !important}
 
-.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.75rem;font-weight:700}
+.task-status-badge{display:inline-block;padding:3px 10px;border-radius:var(--pill);font-size:0.72rem;font-weight:700}
 .task-status-badge.pending{background:rgba(110,116,136,0.18);color:var(--ink-3)}
 .task-status-badge.submitted{background:rgba(224,171,78,0.16);color:var(--gold-soft)}
 .task-status-badge.approved{background:rgba(47,191,143,0.16);color:var(--green)}
 .task-status-badge.rejected{background:rgba(239,95,88,0.16);color:var(--red)}
 .task-actions{display:flex;gap:6px}
-.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700}
+.task-act-btn{padding:6px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700;white-space:nowrap}
 .task-act-approve{background:rgba(47,191,143,0.16);color:var(--green)}
 .task-act-reject{background:rgba(239,95,88,0.16);color:var(--red)}
 .task-act-btn.blink-alert{animation:btnWeakRedPulse 1.6s ease-in-out infinite}
 
+@media(max-width:900px){
+  .app-shell{flex-direction:column}
+  .sidebar{position:static;width:100%;height:auto;flex-direction:row;align-items:center;padding:12px 14px;border-left:none;border-bottom:1px solid var(--line);overflow-x:auto}
+  .sidebar-brand{border-bottom:none;padding:0 12px 0 0;margin-bottom:0}
+  .sidebar-section-label{display:none}
+  .sidebar-nav{flex-direction:row}
+  .nav-item{white-space:nowrap}
+  .sidebar-footer{margin-top:0;padding-top:0;border-top:none;margin-right:auto;flex-direction:row;align-items:center;gap:8px}
+  .sidebar-user{padding:0 6px}
+  .school-pill{display:none}
+  .sidebar-export-btn{width:auto;padding:8px 12px;white-space:nowrap}
+  .logout-btn{width:auto;padding:8px 14px;white-space:nowrap}
+  .main{padding:16px 14px 40px}
+}
 @media(max-width:640px){
-  .topbar{margin:12px 12px 0;padding:11px 18px;flex-wrap:wrap;gap:8px}
-  .logo{font-size:1.15rem}
-  .topbar-right{gap:8px;flex-wrap:wrap}
-  .school-pill{padding:6px 12px;font-size:0.76rem}
-  .wrap{padding:20px 10px 40px}
-  .page-title{font-size:1.3rem}
-  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
-  .stat-card{padding:15px}
-  .stat-num{font-size:1.5rem}
-  .tabs{width:100%;overflow-x:auto;flex-wrap:nowrap}
-  .tab{flex:none;white-space:nowrap;padding:8px 13px;font-size:0.82rem}
+  .topbar h1{font-size:1.05rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-card{padding:14px}
+  .stat-num{font-size:1.25rem}
   .panel-head{padding:14px 16px}
-  th,td{padding:10px 8px;font-size:0.8rem}
+  th,td{padding:10px 12px;font-size:0.8rem}
+  .modal{padding:20px}
   #checkinApprovalTable th:nth-child(2),#checkinApprovalTable td:nth-child(2),
   #checkinApprovalTable th:nth-child(5),#checkinApprovalTable td:nth-child(5){display:none}
 }
@@ -219,132 +245,176 @@ tr.clickable{cursor:pointer}
 </head>
 <body>
 
-<div class="topbar">
-  <div style="display:flex;align-items:center;gap:6px;direction:ltr"><div class="logo">nikud</div><span style="font-size:0.68rem;color:var(--ink-3);font-weight:600;letter-spacing:0.3px">system</span><span class="live-dot"></span></div>
-  <div class="topbar-right">
-    <span class="school-pill">עסק: <strong id="schoolNameLabel">טוען...</strong></span>
-    <button class="copy-code-btn" onclick="exportToExcel()">📊 ייצוא לאקסל</button>
-    <button class="logout-btn" onclick="handleLogout()">יציאה</button>
-  </div>
-</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="name">nikud</span>
+      <span class="sub">system</span>
+      <span class="live-dot"></span>
+    </div>
 
-<div class="wrap" id="app">
-  <div class="loading" id="loadingState">טוען נתונים...</div>
+    <div class="sidebar-section-label">תפריט</div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" id="tabStudents" href="#" onclick="setTab('students', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22.5 21v-2a4 4 0 0 0-3-3.87"/><path d="M15.5 3.13a4 4 0 0 1 0 7.75"/></svg>
+        עובדים
+      </a>
+      <a class="nav-item" id="tabTeachers" href="#" onclick="setTab('teachers', this);return false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+        מנהלי צוותים
+      </a>
+      <a class="nav-item" id="tabCheckinApproval" href="#" onclick="setTab('checkinApproval', this);return false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        צ'ק-אין ממתינים
+        <span id="checkinApprovalBadge" class="nav-badge hidden" style="animation:badgePulse 1.8s ease-in-out infinite">0</span>
+      </a>
+      <a class="nav-item" id="tabAttendance" href="#" onclick="setTab('attendance', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+        דוח נוכחות
+        <span id="atRiskBadge" class="nav-badge hidden" style="animation:badgePulse 1.8s ease-in-out infinite">0</span>
+      </a>
+      <a class="nav-item" id="tabTeacherActivity" href="#" onclick="setTab('teacherActivity', this);return false">
+        <svg viewBox="0 0 24 24"><path d="M3 12h4l2 7 4-14 2 7h6"/></svg>
+        פעילות מנהלים
+      </a>
+      <a class="nav-item" id="tabTasks" href="#" onclick="setTab('tasks', this);return false">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M7 12l2.5 2.5L16 9"/></svg>
+        משימות
+        <span id="tasksApprovalBadge" class="nav-badge hidden" style="animation:badgePulse 1.8s ease-in-out infinite">0</span>
+      </a>
+    </nav>
 
-  <div id="dashboardContent" class="hidden">
-    <div class="page-title">דשבורד ניהול</div>
-    <div class="page-sub">שלום <span id="principalName">מנהל/ת</span>, הנה מצב העסק שלך</div>
-
-    <div class="stats-grid">
-      <div class="stat-card accent clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('tabTasks'))">
-        <div class="stat-num" id="statTasksPending">0</div>
-        <div class="stat-label">משימות</div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="av" id="principalAvatar">·</div>
+        <div class="info">
+          <div class="n" id="principalNameSidebar">מנהל/ת</div>
+          <div class="r">מנהל/ת עסק</div>
+        </div>
       </div>
-      <div class="stat-card green clickable-stat" id="checkinsStatCard" onclick="setTab('checkinApproval', document.getElementById('tabCheckinApproval'))">
-        <div class="stat-num" id="statCheckinsPending">0</div>
-        <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
+      <div class="school-pill">עסק<strong id="schoolNameLabel">טוען...</strong></div>
+      <button class="sidebar-export-btn" onclick="exportToExcel()">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        ייצוא לאקסל
+      </button>
+      <button class="logout-btn" onclick="handleLogout()">
+        <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="1.8"><path d="M15 17l5-5-5-5M20 12H9M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7"/></svg>
+        יציאה
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="loading" id="loadingState">טוען נתונים...</div>
+
+    <div id="dashboardContent" class="hidden">
+      <div class="topbar">
+        <h1>דשבורד ניהול</h1>
+        <div class="date-sub">שלום <span id="principalName">מנהל/ת</span>, הנה מצב העסק שלך</div>
       </div>
-      <div class="stat-card gold">
-        <div class="stat-num" id="statPoints">0</div>
-        <div class="stat-label">סה"כ נקודות שחולקו</div>
+
+      <div class="stats-grid">
+        <div class="stat-card clickable-stat" id="tasksStatCard" onclick="setTab('tasks', document.getElementById('tabTasks'))">
+          <div class="stat-label">משימות</div>
+          <div class="stat-num" id="statTasksPending">0</div>
+        </div>
+        <div class="stat-card clickable-stat" id="checkinsStatCard" onclick="setTab('checkinApproval', document.getElementById('tabCheckinApproval'))">
+          <div class="stat-label">צ'ק-אין ממתינים לאישור</div>
+          <div class="stat-num" id="statCheckinsPending">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">סה"כ נקודות שחולקו</div>
+          <div class="stat-num" id="statPoints">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">קוד הצטרפות לעסק</div>
+          <div class="stat-num" id="statCode">—</div>
+          <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
+        </div>
+        <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.getElementById('tabAttendance'))">
+          <div class="stat-label">⚠️ עובדים בסיכון</div>
+          <div class="stat-num" id="statAtRisk">0</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-num" id="statCode">—</div>
-        <div class="stat-label">קוד הצטרפות לעסק</div>
-        <button class="copy-code-btn" onclick="copyInviteCode()">📋 העתק קוד</button>
+
+      <div class="panel" id="studentsPanel">
+        <div class="panel-head"><h3>רשימת עובדים</h3></div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
+          <tbody id="studentsBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
       </div>
-      <div class="stat-card danger hidden" id="atRiskCard" onclick="setTab('attendance', document.getElementById('tabAttendance'))">
-        <div class="stat-num" id="statAtRisk">0</div>
-        <div class="stat-label">⚠️ עובדים בסיכון (מתחת ל-70% נוכחות או במגמת ירידה)</div>
+
+      <div class="panel hidden" id="teachersPanel">
+        <div class="panel-head"><h3>רשימת מנהלי צוותים</h3></div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>שם</th><th>אימייל</th><th></th></tr></thead>
+          <tbody id="teachersBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="teachersEmpty">עדיין אין מנהלי צוותים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
+      </div>
+
+      <div class="panel hidden" id="checkinApprovalPanel">
+        <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
+        <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 20px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
+        <div class="table-scroll"><table id="checkinApprovalTable">
+          <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
+          <tbody id="checkinApprovalBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
+      </div>
+
+      <div class="panel hidden" id="attendancePanel">
+        <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
+          <tbody id="attendanceBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
+      </div>
+
+      <div class="panel hidden" id="teacherActivityPanel">
+        <div class="panel-head"><h3>פעילות מנהלי צוותים (מהכי פעיל להכי פחות)</h3></div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>שם</th><th>משמרות שנפתחו</th><th>נקודות שחולקו</th><th>פעילות אחרונה</th></tr></thead>
+          <tbody id="teacherActivityBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מנהלי צוותים להציג.</div>
+        <div class="empty-state hidden" id="teacherActivityLocked">🔒 דוח פעילות מנהלים זמין רק במנוי הפרימיום (₪699). <a href="payment.html" style="color:var(--brand)">שדרגו עכשיו</a></div>
+      </div>
+
+      <div class="panel hidden" id="tasksPanel">
+        <div class="panel-head">
+          <h3>משימות למנהלי צוותים</h3>
+          <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
+        </div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>מנהל</th><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
+          <tbody id="tasksBody"></tbody>
+        </table></div>
+        <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
       </div>
     </div>
 
-    <div class="tabs">
-      <button class="tab active" id="tabStudents" onclick="setTab('students', this)">עובדים</button>
-      <button class="tab" id="tabTeachers" onclick="setTab('teachers', this)">מנהלי צוותים</button>
-      <button class="tab" id="tabCheckinApproval" onclick="setTab('checkinApproval', this)">צ'ק-אין ממתינים <span id="checkinApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
-      <button class="tab" id="tabAttendance" onclick="setTab('attendance', this)">דוח נוכחות <span id="atRiskBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
-      <button class="tab" id="tabTeacherActivity" onclick="setTab('teacherActivity', this)">פעילות מנהלים</button>
-      <button class="tab" id="tabTasks" onclick="setTab('tasks', this)">משימות <span id="tasksApprovalBadge" class="hidden" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-right:4px;animation:badgePulse 1.8s ease-in-out infinite">0</span></button>
-    </div>
-
-    <div class="panel" id="studentsPanel">
-      <div class="panel-head"><h3>רשימת עובדים</h3></div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>אימייל</th><th>טלפון</th><th>נקודות</th></tr></thead>
-        <tbody id="studentsBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="studentsEmpty">עדיין אין עובדים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-    </div>
-
-    <div class="panel hidden" id="teachersPanel">
-      <div class="panel-head"><h3>רשימת מנהלי צוותים</h3></div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>שם</th><th>אימייל</th><th></th></tr></thead>
-        <tbody id="teachersBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="teachersEmpty">עדיין אין מנהלי צוותים רשומים. שתף את קוד ההצטרפות כדי שיצטרפו.</div>
-    </div>
-
-    <div class="panel hidden" id="checkinApprovalPanel">
-      <div class="panel-head"><h3>צ'ק-אין / צ'ק-אאוט הממתינים לאישור</h3></div>
-      <p style="color:var(--ink-3);font-size:0.85rem;margin:0 0 14px 22px">לאחר הצ'ק-אאוט יש עד 8 שעות לאשר. הנקודות הן 3, עד למכסה של 3 נקודות צ'ק-אין ליום לכל עובד (צ'ק-אין נוסף באותו יום לא יזכה בנקודות נוספות).</p>
-      <div class="table-scroll"><table id="checkinApprovalTable">
-        <thead><tr><th>עובד</th><th>צוות/משמרת</th><th>שעת כניסה</th><th>שעת יציאה</th><th>זמן לאישור</th><th>פעולות</th></tr></thead>
-        <tbody id="checkinApprovalBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="checkinApprovalEmpty">אין כרגע צ'ק-אין/אאוט הממתינים לאישור.</div>
-    </div>
-
-    <div class="panel hidden" id="attendancePanel">
-      <div class="panel-head"><h3>דוח נוכחות לפי עובד (מהכי נעדר להכי נוכח)</h3></div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>שם</th><th>צוות/מחלקה</th><th>שעת כניסה אחרונה</th><th>שעת יציאה אחרונה</th><th>משמרות שנערכו</th><th>אושרה נוכחות</th><th>אחוז נוכחות</th><th>התראה</th></tr></thead>
-        <tbody id="attendanceBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="attendanceEmpty">אין עדיין משמרות שנערכו כדי להציג דוח נוכחות.</div>
-    </div>
-
-    <div class="panel hidden" id="teacherActivityPanel">
-      <div class="panel-head"><h3>פעילות מנהלי צוותים (מהכי פעיל להכי פחות)</h3></div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>שם</th><th>משמרות שנפתחו</th><th>נקודות שחולקו</th><th>פעילות אחרונה</th></tr></thead>
-        <tbody id="teacherActivityBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="teacherActivityEmpty">אין עדיין פעילות של מנהלי צוותים להציג.</div>
-      <div class="empty-state hidden" id="teacherActivityLocked">🔒 דוח פעילות מנהלים זמין רק במנוי הפרימיום (₪699). <a href="payment.html" style="color:var(--brand)">שדרגו עכשיו</a></div>
-    </div>
-
-    <div class="panel hidden" id="tasksPanel">
-      <div class="panel-head">
-        <h3>משימות למנהלי צוותים</h3>
-        <button class="add-btn" onclick="openTaskModal()">➕ משימה חדשה</button>
-      </div>
-      <div class="table-scroll"><table>
-        <thead><tr><th>מנהל</th><th>משימה</th><th>סטטוס</th><th>פעולות</th></tr></thead>
-        <tbody id="tasksBody"></tbody>
-      </table></div>
-      <div class="empty-state hidden" id="tasksEmpty">עדיין לא נוצרו משימות. לחצו על "משימה חדשה" כדי להתחיל.</div>
-    </div>
-  </div>
-
-  <div class="empty-state hidden" id="errorState"></div>
+    <div class="empty-state hidden" id="errorState"></div>
+  </main>
 </div>
 
 <div class="modal-overlay" id="studentModalOverlay" onclick="if(event.target===this) closeStudentModal()">
   <div class="modal" style="max-width:480px">
     <h3 id="studentModalName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalPoints" style="font-size:1.5rem">0</div>
-        <div class="stat-label">נקודות כרגע</div>
+      <div class="stat-card" style="flex:1;padding:14px">
+        <div class="stat-num" id="studentModalPoints" style="font-size:1.4rem">0</div>
+        <div class="stat-label" style="margin-top:6px;margin-bottom:0">נקודות כרגע</div>
       </div>
       <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="studentModalClass" style="font-size:1.5rem">—</div>
-        <div class="stat-label">צוות/מחלקה</div>
+        <div class="stat-num" id="studentModalClass" style="font-size:1.4rem">—</div>
+        <div class="stat-label" style="margin-top:6px;margin-bottom:0">צוות/מחלקה</div>
       </div>
     </div>
-    <h3 style="font-size:0.9rem;margin-bottom:10px">היסטוריית פעילות</h3>
+    <h3 style="font-size:0.88rem;margin-bottom:10px">היסטוריית פעילות</h3>
     <div id="studentModalHistory" style="max-height:320px;overflow-y:auto"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeStudentModal()">סגור</button>
@@ -357,18 +427,18 @@ tr.clickable{cursor:pointer}
     <h3 id="attendanceDetailName">עובד/ת</h3>
     <div style="display:flex;gap:16px;margin-bottom:18px">
       <div class="stat-card" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.5rem">—</div>
-        <div class="stat-label">צוות/מחלקה</div>
+        <div class="stat-num" id="attendanceDetailClass" style="font-size:1.4rem">—</div>
+        <div class="stat-label" style="margin-top:6px;margin-bottom:0">צוות/מחלקה</div>
       </div>
-      <div class="stat-card gold" style="flex:1;padding:14px">
-        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.5rem">—</div>
-        <div class="stat-label">אחוז נוכחות</div>
+      <div class="stat-card" style="flex:1;padding:14px">
+        <div class="stat-num" id="attendanceDetailPct" style="font-size:1.4rem">—</div>
+        <div class="stat-label" style="margin-top:6px;margin-bottom:0">אחוז נוכחות</div>
       </div>
     </div>
-    <h3 style="font-size:0.9rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
+    <h3 style="font-size:0.88rem;margin-bottom:10px">כל הכניסות והיציאות (לפי יום)</h3>
     <div id="attendanceDetailHistory" style="max-height:380px;overflow-y:auto">
       <table style="width:100%;border-collapse:collapse">
-        <thead><tr><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.78rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
+        <thead><tr><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">תאריך</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">כניסה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">יציאה</th><th style="text-align:right;font-size:0.74rem;color:var(--ink-3);padding:6px 4px">סטטוס</th></tr></thead>
         <tbody id="attendanceDetailBody"></tbody>
       </table>
       <div class="empty-state hidden" id="attendanceDetailEmpty" style="padding:20px 0">אין עדיין רשומות נוכחות לעובד זה.</div>
@@ -433,7 +503,7 @@ async function handleLogout() {
 }
 
 function setTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'))
   if (btn) btn.classList.add('active')
   document.getElementById('studentsPanel').classList.toggle('hidden', tab !== 'students')
   document.getElementById('teachersPanel').classList.toggle('hidden', tab !== 'teachers')
@@ -936,6 +1006,8 @@ async function loadDashboard() {
 
   currentSchoolId = profile.school_id
   document.getElementById('principalName').textContent = profile.name || 'מנהל/ת'
+  document.getElementById('principalNameSidebar').textContent = profile.name || 'מנהל/ת'
+  document.getElementById('principalAvatar').textContent = profile.name ? profile.name[0] : '·'
 
   const { data: school } = await supabaseClient
     .from('schools').select('*').eq('id', currentSchoolId).single()
