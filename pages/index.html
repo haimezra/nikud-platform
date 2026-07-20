@@ -48,7 +48,7 @@
   --ease:cubic-bezier(0.22,1,0.36,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-.banner-above-console{display:block;width:100%;height:auto;border-radius:var(--r);box-shadow:var(--sh-2);margin-bottom:16px}
+.banner-above-console{display:block;width:100%;height:auto;margin-bottom:16px}
 html{scroll-behavior:smooth}
 body{
   background:var(--paper);color:var(--ink);
@@ -256,10 +256,17 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .phone-cta-wrap{display:flex;justify-content:flex-start;top:-28px;margin-right:0;margin-left:auto}
 }
 .hero-inner{width:100%}
-.banner-above-console{margin-top:-80px;margin-bottom:120px}
+.banner-above-console{
+  width:100vw;max-width:100vw;
+  margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  margin-top:-80px;margin-bottom:120px;border-radius:0;
+}
 @media(min-width:1001px){
   .hero-inner{overflow-x:clip}
-  .banner-above-console{width:calc(100% + 40px);margin-left:-20px;margin-right:-20px;margin-top:0;margin-bottom:48px;border-radius:0}
+  .banner-above-console{
+    margin-top:-118px;margin-bottom:48px;
+    object-fit:cover;
+  }
 }
 @media(max-width:600px){.banner-above-console{margin-top:-36px;margin-bottom:80px}}
 .phone-cta{
@@ -310,7 +317,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   border-radius:var(--r-sm);padding:14px;box-shadow:var(--hl);
 }
 .kpi-num{font-family:'Rubik',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-0.6px;line-height:1}
-.kpi-num.c-blue{color:var(--brand)}.kpi-num.c-green{color:var(--green)}.kpi-num.c-gold{color:var(--gold)}
+.kpi-num.c-blue{color:var(--ink-2)}.kpi-num.c-green{color:var(--ink-2)}.kpi-num.c-gold{color:var(--ink-2)}
 .kpi-lbl{font-size:0.68rem;color:var(--ink-3);font-weight:500;margin-top:6px}
 .kpi-delta{font-size:0.64rem;color:var(--green);font-weight:600;margin-top:5px}
 .console-row{display:grid;grid-template-columns:1.22fr 1fr;gap:11px}
@@ -398,6 +405,10 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   margin:16px 0 8px;letter-spacing:-0.3px;line-height:1.32;
 }
 .device-card p{font-size:0.8rem;color:var(--ink-2);line-height:1.68}
+.device-card--plain{
+  background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;
+  border:none;box-shadow:none;padding:0;
+}
 
 /* ============ SECURE CLOCK CARD ============ */
 .secure-card{
@@ -1012,7 +1023,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 
     <!-- FINGERPRINT DEVICE -->
     <div class="device-wrap">
-      <div class="device-card">
+      <div class="device-card device-card--plain">
         <div class="device-img-frame">
           <img src="images/nikud-nfc-clock.jpg" alt="דיווח נוכחות בהצמדת טלפון בטכנולוגיית NFC של ניקוד">
         </div>
