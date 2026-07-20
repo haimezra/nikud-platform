@@ -728,6 +728,25 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   .contact-head h3{font-size:1.1rem}
 }
 
+/* ============ MANAGER DASHBOARD DEMO ============ */
+#manager-demo .inner{max-width:1320px}
+.dash-frame{margin-top:40px;padding:14px}
+.dash-preview{border-radius:var(--r)}
+.dash-zoom{display:block;cursor:zoom-in}
+.dash-img{
+  width:100%;height:auto;display:block;border-radius:var(--r);
+  transition:transform 0.4s var(--ease);
+}
+.dash-zoom:hover .dash-img{transform:scale(1.015)}
+
+@media(max-width:600px){
+  #manager-demo{padding:56px 8px}
+  #manager-demo .inner{padding:0}
+  .dash-frame{padding:8px;border-radius:var(--r-sm);margin-top:26px}
+  .dash-preview{border-radius:var(--r-sm)}
+  .dash-img{border-radius:var(--r-sm)}
+}
+
 /* ============ REVEAL ============ */
 .rv{opacity:0;transform:translateY(30px);transition:opacity 0.75s ease,transform 0.75s var(--ease)}
 .rv.in{opacity:1;transform:none}
@@ -1289,17 +1308,19 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 </section>
 
 <!-- MANAGER DASHBOARD DEMO -->
-<section class="section">
+<section class="section" id="manager-demo">
   <div class="inner">
     <div class="rv center">
       <h2 class="sec-title">כך נראה הדשבורד של המנהל</h2>
       <p class="sec-sub">מבט אמיתי על מסך העבודה היומי: אישורי נוכחות ממתינים, תקציב הנקודות, בקשות מימוש ופעולות אחרונות, הכול במקום אחד.</p>
     </div>
-    <div class="preview-frame rv">
-      <div class="preview" style="padding:0;overflow:hidden">
-        <img src="images/nikud-manager-dashboard.jpg"
-             alt="דשבורד המנהל של ניקוד – אישורי נוכחות, נקודות, משימות ורשימת עובדים"
-             style="width:100%;height:auto;display:block;border-radius:var(--r)">
+    <div class="preview-frame rv dash-frame">
+      <div class="preview dash-preview" style="padding:0;overflow:hidden">
+        <a href="images/nikud-manager-dashboard.jpg" target="_blank" class="dash-zoom" aria-label="הגדל תמונה">
+          <img src="images/nikud-manager-dashboard.jpg"
+               alt="דשבורד המנהל של ניקוד – אישורי נוכחות, נקודות, משימות ורשימת עובדים"
+               class="dash-img">
+        </a>
       </div>
     </div>
   </div>
