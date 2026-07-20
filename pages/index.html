@@ -409,9 +409,9 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
   background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;
   border:none;box-shadow:none;padding:0;
 }
-/* מחשב בלבד: שתי תמונות המכשירים זו לצד זו (במובייל נשאר מוערם) */
+/* מחשב בלבד: שתי תמונות המכשירים זו לצד זו וממלאות את כל הרוחב (במובייל נשאר מוערם) */
 @media(min-width:1001px){
-  .device-wrap{display:flex;gap:20px;align-items:flex-start}
+  .device-wrap{display:flex;gap:24px;align-items:flex-start;max-width:none !important;width:100%;margin:0 !important}
   .device-wrap .device-card{flex:1;min-width:0;margin-top:0 !important}
 }
 
