@@ -159,10 +159,9 @@ async function init() {
     .maybeSingle()
 
   if (last && last.status === 'ממתינה') {
-    // כבר במשמרת -> להציע צ'ק-אאוט
+    // כבר במשמרת -> צ'ק-אאוט אוטומטי (סריקה שנייה = סיום משמרת, בלי כפתור)
     window._activeCheckin = last
-    document.getElementById('activeSince').textContent = 'נכנסת בשעה ' + fmtTime(last.check_in_at)
-    return show('stateActive')
+    return doCheckout()
   }
 
   // אין משמרת פעילה -> לרשום צ'ק-אין חדש
