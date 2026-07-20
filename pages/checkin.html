@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2148E6">
+<title>צ'ק-אין · ניקוד☑︎</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --brand:#2148E6; --brand-2:#1a3bc4; --green:#16a34a; --red:#dc2626;
+    --gold:#d97706; --ink:#0B0D14; --ink-2:#4b5563; --ink-3:#9ca3af;
+    --bg:#FBFCFF; --card:#ffffff; --line:#e5e7eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Rubik','Segoe UI',sans-serif;background:var(--bg);color:var(--ink);
+    min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:22px;
+    box-shadow:0 12px 40px rgba(8,20,80,0.10);padding:34px 26px;
+    width:100%;max-width:420px;text-align:center;
+  }
+  .logo{font-family:'Rubik';font-weight:800;font-size:1.4rem;color:var(--brand);letter-spacing:-0.5px;margin-bottom:6px}
+  .loc-name{font-size:0.85rem;color:var(--ink-3);margin-bottom:24px}
+  .spinner{
+    width:52px;height:52px;border:5px solid #e5e9f5;border-top-color:var(--brand);
+    border-radius:50%;animation:spin 0.8s linear infinite;margin:14px auto 22px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .icon-big{font-size:3.2rem;margin:6px 0 14px;line-height:1}
+  h1{font-size:1.28rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.4px}
+  p.sub{font-size:0.92rem;color:var(--ink-2);line-height:1.6;margin-bottom:22px}
+  .btn{
+    display:block;width:100%;padding:14px;border:none;border-radius:14px;
+    font-family:'Rubik';font-weight:700;font-size:1rem;cursor:pointer;
+    background:var(--brand);color:#fff;box-shadow:0 6px 18px rgba(33,72,230,0.28);
+    text-decoration:none;margin-top:10px;
+  }
+  .btn:active{transform:scale(0.98)}
+  .btn.secondary{background:#eef1fb;color:var(--brand);box-shadow:none}
+  .ok{color:var(--green)} .err{color:var(--red)} .wait{color:var(--gold)}
+  .time-line{font-size:0.9rem;color:var(--ink-2);margin-top:8px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">ניקוד☑︎</div>
+    <div class="loc-name" id="locName">צ'ק-אין נוכחות</div>
+
+    <!-- מצב טעינה -->
+    <div id="stateLoading">
+      <div class="spinner"></div>
+      <p class="sub" id="loadingMsg">מזהה אותך...</p>
+    </div>
+
+    <!-- הצלחה: נכנס -->
+    <div id="stateCheckedIn" class="hidden">
+      <div class="icon-big ok">✅</div>
+      <h1 class="ok">נרשמה כניסה!</h1>
+      <p class="sub">הנוכחות שלך נשלחה לאישור המנהל.<br>המשמרת פעילה עכשיו.</p>
+      <div class="time-line" id="checkinTime"></div>
+      <button class="btn" onclick="location.reload()">רענן</button>
+    </div>
+
+    <!-- משמרת פעילה: אפשרות צ'ק-אאוט -->
+    <div id="stateActive" class="hidden">
+      <div class="icon-big wait">🕐</div>
+      <h1>יש לך משמרת פעילה</h1>
+      <p class="sub" id="activeSince"></p>
+      <button class="btn" onclick="doCheckout()">צ'ק-אאוט · סיימתי משמרת</button>
+    </div>
+
+    <!-- הושלם -->
+    <div id="stateDone" class="hidden">
+      <div class="icon-big ok">👍</div>
+      <h1 class="ok">המשמרת נסגרה</h1>
+      <p class="sub">הנוכחות נשלחה לאישור המנהל.<br>תודה!</p>
+      <div class="time-line" id="doneTimes"></div>
+    </div>
+
+    <!-- לא מחובר -->
+    <div id="stateLogin" class="hidden">
+      <div class="icon-big">🔑</div>
+      <h1>צריך להתחבר קודם</h1>
+      <p class="sub">כדי לרשום נוכחות עליך להיכנס לחשבון שלך פעם אחת. אחרי זה הצ'ק-אין יעבוד ישירות.</p>
+      <a class="btn" id="loginLink" href="#">כניסה לחשבון</a>
+    </div>
+
+    <!-- שגיאה -->
+    <div id="stateError" class="hidden">
+      <div class="icon-big err">⚠️</div>
+      <h1 class="err">משהו השתבש</h1>
+      <p class="sub" id="errMsg"></p>
+      <button class="btn secondary" onclick="location.reload()">נסה שוב</button>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+let sb = null
+let currentUser = null
+
+// קריאת פרמטר מיקום מה-URL (למשל ?loc=entrance) - להצגה בלבד
+const params = new URLSearchParams(location.search)
+const locParam = params.get('loc')
+if (locParam) document.getElementById('locName').textContent = 'נקודת צ\'ק-אין: ' + decodeURIComponent(locParam)
+
+function show(id) {
+  ['stateLoading','stateCheckedIn','stateActive','stateDone','stateLogin','stateError']
+    .forEach(s => document.getElementById(s).classList.add('hidden'))
+  document.getElementById(id).classList.remove('hidden')
+}
+function fmtTime(iso){ return iso ? new Date(iso).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}) : '' }
+
+// ניסיון לקלוט מיקום GPS (כמו בדשבורד) - לא חוסם אם נכשל
+function getLocation() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null)
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+    )
+  })
+}
+
+async function init() {
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  } catch (e) {
+    return showError('לא ניתן להתחבר למערכת. נסה שוב מאוחר יותר.')
+  }
+
+  // בדיקת התחברות
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) {
+    // שמירת היעד כדי לחזור hלכאן אחרי התחברות
+    const back = encodeURIComponent(location.pathname + location.search)
+    document.getElementById('loginLink').href = 'login.html?redirect=' + back
+    return show('stateLogin')
+  }
+
+  const { data: profile } = await sb.from('users').select('*').eq('id', user.id).single()
+  if (!profile) return showError('הפרופיל שלך לא נמצא. פנה למנהל.')
+  currentUser = profile
+
+  // בדיקה אם כבר יש משמרת פעילה (status='ממתינה' ללא צ'ק-אאוט)
+  const { data: last } = await sb.from('checkins')
+    .select('*')
+    .eq('student_id', currentUser.id)
+    .order('check_in_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (last && last.status === 'ממתינה') {
+    // כבר במשמרת -> להציע צ'ק-אאוט
+    window._activeCheckin = last
+    document.getElementById('activeSince').textContent = 'נכנסת בשעה ' + fmtTime(last.check_in_at)
+    return show('stateActive')
+  }
+
+  // אין משמרת פעילה -> לרשום צ'ק-אין חדש
+  await doCheckin()
+}
+
+async function doCheckin() {
+  show('stateLoading')
+  document.getElementById('loadingMsg').textContent = 'קולט מיקום ורושם נוכחות...'
+
+  const loc = await getLocation()
+  const payload = {
+    student_id: currentUser.id,
+    status: 'ממתינה',
+    check_in_at: new Date().toISOString()
+  }
+  if (currentUser.school_id) payload.school_id = currentUser.school_id
+  if (currentUser.class_name) payload.class_name = currentUser.class_name
+  if (loc) {
+    payload.check_in_lat = loc.lat
+    payload.check_in_lng = loc.lng
+    payload.check_in_accuracy = loc.accuracy
+    payload.location_captured_at = new Date().toISOString()
+  }
+
+  const { data, error } = await sb.from('checkins').insert(payload).select().single()
+  if (error) {
+    console.error('[checkin]', error)
+    return showError('לא הצלחנו לרשום את הנוכחות. נסה שוב.')
+  }
+  document.getElementById('checkinTime').textContent = 'שעת כניסה: ' + fmtTime(data.check_in_at)
+  show('stateCheckedIn')
+}
+
+async function doCheckout() {
+  const active = window._activeCheckin
+  if (!active) return
+  show('stateLoading')
+  document.getElementById('loadingMsg').textContent = 'סוגר משמרת...'
+
+  const { data, error } = await sb.from('checkins')
+    .update({ status: 'הושלם', check_out_at: new Date().toISOString() })
+    .eq('id', active.id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('[checkout]', error)
+    return showError('לא הצלחנו לסגור את המשמרת. נסה שוב.')
+  }
+  document.getElementById('doneTimes').textContent =
+    'נכנסת ' + fmtTime(data.check_in_at) + ' · יצאת ' + fmtTime(data.check_out_at)
+  show('stateDone')
+}
+
+function showError(msg) {
+  document.getElementById('errMsg').textContent = msg
+  show('stateError')
+}
+
+init()
+</script>
+</body>
+</html>
