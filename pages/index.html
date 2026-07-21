@@ -112,8 +112,8 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .logo-tagline{
   font-family:'Heebo',sans-serif;
   font-size:0.94rem;
-  font-weight:600;
-  color:#000;
+  font-weight:400;
+  color:#8A93AD;
   margin-right:8px;
   letter-spacing:0;
   align-self:baseline;
@@ -183,18 +183,9 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .eyebrow .dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 0 4px rgba(11,138,99,0.15);animation:pulse 0.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .hero h1{
-  font-size:clamp(2.5rem,5.1vw,4rem);font-weight:600;
-  line-height:1.08;letter-spacing:-1.8px;margin-bottom:24px;
-  background:linear-gradient(180deg,
-    #6B7590 0%,
-    #2A3148 22%,
-    #05070F 44%,
-    #010208 50%,
-    #3D4763 54%,
-    #0A0E1D 62%,
-    #01030A 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 1px 0 rgba(255,255,255,0.65)) drop-shadow(0 10px 22px rgba(4,8,26,0.18));
+  font-size:clamp(2.3rem,4.4vw,3.4rem);font-weight:600;
+  line-height:1.2;letter-spacing:-0.5px;margin-bottom:24px;
+  color:var(--ink);
 }
 .hero h1 em{
   font-style:normal;
@@ -541,7 +532,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:54px}
 .feat{
   background:var(--glass);backdrop-filter:blur(14px);
-  border:1px solid var(--glass-border);border-radius:var(--r);
+  border:1px solid var(--glass-border);border-radius:4px;
   padding:32px 28px;transition:transform 0.35s var(--ease),box-shadow 0.35s,border-color 0.35s;
   box-shadow:var(--sh-1),var(--hl);position:relative;overflow:hidden;
 }
@@ -1041,8 +1032,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 
     <!-- LIVE CONSOLE -->
     <div class="console-wrap">
-      <div class="chip chip-1"><span class="star">★</span> נועה קיבלה +25 נקודות</div>
-      <div class="chip chip-2">הנוכחות עלתה ב-16%<small>ב-30 הימים האחרונים</small></div>
       <div class="console" role="img" aria-label="תצוגת דשבורד המערכת">
         <div class="console-top">
           <div class="console-title">דשבורד ניהול</div>
@@ -1084,9 +1073,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
           </div>
         </div>
         <div class="feed">
-          <div class="feed-row"><div class="feed-ic"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="feed-txt"><b>דניאל</b> סימן צ'ק-אין למשמרת בוקר</div><div class="feed-pts">+3</div></div>
-          <div class="feed-row"><div class="feed-ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4"/><path d="M12 8v13M5 12v9h14v-9"/><path d="M12 8S9.5 4 7.5 4 4 5.5 4 6.5 5.5 8 7.5 8 12 8 12 8zm0 0s2.5-4 4.5-4S20 5.5 20 6.5 18.5 8 16.5 8 12 8 12 8z"/></svg></div><div class="feed-txt"><b>מאיה</b> מימשה גיפט-קארד</div><div class="feed-pts neg">-120</div></div>
-          <div class="feed-row"><div class="feed-ic"><svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.3 6.6.9-4.8 4.6 1.2 6.5L12 17.8 6.1 20.3l1.2-6.5L2.5 9.2l6.6-.9z"/></svg></div><div class="feed-txt"><b>עומר</b> קיבל בונוס מצוינות מהמנהל</div><div class="feed-pts">+5</div></div>
         </div>
       </div>
     </div>
@@ -1099,13 +1085,6 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
         </div>
         <h4>צ'ק-אין בהצמדת טלפון (NFC)</h4>
         <p>בדיוק כמו תשלום ללא מגע, העובד רק מצמיד את הטלפון לקורא ה-NFC והנוכחות נרשמת בשנייה. אין צורך להוריד אפליקציה ייעודית לצ'ק-אין, אין הקלדת קודים ואין תורים בכניסה, פשוט מקרבים את המכשיר והנתונים עולים ישירות למערכת בזמן אמת.</p>
-      </div>
-      <div class="device-card device-card--plain" style="margin-top:18px">
-        <div class="device-img-frame">
-          <img src="images/nikud-face-clock.jpg" alt="שעון נוכחות חכם עם זיהוי פנים של ניקוד">
-        </div>
-        <h4>שעון חכם עם זיהוי פנים</h4>
-        <p>בנוסף לטביעת האצבע, יש לנו גם שעון נוכחות מתקדם עם זיהוי פנים. הצ'ק-אין קורה תוך שנייה מול המצלמה, ללא מגע, והנתונים עולים ישירות לאפליקציה שלנו בזמן אמת.</p>
       </div>
     </div>
     </div>
@@ -1140,32 +1119,32 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M21 12v6a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h11"/></svg></div>
         <h3>אישור נוכחות מבוקר</h3>
-        <p>העובדים מסמנים צ'ק-אין, והמנהל מאשר ידנית. אין דיווח עצמי, יש אמינות מלאה.</p>
+        <p>כל דיווח נוכחות עובר אישור ידני של מנהל הצוות לפני שהוא נקלט במערכת. כך נמנע דיווח עצמי, וכל נתון משקף מציאות תפעולית מדויקת.</p>
       </div>
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
-        <h3>מעקב בזמן אמת</h3>
-        <p>דשבורד חי שמראה מי נוכח, מי בסיכון ומה מצב המשימות, בכל רגע, מכל מכשיר.</p>
+        <h3>ניהול משמרות וסידור עבודה</h3>
+        <p>קובעים סידור עבודה לצוותים ולסניפים מראש, והמערכת מתריעה אוטומטית כשעובד חסר או כשיש חריגה מהמשמרת שנקבעה.</p>
       </div>
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7a3 3 0 10-3-3c0 1.7 1.3 3 3 3z"/><path d="M12 7a3 3 0 113-3c0 1.7-1.3 3-3 3z"/></svg></div>
         <h3>חנות פרסים אמיתית</h3>
-        <p>נקודות שנצברו מומרות לגיפט-קארד, קופונים, מוצרי חשמל ועוד. כל עסק יכול להוסיף פרסים משלו.</p>
+        <p>נקודות שנצברות על ביצועים ועמידה ביעדים ניתנות למימוש בגיפט-קארד, קופונים ומוצרי חשמל. כל ארגון יכול להתאים את מבחר הפרסים לצוות שלו.</p>
       </div>
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
         <h3>דוחות וזיהוי מגמות</h3>
-        <p>המערכת מזהה אוטומטית עובדים בסיכון ומגמות ירידה בנוכחות, לפני שזה הופך לבעיה.</p>
+        <p>המערכת מפיקה דוחות תפעוליים ומזהה מגמות ירידה בנוכחות בזמן אמת, כדי שמנהלים יוכלו לפעול לפני שהבעיה משפיעה על התפעול השוטף.</p>
       </div>
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M22 17a4 4 0 00-4-4H6a4 4 0 00-4 4"/><circle cx="12" cy="7" r="4"/></svg></div>
         <h3>הטלת משימות ומעקב</h3>
-        <p>מנהלים מטילים משימות, עוקבים אחר ההשלמה ומתגמלים בנקודות על עמידה ביעדים.</p>
+        <p>מנהלים מקצים משימות לעובדים ולצוותים, עוקבים אחר ההתקדמות בזמן אמת ומתגמלים עמידה ביעדים בנקודות, הכול במקום אחד.</p>
       </div>
       <div class="feat rv">
         <div class="feat-ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></div>
-        <h3>התראות SMS ווואטסאפ</h3>
-        <p>התראות אוטומטיות למנהלים ולמנהלי הצוותים כשמשהו דורש תשומת לב: היעדרות, ירידה או הישג.</p>
+        <h3>התראות SMS ווטסאפ</h3>
+        <p>התראות אוטומטיות נשלחות למנהלים ולמנהלי הצוותים בכל אירוע שדורש תשומת לב: היעדרות, ירידה בנוכחות או חריגה מהיעד.</p>
       </div>
     </div>
   </div>
