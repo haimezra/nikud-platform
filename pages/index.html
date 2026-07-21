@@ -414,10 +414,10 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
 }
 /* מחשב בלבד: שתי תמונות המכשירים זו לצד זו וממלאות את כל הרוחב (במובייל נשאר מוערם) */
 @media(min-width:1001px){
-  .device-wrap{display:flex;gap:24px;align-items:stretch;max-width:none !important;width:100%;margin:0 !important}
+  .device-wrap{grid-column:1 / -1;display:flex;gap:24px;align-items:stretch;max-width:none !important;width:100%;margin:0 !important}
   .device-wrap .device-card{flex:1;min-width:0;margin-top:0 !important;display:flex;flex-direction:column}
   .device-wrap .device-img-frame{flex:0 0 auto}
-  .device-wrap .device-img-frame img{width:100%;height:260px;object-fit:cover}
+  .device-wrap .device-img-frame img{width:100%;height:340px;object-fit:cover}
 }
 
 /* ============ SECURE CLOCK CARD ============ */
@@ -1094,7 +1094,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
         <h4>צ'ק-אין בהצמדת טלפון (NFC)</h4>
         <p>בדיוק כמו תשלום ללא מגע, העובד רק מצמיד את הטלפון לקורא ה-NFC והנוכחות נרשמת בשנייה. אין צורך להוריד אפליקציה ייעודית לצ'ק-אין, אין הקלדת קודים ואין תורים בכניסה, פשוט מקרבים את המכשיר והנתונים עולים ישירות למערכת בזמן אמת.</p>
       </div>
-      <div class="device-card" style="margin-top:18px">
+      <div class="device-card device-card--plain" style="margin-top:18px">
         <div class="device-img-frame">
           <img src="images/nikud-face-clock.jpg" alt="שעון נוכחות חכם עם זיהוי פנים של ניקוד">
         </div>
