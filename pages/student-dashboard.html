@@ -902,11 +902,17 @@ async function loadStore() {
   if (!data) return
 
   document.getElementById('storeGrid').innerHTML = data.map(item => `
-    <div class="store-item" onclick="buyItem('${item.id}', ${JSON.stringify(item.name)}, ${item.points_cost})">
+    <div class="store-item" data-id="${item.id}" data-name="${escapeHtml(item.name)}" data-cost="${item.points_cost}" onclick="buyItemFromEl(this)">
       <div class="item-name">${escapeHtml(item.name)}</div>
       <div class="item-pts">${item.points_cost} נקודות</div>
     </div>
   `).join('')
+}
+
+// עוטף בטוח שקורא ל-buyItem מתוך data-* attributes (נמנע מהתנגשות גרשיים
+// שקרתה כשהיינו מטמיעים JSON.stringify(name) ישירות בתוך onclick="...")
+function buyItemFromEl(el) {
+  buyItem(el.dataset.id, el.dataset.name, Number(el.dataset.cost))
 }
 
 async function buyItem(itemId, name, cost) {
