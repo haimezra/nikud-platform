@@ -1470,7 +1470,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
       <input id="qsSchoolName" placeholder="שם העסק" required>
       <input id="qsInviteCode" placeholder="קוד הצטרפות מהעסק" style="display:none">
       <input id="qsName" placeholder="שם מלא" required>
-      <input id="qsPhone" type="tel" inputmode="tel" dir="ltr" placeholder="מספר טלפון" required>
+      <input id="qsPhone" type="tel" inputmode="tel" dir="ltr" placeholder="מספר טלפון" pattern="0[2-9][0-9]{7,8}" title="מספר טלפון ישראלי תקין, ללא מקפים. למשל 0501234567" required>
       <input id="qsEmail" type="email" placeholder="אימייל" required>
       <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required>
       <button type="submit" id="qsSubmitBtn" class="qs-submit">המשך לתשלום ←</button>
