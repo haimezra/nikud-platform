@@ -1470,6 +1470,7 @@ h1,h2,h3,h4,.display{font-family:'Rubik',sans-serif}
       <input id="qsSchoolName" placeholder="שם העסק" required>
       <input id="qsInviteCode" placeholder="קוד הצטרפות מהעסק" style="display:none">
       <input id="qsName" placeholder="שם מלא" required>
+      <input id="qsPhone" type="tel" inputmode="tel" dir="ltr" placeholder="מספר טלפון" required>
       <input id="qsEmail" type="email" placeholder="אימייל" required>
       <input id="qsPassword" type="password" placeholder="בחר סיסמה (6+ תווים)" minlength="6" required>
       <button type="submit" id="qsSubmitBtn" class="qs-submit">המשך לתשלום ←</button>
@@ -1643,6 +1644,7 @@ async function submitQuickSignup(e) {
   const role = document.getElementById('qsRole').value
   const isFree = plan === 'free'
   const name = document.getElementById('qsName').value
+  const phone = document.getElementById('qsPhone').value.trim()
   const email = document.getElementById('qsEmail').value
   const password = document.getElementById('qsPassword').value
   const errBox = document.getElementById('qsError')
@@ -1690,7 +1692,7 @@ async function submitQuickSignup(e) {
 
       const { data: authData, error: authErr } = await qsClient.auth.signUp({
         email, password,
-        options: { data: { name, role, school_id: schoolId } }
+        options: { data: { name, role, school_id: schoolId, phone } }
       })
       if (authErr) throw authErr
       userId = authData.user.id
