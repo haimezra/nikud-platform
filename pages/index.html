@@ -1697,11 +1697,19 @@ async function submitQuickSignup(e) {
       if (authErr) throw authErr
       userId = authData.user.id
 
-      // אם נדרש אימות אימייל, signUp לא מייצר session פעיל -
-      // לא ניתן להעביר לדשבורד (הוא יבדוק session ויחזיר ללוגין). מציגים הודעה במקום.
+      // אם נדרש אימות אימייל, signUp לא מייצר session פעיל.
       if (!authData.session) {
+        // מסלול בתשלום: ממשיכים לדף התשלום גם בלי session.
+        // אישור התשלום מתבצע בשרת (Edge Function עם service role) ולא תלוי ב-session,
+        // ולכן אין סיבה לעצור כאן. אחרת הלקוח לא היה מגיע לתשלום כלל.
+        if (!isFree) {
+          const payParams = new URLSearchParams({ mode: 'start', school_id: schoolId, plan, email, name })
+          window.location.href = `https://iyibnkdstmijttvprpxk.supabase.co/functions/v1/hyp-payment?${payParams.toString()}`
+          return
+        }
+        // מסלול חינם: אין לאן להעביר בלי session, מציגים הנחיה לאימות.
         errBox.style.cssText = 'display:block;background:rgba(11,138,99,0.12);border-color:rgba(11,138,99,0.35);color:#0B8A63'
-        errBox.textContent = 'נרשמת בהצלחה! בדוק/י את תיבת האימייל שלך לאימות החשבון, ולאחר מכן היכנס/י דרך login.html.'
+        errBox.textContent = 'נרשמת בהצלחה! בדוק/י את תיבת האימייל שלך לאימות החשבון, ולאחר מכן היכנס/י דרך כפתור הכניסה באתר.'
         btn.disabled = false
         btn.textContent = btnLabel
         return
