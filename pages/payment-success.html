@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>סטטוס תשלום – ניקוד★</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#0B0620;--card:rgba(255,255,255,0.07);--border:rgba(255,255,255,0.16);
@@ -31,6 +32,18 @@ p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:26px}
   display:inline-block;padding:13px 28px;background:var(--accent);border-radius:12px;
   color:#fff;font-weight:700;text-decoration:none;font-size:0.95rem;
 }
+.steps{
+  text-align:right;background:rgba(255,255,255,0.05);border:1px solid var(--border);
+  border-radius:14px;padding:16px 18px;margin-bottom:24px;display:none;
+}
+.steps-title{font-size:0.86rem;font-weight:700;color:var(--text);margin-bottom:12px}
+.step{display:flex;gap:10px;align-items:flex-start;font-size:0.84rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.step:last-child{margin-bottom:0}
+.step-num{
+  flex-shrink:0;width:20px;height:20px;border-radius:50%;background:rgba(46,111,255,0.2);
+  border:1px solid rgba(46,111,255,0.4);color:#8FB0FF;font-size:0.7rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
 </style>
 <!-- Vercel Web Analytics -->
 <script>
@@ -44,22 +57,52 @@ p{color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:26px}
   <div class="icon" id="icon">⏳</div>
   <h1 id="title">בודק את סטטוס התשלום...</h1>
   <p id="msg"></p>
+  <div class="steps" id="steps">
+    <div class="steps-title">שני שלבים אחרונים כדי להיכנס:</div>
+    <div class="step"><span class="step-num">1</span><span>פתח/י את תיבת האימייל שלך ולחץ/י על קישור האימות ששלחנו (בדוק/י גם בספאם).</span></div>
+    <div class="step"><span class="step-num">2</span><span>חזור/י לאתר והתחבר/י עם האימייל והסיסמה שבחרת. המנוי כבר פעיל וממתין לך.</span></div>
+  </div>
   <a href="principal.html" class="btn" id="btn">חזרה לדשבורד</a>
 </div>
 
 <script>
+const SUPABASE_URL = 'https://iyibnkdstmijttvprpxk.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_AYB1c9H3wEUxdG0Z6OsCZA_dE9UMq9d'
+
 const params = new URLSearchParams(window.location.search)
 const status = params.get('status')
 const plan = params.get('plan')
 
 const el = (id) => document.getElementById(id)
 
+// טקסט התוכנית שנרכשה, משותף לשני המקרים (עם session ובלי)
+const planText = plan === 'premium'
+  ? 'המנוי המורחב (₪699) פעיל עכשיו. כל הפיצ\'רים נפתחו אוטומטית - דוחות מתקדמים, בונוסים אישיים, והכל. חשבונית נשלחה למייל.'
+  : 'המנוי (₪299) פעיל עכשיו. חנות הפרסים וכל התכונות של החבילה נפתחו אוטומטית. חשבונית נשלחה למייל.'
+
 if (status === 'success') {
   el('icon').textContent = '🎉'
   el('title').textContent = 'התשלום התקבל - המנוי הופעל!'
-  el('msg').textContent = plan === 'premium'
-    ? 'המנוי המורחב (₪699) פעיל עכשיו. כל הפיצ\'רים נפתחו אוטומטית - דוחות מתקדמים, בונוסים אישיים, והכל. חשבונית נשלחה למייל.'
-    : 'המנוי (₪299) פעיל עכשיו. חנות הפרסים וכל התכונות של החבילה נפתחו אוטומטית. חשבונית נשלחה למייל.'
+  el('msg').textContent = planText
+
+  // הרשמה חדשה + תשלום לא מייצרת session (נדרש אימות אימייל קודם).
+  // במקרה כזה הפניה ל-principal.html רק תזרוק את הלקוח חזרה ללוגין,
+  // ולכן מציגים לו את שני השלבים שנותרו במקום כפתור שלא יעבוד.
+  ;(async () => {
+    try {
+      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+      const { data: { session } } = await client.auth.getSession()
+      if (!session) {
+        el('steps').style.display = 'block'
+        el('btn').href = 'login.html'
+        el('btn').textContent = 'למסך הכניסה ←'
+      }
+    } catch (err) {
+      // אם בדיקת ה-session נכשלה, משאירים את הכפתור כברירת מחדל.
+      console.warn('session check failed:', err)
+    }
+  })()
+
 } else if (status === 'failed') {
   el('icon').textContent = '❌'
   el('title').textContent = 'התשלום לא הושלם'
