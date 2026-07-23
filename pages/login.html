@@ -151,9 +151,9 @@ body{
         <label>כיתה</label>
         <input type="text" id="classInput" placeholder='למשל: י"א 3'>
       </div>
-      <div class="field hidden" id="phoneField">
+      <div class="field" id="phoneField">
         <label>מספר טלפון</label>
-        <input type="tel" id="phoneInput" placeholder="050-1234567">
+        <input type="tel" id="phoneInput" inputmode="tel" dir="ltr" placeholder="050-1234567">
       </div>
       <div class="field hidden" id="schoolNameField">
         <label>שם בית הספר</label>
@@ -281,23 +281,25 @@ function updateFormFields() {
   const schoolNameField = document.getElementById('schoolNameField')
   const schoolCodeField = document.getElementById('schoolCodeField')
   const phoneField = document.getElementById('phoneField')
+  const phoneInput = document.getElementById('phoneInput')
+
+  // מספר טלפון נדרש בהרשמה עבור כל התפקידים
+  phoneField.classList.toggle('hidden', currentMode !== 'register')
+  phoneInput.required = currentMode === 'register'
 
   if (currentMode === 'register') {
     if (currentRole === 'student') {
       classField.classList.remove('hidden')
       schoolNameField.classList.add('hidden')
       schoolCodeField.classList.remove('hidden')
-      phoneField.classList.remove('hidden')
     } else if (currentRole === 'teacher') {
       classField.classList.add('hidden')
       schoolNameField.classList.add('hidden')
       schoolCodeField.classList.remove('hidden')
-      phoneField.classList.add('hidden')
     } else if (currentRole === 'principal') {
       classField.classList.add('hidden')
       schoolNameField.classList.remove('hidden')
       schoolCodeField.classList.add('hidden')
-      phoneField.classList.add('hidden')
     }
   }
 }
@@ -414,6 +416,10 @@ async function handleSubmit(e) {
       const name = document.getElementById('nameInput').value
       if (!name) { showError('נא למלא שם מלא'); btn.disabled = false; btn.textContent = 'הרשמה'; return }
 
+      // מספר טלפון חובה לכל התפקידים
+      const phone = document.getElementById('phoneInput').value.trim()
+      if (!phone) { showError('נא למלא מספר טלפון'); btn.disabled = false; btn.textContent = 'הרשמה'; return }
+
       let school_id = null
 
       if (currentRole === 'principal') {
@@ -438,7 +444,6 @@ async function handleSubmit(e) {
       }
 
       const class_name = currentRole === 'student' ? document.getElementById('classInput').value : null
-      const phone = currentRole === 'student' ? document.getElementById('phoneInput').value : null
 
       // Profile row is now created server-side by a DB trigger (handle_new_user),
       // using this metadata - works even before email confirmation.
