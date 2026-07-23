@@ -708,8 +708,8 @@ async function renderAttendanceReport() {
     const trendBadge = r.decliningTrend
       ? `<span title="ירידה של ${r.previousPct - r.recentPct} נקודות אחוז ב-14 הימים האחרונים (מ-${r.previousPct}% ל-${r.recentPct}%)" style="font-size:0.68rem;background:rgba(224,171,78,0.16);color:var(--gold-soft);padding:2px 8px;border-radius:99px;margin-right:6px">📉 מגמת ירידה</span>`
       : ''
-    const phone = r.student.parent_phone || ''
-    const alertCell = (atRisk || r.decliningTrend)
+const phone = r.student.phone || r.student.parent_phone || ''
+  const alertCell = (atRisk || r.decliningTrend)
       ? phone
         ? `<a href="${buildWhatsappAlertLink(phone, r.student.name, r.pct)}" target="_blank" class="copy-code-btn" style="text-decoration:none;display:inline-block">💬 שלח התראה</a>`
         : `<button class="copy-code-btn" onclick="promptParentPhone('${r.student.id}', '${(r.student.name||'').replace(/'/g,"")}')">📱 הוסף טלפון</button>`
